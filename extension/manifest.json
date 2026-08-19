@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "FormPilot",
+  "version": "1.0.0",
+  "description": "AI-powered Google Forms Autofill. Fill your profile once, autofill job applications everywhere.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://docs.google.com/forms/*",
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*"
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "FormPilot",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://docs.google.com/forms/*"],
+      "js": ["src/content/index.tsx"]
+    },
+    {
+      "matches": ["http://localhost:3000/*", "http://127.0.0.1:3000/*"],
+      "js": ["src/content/dashboardSync.ts"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*", "logo.png", "logo-icon.png", "icon16.png", "icon48.png", "icon128.png"],
+      "matches": ["https://docs.google.com/*"]
+    }
+  ],
+  "externally_connectable": {
+    "matches": [
+      "http://localhost:3000/*",
+      "http://127.0.0.1:3000/*"
+    ]
+  }
+}
