@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Form Mock</title>
+    <style>
+        body { font-family: Roboto, Arial, sans-serif; background: #f0ebf8; padding: 20px; }
+        .form-container { max-width: 640px; margin: 0 auto; background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .listitem { margin-bottom: 24px; padding: 24px; border: 1px solid #dadce0; border-radius: 8px; }
+        .heading { font-size: 16px; font-weight: 500; margin-bottom: 16px; }
+        input[type="text"], textarea { width: 100%; padding: 8px; border: none; border-bottom: 1px solid #dadce0; outline: none; }
+        input[type="text"]:focus, textarea:focus { border-bottom: 2px solid #673ab7; }
+        .radio-opt, .check-opt { margin-bottom: 12px; display: flex; align-items: center; cursor: pointer; }
+        .radio-opt input, .check-opt input { margin-right: 8px; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Software Engineer Application</h1>
+        
+        <!-- Short Answer -->
+        <div role="listitem" class="listitem">
+            <div role="heading" class="heading">Full Name *</div>
+            <input type="text" placeholder="Your answer" />
+        </div>
+
+        <!-- Short Answer (Email) -->
+        <div role="listitem" class="listitem">
+            <div role="heading" class="heading">Email Address *</div>
+            <input type="text" placeholder="Your email" />
+        </div>
+
+        <!-- Paragraph -->
+        <div role="listitem" class="listitem">
+            <div role="heading" class="heading">Summary of your experience</div>
+            <textarea rows="3" placeholder="Your answer"></textarea>
+        </div>
+
+        <!-- Radio Group -->
+        <div role="listitem" class="listitem">
+            <div role="heading" class="heading">Years of Experience *</div>
+            <div role="radiogroup">
+                <div role="radio" data-value="0-2 years" class="radio-opt"><input type="radio" name="exp"> 0-2 years</div>
+                <div role="radio" data-value="3-5 years" class="radio-opt"><input type="radio" name="exp"> 3-5 years</div>
+                <div role="radio" data-value="5+ years" class="radio-opt"><input type="radio" name="exp"> 5+ years</div>
+            </div>
+        </div>
+
+        <!-- Checkboxes -->
+        <div role="listitem" class="listitem">
+            <div role="heading" class="heading">Technical Skills (Select all that apply)</div>
+            <div>
+                <div role="checkbox" aria-label="React" data-value="React" class="check-opt"><input type="checkbox"> React</div>
+                <div role="checkbox" aria-label="Node.js" data-value="Node.js" class="check-opt"><input type="checkbox"> Node.js</div>
+                <div role="checkbox" aria-label="Python" data-value="Python" class="check-opt"><input type="checkbox"> Python</div>
+                <div role="checkbox" aria-label="AWS" data-value="AWS" class="check-opt"><input type="checkbox"> AWS</div>
+            </div>
+        </div>
+        
+        <!-- Dropdown Mock -->
+        <div role="listitem" class="listitem">
+            <div role="heading" class="heading">Highest Education Level *</div>
+            <div role="listbox" style="border: 1px solid #dadce0; padding: 8px; border-radius: 4px; cursor: pointer;">
+                Choose
+            </div>
+            <div style="display: none;">
+                <div role="option" data-value="High School">High School</div>
+                <div role="option" data-value="Bachelor's Degree">Bachelor's Degree</div>
+                <div role="option" data-value="Master's Degree">Master's Degree</div>
+                <div role="option" data-value="PhD">PhD</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
