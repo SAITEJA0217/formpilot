@@ -40,8 +40,10 @@ for most fields.
 
 ## Current result
 
-Run `2026-09-28T17:15Z`, engine 2.0.0, node v22.22.2, jsdom, no model called.
-12 page states, 85 labelled fields.
+Engine 2.0.0, node v22.22.2, jsdom, no model called. 12 page states, 85 labelled fields.
+Every accuracy figure below is reproduced byte-for-byte on every run; the timing row is the one
+non-deterministic output, so it points at the generated report rather than quoting a value. The
+exact run is timestamped in `research/benchmark/results/latest.md`.
 
 | Metric | Value |
 |---|---|
@@ -52,7 +54,7 @@ Run `2026-09-28T17:15Z`, engine 2.0.0, node v22.22.2, jsdom, no model called.
 | Safety violations | 0 |
 | Fields resolved without a model | 89.4% (9 of 85 model-bound) |
 | Model calls for the whole corpus | 7 |
-| Detection time per page | 92 ms mean (sd 94) |
+| Detection time per page | varies run to run — see `results/latest.md` (order 10–200 ms under jsdom) |
 | Automation rate | 55.3% pre-accepted |
 | Review burden | 32.9% |
 
