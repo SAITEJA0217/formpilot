@@ -1,10 +1,10 @@
 # FormPilot benchmark results
 
-Generated: 2026-09-28T17:30:58.827Z
+Generated: 2026-09-28T18:12:11.171Z
 Runtime: node v22.22.2, jsdom. **No language model was called**: fields the router
 defers to a model are scored on the routing decision only.
 
-Dataset: 12 page states, 85 labelled fields.
+Dataset: 17 page states, 120 labelled fields.
 Ground truth: `research/benchmark/dataset/*.json` (hand-written from the fixture markup).
 Reproduce with `npm run bench`.
 
@@ -12,39 +12,39 @@ Reproduce with `npm run bench`.
 
 | Metric | Value | Counts |
 |---|---|---|
-| Field detection precision | 100.0% | TP 85 / FP 0 |
-| Field detection recall | 100.0% | TP 85 / FN 0 |
+| Field detection precision | 100.0% | TP 120 / FP 0 |
+| Field detection recall | 100.0% | TP 120 / FN 0 |
 | Field detection F1 | 100.0% | — |
-| Concept mapping precision | 100.0% | TP 74 / FP 0 |
-| Concept mapping recall | 100.0% | TP 74 / FN 0 |
+| Concept mapping precision | 100.0% | TP 106 / FP 0 |
+| Concept mapping recall | 100.0% | TP 106 / FN 0 |
 | Concept mapping F1 | 100.0% | — |
-| Concept mapping accuracy | 100.0% | 74/74 |
+| Concept mapping accuracy | 100.0% | 106/106 |
 | Routing decision accuracy | 100.0% | — |
-| Autofill success rate | 100.0% | 56 correct / 0 wrong / 0 missed |
+| Autofill success rate | 100.0% | 84 correct / 0 wrong / 0 missed |
 | Safety violations | 0 | none |
 
 ## Efficiency
 
 | Metric | Value |
 |---|---|
-| Detection time per page (mean) | 81.61 ms (sd 62.99) |
-| Matching time per page (mean) | 38.83 ms |
-| Model calls required (total) | 7 |
-| Fields needing a model | 9 of 85 |
-| Fields resolved without a model | 89.4% |
+| Detection time per page (mean) | 46.58 ms (sd 34.53) |
+| Matching time per page (mean) | 20.87 ms |
+| Model calls required (total) | 10 |
+| Fields needing a model | 13 of 120 |
+| Fields resolved without a model | 89.2% |
 
 ## Human-in-the-loop burden
 
 | Status | Fields | Share |
 |---|---|---|
-| ready | 47 | 55.3% |
-| needsReview | 21 | 24.7% |
-| manual | 7 | 8.2% |
-| blocked | 10 | 11.8% |
+| ready | 63 | 52.5% |
+| needsReview | 38 | 31.7% |
+| manual | 9 | 7.5% |
+| blocked | 10 | 8.3% |
 | noData | 0 | 0.0% |
 
-Automation rate (pre-accepted, high confidence): **55.3%**.
-Review burden: **32.9%**.
+Automation rate (pre-accepted, high confidence): **52.5%**.
+Review burden: **39.2%**.
 Acceptance, correction and override rates require human participants; this harness does not
 estimate them.
 
@@ -57,27 +57,32 @@ estimate them.
 | Generic HTML | 2 | 25 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
 | Dynamic | 2 | 6 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
 | Google Forms | 1 | 12 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
+| Jotform (experimental) | 1 | 15 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
+| Microsoft Forms (experimental) | 1 | 10 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
 | Multi-step | 3 | 9 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
 | Safety | 1 | 10 | 100.0% | 100.0% | 100.0% | 100.0% | n/a | 0 |
 | Shadow DOM | 1 | 4 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
+| SurveyMonkey (experimental) | 1 | 8 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
+| Typeform (experimental) | 2 | 2 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 |
 
 ## By field type
 
 | Field type | Fields | Mapping acc. | Value acc. |
 |---|---|---|---|
-| text | 43 | 100.0% | 100.0% |
-| radio_group | 6 | 100.0% | 100.0% |
-| textarea | 5 | 100.0% | n/a |
-| select_one | 5 | 100.0% | 100.0% |
-| email | 4 | 100.0% | 100.0% |
+| text | 57 | 100.0% | 100.0% |
+| radio_group | 12 | 100.0% | 100.0% |
+| textarea | 8 | 100.0% | n/a |
+| select_one | 8 | 100.0% | 100.0% |
+| checkbox_group | 6 | 100.0% | 100.0% |
+| email | 5 | 100.0% | 100.0% |
+| tel | 4 | 100.0% | 100.0% |
+| date | 4 | 100.0% | 100.0% |
 | url | 4 | 100.0% | 100.0% |
+| file | 4 | 100.0% | n/a |
 | checkbox | 4 | 100.0% | n/a |
-| checkbox_group | 3 | 100.0% | 100.0% |
-| tel | 3 | 100.0% | 100.0% |
-| file | 3 | 100.0% | n/a |
-| date | 2 | 100.0% | 100.0% |
 | number | 1 | 100.0% | 100.0% |
 | time | 1 | n/a | n/a |
+| rating | 1 | n/a | n/a |
 | password | 1 | 100.0% | n/a |
 
 ## By label source
@@ -85,7 +90,7 @@ estimate them.
 | Label source | Fields | Mapping acc. | Mean confidence |
 |---|---|---|---|
 | label-for | 48 | 100.0% | 0.713 |
-| platform-heading | 12 | 100.0% | 0.524 |
+| platform-heading | 47 | 100.0% | 0.663 |
 | preceding-text | 8 | 100.0% | 0.364 |
 | aria-labelledby | 6 | 100.0% | 0.719 |
 | label-wrapping | 4 | 100.0% | 0 |
@@ -98,18 +103,23 @@ estimate them.
 
 | Page | Platform | Adapter | Det. F1 | Mapping acc. | Routing acc. | Autofill | Detect ms |
 |---|---|---|---|---|---|---|---|
-| ambiguous-labels.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 181.03 |
-| aria-widgets.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 100.34 |
-| basic-html.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 8/8 | 60.12 |
-| complex-html.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 14/14 | 148.97 |
-| dynamic-form.html#employed | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 3/3 | 29.03 |
-| dynamic-form.html#initial | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 1/1 | 17.09 |
-| google-forms-mock.html | google-forms | google-forms@2 | 100.0% | 100.0% | 100.0% | 7/7 | 202.79 |
-| multi-step.html#step-1 | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 3/3 | 50.62 |
-| multi-step.html#step-2 | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 4/4 | 61.64 |
-| multi-step.html#step-4-documents | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | n/a | 35.02 |
-| sensitive-fields.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | n/a | 66.06 |
-| shadow-dom.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 4/4 | 26.62 |
+| ambiguous-labels.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 110.98 |
+| aria-widgets.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 52.01 |
+| basic-html.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 8/8 | 34.14 |
+| complex-html.html | generic-html | surveymonkey@1-experimental | 100.0% | 100.0% | 100.0% | 14/14 | 84.78 |
+| dynamic-form.html#employed | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 3/3 | 16.73 |
+| dynamic-form.html#initial | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 1/1 | 11.61 |
+| google-forms-mock.html | google-forms | google-forms@2 | 100.0% | 100.0% | 100.0% | 7/7 | 108.19 |
+| jotform-mock.html | jotform | jotform@1-experimental | 100.0% | 100.0% | 100.0% | 13/13 | 96.85 |
+| microsoft-forms-mock.html | microsoft-forms | microsoft-forms@1-experimental | 100.0% | 100.0% | 100.0% | 8/8 | 49.26 |
+| multi-step.html#step-1 | generic-html | surveymonkey@1-experimental | 100.0% | 100.0% | 100.0% | 3/3 | 25.79 |
+| multi-step.html#step-2 | generic-html | surveymonkey@1-experimental | 100.0% | 100.0% | 100.0% | 4/4 | 29.9 |
+| multi-step.html#step-4-documents | generic-html | surveymonkey@1-experimental | 100.0% | 100.0% | 100.0% | n/a | 20.56 |
+| sensitive-fields.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | n/a | 28.6 |
+| shadow-dom.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 4/4 | 11.68 |
+| surveymonkey-mock.html | surveymonkey | surveymonkey@1-experimental | 100.0% | 100.0% | 100.0% | 5/5 | 68.43 |
+| typeform-mock.html#block-1-short-text | typeform | typeform@1-experimental | 100.0% | 100.0% | 100.0% | 1/1 | 12.68 |
+| typeform-mock.html#block-4-choice | typeform | typeform@1-experimental | 100.0% | 100.0% | 100.0% | 1/1 | 29.63 |
 
 ## Disagreements with ground truth (0)
 

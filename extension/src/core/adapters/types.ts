@@ -19,8 +19,22 @@ export interface FormAdapter extends DetectionHooks {
   /** Platform-specific fill for widgets the generic engine cannot drive. */
   fillField?: PlatformFillHandler;
   /**
-   * Human-readable support status, surfaced in the UI and the compatibility
-   * matrix. Never claim `verified` without a passing test.
+   * Support status, surfaced in the UI and in the compatibility matrix.
+   *
+   * - `verified`          — exercised against the real product or a faithful fixture,
+   *                         with passing automated tests *and* a real-browser run.
+   * - `experimental`      — implemented against a **reproduction** of the platform's
+   *                         published markup, with passing tests against that
+   *                         reproduction, but never validated against the live product.
+   * - `generic-fallback`  — no dedicated adapter; the generic engine will attempt it.
+   *
+   * `experimental` exists because a reproduction can be wrong in ways no local test can
+   * detect. Calling that `verified` would be a false claim.
    */
-  supportStatus: 'verified' | 'generic-fallback';
+  supportStatus: 'verified' | 'experimental' | 'generic-fallback';
+  /**
+   * Where the adapter's DOM knowledge came from, and what has actually been run against
+   * it. Printed into the compatibility matrix verbatim so a reader can judge the claim.
+   */
+  provenance?: string;
 }

@@ -1,0 +1,24 @@
+{
+  "page": "jotform-mock.html",
+  "category": "Jotform (experimental)",
+  "platform": "jotform",
+  "url": "https://form.jotform.com/240000000000",
+  "notes": "Reproduction of Jotform's documented form-line markup, including a composite address question. jotform.com is unreachable from the build environment.",
+  "fields": [
+    { "label": "Name — First Name", "type": "text", "concept": "person.first_name", "expected": "Saiteja", "outcome": "fill" },
+    { "label": "Name — Last Name", "type": "text", "concept": "person.last_name", "expected": "Kotha", "outcome": "fill" },
+    { "label": "E-mail", "type": "email", "concept": "person.email", "expected": "saiteja@example.com", "outcome": "fill" },
+    { "label": "Phone Number", "type": "tel", "concept": "person.phone", "expected": "+91 98765 43210", "outcome": "fill" },
+    { "label": "Address — Street Address", "type": "text", "concept": "address.line1", "expected": "12 MG Road", "outcome": "fill" },
+    { "label": "Address — City", "type": "text", "concept": "address.city", "expected": "Hyderabad", "outcome": "fill" },
+    { "label": "Address — State / Province", "type": "text", "concept": "address.state", "expected": "Telangana", "outcome": "fill" },
+    { "label": "Address — Postal / Zip Code", "type": "text", "concept": "address.postal_code", "expected": "500081", "outcome": "fill" },
+    { "label": "Address — Country", "type": "text", "concept": "address.country", "expected": "India", "outcome": "fill" },
+    { "label": "Highest Qualification", "type": "select_one", "concept": "education.degree", "expected": "Bachelor's Degree", "outcome": "fill" },
+    { "label": "Years of Experience", "type": "radio_group", "concept": "experience.years_of_experience", "expected": "0-2 years", "outcome": "fill" },
+    { "label": "Technical Skills", "type": "checkbox_group", "concept": "skills.technical", "expected": ["TypeScript", "React", "Python"], "outcome": "fill" },
+    { "label": "Date of Birth", "type": "date", "concept": "person.date_of_birth", "expected": "2001-07-14", "outcome": "fill" },
+    { "label": "Upload Resume", "type": "file", "concept": "documents.resume", "expected": null, "outcome": "document" },
+    { "label": "Why do you want to join our team?", "type": "textarea", "concept": "freeform.motivation", "expected": null, "outcome": "model" }
+  ]
+}

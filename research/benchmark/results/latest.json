@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T17:30:58.827Z",
+  "generatedAt": "2026-09-28T18:12:11.171Z",
   "engine": {
     "version": "2.0.0"
   },
@@ -9,15 +9,15 @@
     "modelCalled": false
   },
   "dataset": {
-    "pages": 12,
-    "fields": 85
+    "pages": 17,
+    "fields": 120
   },
   "detection": {
     "precision": 1,
     "recall": 1,
     "f1": 1,
     "counts": {
-      "truePositives": 85,
+      "truePositives": 120,
       "falsePositives": 0,
       "falseNegatives": 0
     }
@@ -28,7 +28,7 @@
     "f1": 1,
     "accuracy": 1,
     "counts": {
-      "truePositives": 74,
+      "truePositives": 106,
       "falsePositives": 0,
       "falseNegatives": 0
     }
@@ -37,10 +37,10 @@
     "outcomeAccuracy": 1
   },
   "autofill": {
-    "correct": 56,
+    "correct": 84,
     "incorrect": 0,
     "missed": 0,
-    "total": 56,
+    "total": 84,
     "successRate": 1
   },
   "safety": {
@@ -48,24 +48,24 @@
     "clean": true
   },
   "efficiency": {
-    "detectMsMean": 81.61,
-    "detectMsStdev": 62.99,
-    "suggestMsMean": 38.83,
-    "modelCallsTotal": 7,
-    "modelBoundFields": 9,
-    "fieldsEvaluated": 85,
-    "deterministicFieldShare": 0.894
+    "detectMsMean": 46.58,
+    "detectMsStdev": 34.53,
+    "suggestMsMean": 20.87,
+    "modelCallsTotal": 10,
+    "modelBoundFields": 13,
+    "fieldsEvaluated": 120,
+    "deterministicFieldShare": 0.892
   },
   "humanInTheLoop": {
     "statusTotals": {
-      "ready": 47,
-      "needsReview": 21,
-      "manual": 7,
+      "ready": 63,
+      "needsReview": 38,
+      "manual": 9,
       "blocked": 10,
       "noData": 0
     },
-    "automationRate": 0.553,
-    "reviewBurden": 0.329,
+    "automationRate": 0.525,
+    "reviewBurden": 0.392,
     "note": "Acceptance, correction and override rates require human participants and are not measured here."
   },
   "pages": [
@@ -96,9 +96,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 181.03,
-        "suggestMs": 70.57,
-        "fillMs": 6.98
+        "detectMs": 110.98,
+        "suggestMs": 47.29,
+        "fillMs": 5.23
       },
       "statuses": {
         "ready": 6,
@@ -138,9 +138,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 100.34,
-        "suggestMs": 48.49,
-        "fillMs": 211.34
+        "detectMs": 52.01,
+        "suggestMs": 22.86,
+        "fillMs": 194.77
       },
       "statuses": {
         "ready": 3,
@@ -178,9 +178,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 60.12,
-        "suggestMs": 58.55,
-        "fillMs": 4.97
+        "detectMs": 34.14,
+        "suggestMs": 27.92,
+        "fillMs": 2.82
       },
       "statuses": {
         "ready": 7,
@@ -196,7 +196,7 @@
       "category": "Generic HTML",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "generic-html@1",
+      "adapter": "surveymonkey@1-experimental",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -218,9 +218,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 148.97,
-        "suggestMs": 62.89,
-        "fillMs": 17.24
+        "detectMs": 84.78,
+        "suggestMs": 37.72,
+        "fillMs": 12
       },
       "statuses": {
         "ready": 12,
@@ -229,7 +229,9 @@
         "blocked": 0,
         "noData": 0
       },
-      "warnings": []
+      "warnings": [
+        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion."
+      ]
     },
     {
       "page": "dynamic-form.html#employed",
@@ -258,9 +260,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 29.03,
-        "suggestMs": 13.79,
-        "fillMs": 1.78
+        "detectMs": 16.73,
+        "suggestMs": 9.23,
+        "fillMs": 1.07
       },
       "statuses": {
         "ready": 3,
@@ -298,9 +300,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 17.09,
-        "suggestMs": 8.34,
-        "fillMs": 1.94
+        "detectMs": 11.61,
+        "suggestMs": 4.53,
+        "fillMs": 0.52
       },
       "statuses": {
         "ready": 1,
@@ -338,9 +340,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 202.79,
-        "suggestMs": 66.31,
-        "fillMs": 205.77
+        "detectMs": 108.19,
+        "suggestMs": 31.48,
+        "fillMs": 192.05
       },
       "statuses": {
         "ready": 4,
@@ -352,11 +354,95 @@
       "warnings": []
     },
     {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "platformDetected": "jotform",
+      "platformCorrect": true,
+      "adapter": "jotform@1-experimental",
+      "detection": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "support": 15,
+        "counts": {
+          "truePositives": 15,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        }
+      },
+      "mappingAccuracy": 1,
+      "outcomeAccuracy": 1,
+      "autofill": {
+        "correct": 13,
+        "incorrect": 0,
+        "missed": 0,
+        "total": 13
+      },
+      "safetyViolations": [],
+      "timings": {
+        "detectMs": 96.85,
+        "suggestMs": 55.47,
+        "fillMs": 6.65
+      },
+      "statuses": {
+        "ready": 8,
+        "needsReview": 7,
+        "manual": 0,
+        "blocked": 0,
+        "noData": 0
+      },
+      "warnings": [
+        "jotform support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion."
+      ]
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "platformDetected": "microsoft-forms",
+      "platformCorrect": true,
+      "adapter": "microsoft-forms@1-experimental",
+      "detection": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "support": 10,
+        "counts": {
+          "truePositives": 10,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        }
+      },
+      "mappingAccuracy": 1,
+      "outcomeAccuracy": 1,
+      "autofill": {
+        "correct": 8,
+        "incorrect": 0,
+        "missed": 0,
+        "total": 8
+      },
+      "safetyViolations": [],
+      "timings": {
+        "detectMs": 49.26,
+        "suggestMs": 29.29,
+        "fillMs": 188.72
+      },
+      "statuses": {
+        "ready": 5,
+        "needsReview": 5,
+        "manual": 0,
+        "blocked": 0,
+        "noData": 0
+      },
+      "warnings": [
+        "microsoft-forms support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion."
+      ]
+    },
+    {
       "page": "multi-step.html#step-1",
       "category": "Multi-step",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "generic-html@1",
+      "adapter": "surveymonkey@1-experimental",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -378,9 +464,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 50.62,
-        "suggestMs": 16.28,
-        "fillMs": 3.27
+        "detectMs": 25.79,
+        "suggestMs": 7.44,
+        "fillMs": 1.14
       },
       "statuses": {
         "ready": 3,
@@ -390,6 +476,7 @@
         "noData": 0
       },
       "warnings": [
+        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion.",
         "This looks like a multi-step form (1 of 5). Only the current step is visible to FormPilot."
       ]
     },
@@ -398,7 +485,7 @@
       "category": "Multi-step",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "generic-html@1",
+      "adapter": "surveymonkey@1-experimental",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -420,9 +507,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 61.64,
-        "suggestMs": 18.31,
-        "fillMs": 3.62
+        "detectMs": 29.9,
+        "suggestMs": 8.82,
+        "fillMs": 1.16
       },
       "statuses": {
         "ready": 4,
@@ -432,6 +519,7 @@
         "noData": 0
       },
       "warnings": [
+        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion.",
         "This looks like a multi-step form (2 of 5). Only the current step is visible to FormPilot."
       ]
     },
@@ -440,7 +528,7 @@
       "category": "Multi-step",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "generic-html@1",
+      "adapter": "surveymonkey@1-experimental",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -462,9 +550,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 35.02,
-        "suggestMs": 6.73,
-        "fillMs": 0.31
+        "detectMs": 20.56,
+        "suggestMs": 4.3,
+        "fillMs": 0.1
       },
       "statuses": {
         "ready": 0,
@@ -474,6 +562,7 @@
         "noData": 0
       },
       "warnings": [
+        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion.",
         "This looks like a multi-step form (4 of 5). Only the current step is visible to FormPilot."
       ]
     },
@@ -504,9 +593,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 66.06,
-        "suggestMs": 69.63,
-        "fillMs": 0.35
+        "detectMs": 28.6,
+        "suggestMs": 27.75,
+        "fillMs": 0.12
       },
       "statuses": {
         "ready": 0,
@@ -544,9 +633,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 26.62,
-        "suggestMs": 26.03,
-        "fillMs": 3.19
+        "detectMs": 11.68,
+        "suggestMs": 10.55,
+        "fillMs": 1.24
       },
       "statuses": {
         "ready": 4,
@@ -556,6 +645,132 @@
         "noData": 0
       },
       "warnings": []
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "platformDetected": "surveymonkey",
+      "platformCorrect": true,
+      "adapter": "surveymonkey@1-experimental",
+      "detection": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "support": 8,
+        "counts": {
+          "truePositives": 8,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        }
+      },
+      "mappingAccuracy": 1,
+      "outcomeAccuracy": 1,
+      "autofill": {
+        "correct": 5,
+        "incorrect": 0,
+        "missed": 0,
+        "total": 5
+      },
+      "safetyViolations": [],
+      "timings": {
+        "detectMs": 68.43,
+        "suggestMs": 24.08,
+        "fillMs": 2.86
+      },
+      "statuses": {
+        "ready": 2,
+        "needsReview": 4,
+        "manual": 2,
+        "blocked": 0,
+        "noData": 0
+      },
+      "warnings": [
+        "surveymonkey support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion."
+      ]
+    },
+    {
+      "page": "typeform-mock.html#block-1-short-text",
+      "category": "Typeform (experimental)",
+      "platformDetected": "typeform",
+      "platformCorrect": true,
+      "adapter": "typeform@1-experimental",
+      "detection": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "support": 1,
+        "counts": {
+          "truePositives": 1,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        }
+      },
+      "mappingAccuracy": 1,
+      "outcomeAccuracy": 1,
+      "autofill": {
+        "correct": 1,
+        "incorrect": 0,
+        "missed": 0,
+        "total": 1
+      },
+      "safetyViolations": [],
+      "timings": {
+        "detectMs": 12.68,
+        "suggestMs": 3.33,
+        "fillMs": 0.72
+      },
+      "statuses": {
+        "ready": 1,
+        "needsReview": 0,
+        "manual": 0,
+        "blocked": 0,
+        "noData": 0
+      },
+      "warnings": [
+        "typeform support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion."
+      ]
+    },
+    {
+      "page": "typeform-mock.html#block-4-choice",
+      "category": "Typeform (experimental)",
+      "platformDetected": "typeform",
+      "platformCorrect": true,
+      "adapter": "typeform@1-experimental",
+      "detection": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "support": 1,
+        "counts": {
+          "truePositives": 1,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        }
+      },
+      "mappingAccuracy": 1,
+      "outcomeAccuracy": 1,
+      "autofill": {
+        "correct": 1,
+        "incorrect": 0,
+        "missed": 0,
+        "total": 1
+      },
+      "safetyViolations": [],
+      "timings": {
+        "detectMs": 29.63,
+        "suggestMs": 2.73,
+        "fillMs": 1.13
+      },
+      "statuses": {
+        "ready": 0,
+        "needsReview": 1,
+        "manual": 0,
+        "blocked": 0,
+        "noData": 0
+      },
+      "warnings": [
+        "typeform support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion."
+      ]
     }
   ],
   "fields": [
@@ -1839,6 +2054,530 @@
       "usedAI": false
     },
     {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Name — First Name",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.first_name",
+      "predictedConcept": "person.first_name",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Saiteja",
+      "proposedValue": "Saiteja",
+      "domValue": "Saiteja",
+      "valueCorrect": true,
+      "confidence": 0.856,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Name — Last Name",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.last_name",
+      "predictedConcept": "person.last_name",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Kotha",
+      "proposedValue": "Kotha",
+      "domValue": "Kotha",
+      "valueCorrect": true,
+      "confidence": 0.837,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "E-mail",
+      "fieldType": "email",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.email",
+      "predictedConcept": "person.email",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "saiteja@example.com",
+      "proposedValue": "saiteja@example.com",
+      "domValue": "saiteja@example.com",
+      "valueCorrect": true,
+      "confidence": 1,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Phone Number",
+      "fieldType": "tel",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.phone",
+      "predictedConcept": "person.phone",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "+91 98765 43210",
+      "proposedValue": "+91 98765 43210",
+      "domValue": "+91 98765 43210",
+      "valueCorrect": true,
+      "confidence": 1,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Address — Street Address",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "address.line1",
+      "predictedConcept": "address.line1",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "12 MG Road",
+      "proposedValue": "12 MG Road",
+      "domValue": "12 MG Road",
+      "valueCorrect": true,
+      "confidence": 0.93,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Address — City",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "address.city",
+      "predictedConcept": "address.city",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Hyderabad",
+      "proposedValue": "Hyderabad",
+      "domValue": "Hyderabad",
+      "valueCorrect": true,
+      "confidence": 0.93,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Address — State / Province",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "address.state",
+      "predictedConcept": "address.state",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Telangana",
+      "proposedValue": "Telangana",
+      "domValue": "Telangana",
+      "valueCorrect": true,
+      "confidence": 0.93,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Address — Postal / Zip Code",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "address.postal_code",
+      "predictedConcept": "address.postal_code",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "500081",
+      "proposedValue": "500081",
+      "domValue": "500081",
+      "valueCorrect": true,
+      "confidence": 0.93,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Address — Country",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "address.country",
+      "predictedConcept": "address.country",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "India",
+      "proposedValue": "India",
+      "domValue": "India",
+      "valueCorrect": true,
+      "confidence": 0.93,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Highest Qualification",
+      "fieldType": "select_one",
+      "labelSource": "platform-heading",
+      "expectedConcept": "education.degree",
+      "predictedConcept": "education.degree",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Bachelor's Degree",
+      "proposedValue": "Bachelor's Degree",
+      "domValue": "Bachelor's Degree",
+      "valueCorrect": true,
+      "confidence": 0.85,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Years of Experience",
+      "fieldType": "radio_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": "experience.years_of_experience",
+      "predictedConcept": "experience.years_of_experience",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "0-2 years",
+      "proposedValue": "0-2 years",
+      "domValue": "0-2 years",
+      "valueCorrect": true,
+      "confidence": 0.669,
+      "band": "low",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Technical Skills",
+      "fieldType": "checkbox_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": "skills.technical",
+      "predictedConcept": "skills.technical",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": [
+        "TypeScript",
+        "React",
+        "Python"
+      ],
+      "proposedValue": [
+        "TypeScript",
+        "React",
+        "Python"
+      ],
+      "domValue": [
+        "React",
+        "TypeScript",
+        "Python"
+      ],
+      "valueCorrect": true,
+      "confidence": 0.854,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Date of Birth",
+      "fieldType": "date",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.date_of_birth",
+      "predictedConcept": "person.date_of_birth",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "2001-07-14",
+      "proposedValue": "2001-07-14",
+      "domValue": "2001-07-14",
+      "valueCorrect": true,
+      "confidence": 1,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Upload Resume",
+      "fieldType": "file",
+      "labelSource": "platform-heading",
+      "expectedConcept": "documents.resume",
+      "predictedConcept": "documents.resume",
+      "conceptCorrect": true,
+      "expectedOutcome": "document",
+      "predictedOutcome": "document",
+      "outcomeCorrect": true,
+      "expectedValue": null,
+      "proposedValue": null,
+      "domValue": null,
+      "valueCorrect": null,
+      "confidence": 0,
+      "band": "low",
+      "usedAI": false
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "label": "Why do you want to join our team?",
+      "fieldType": "textarea",
+      "labelSource": "platform-heading",
+      "expectedConcept": "freeform.motivation",
+      "predictedConcept": "freeform.motivation",
+      "conceptCorrect": true,
+      "expectedOutcome": "model",
+      "predictedOutcome": "model",
+      "outcomeCorrect": true,
+      "expectedValue": null,
+      "proposedValue": null,
+      "domValue": null,
+      "valueCorrect": null,
+      "confidence": 0,
+      "band": "low",
+      "usedAI": true
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Full Name",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.full_name",
+      "predictedConcept": "person.full_name",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Saiteja Reddy Kotha",
+      "proposedValue": "Saiteja Reddy Kotha",
+      "domValue": "Saiteja Reddy Kotha",
+      "valueCorrect": true,
+      "confidence": 0.97,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Email Address",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.email",
+      "predictedConcept": "person.email",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "saiteja@example.com",
+      "proposedValue": "saiteja@example.com",
+      "domValue": "saiteja@example.com",
+      "valueCorrect": true,
+      "confidence": 0.97,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Phone Number",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.phone",
+      "predictedConcept": "person.phone",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "+91 98765 43210",
+      "proposedValue": "+91 98765 43210",
+      "domValue": "+91 98765 43210",
+      "valueCorrect": true,
+      "confidence": 0.97,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Why do you want to join our team?",
+      "fieldType": "textarea",
+      "labelSource": "platform-heading",
+      "expectedConcept": "freeform.motivation",
+      "predictedConcept": "freeform.motivation",
+      "conceptCorrect": true,
+      "expectedOutcome": "model",
+      "predictedOutcome": "model",
+      "outcomeCorrect": true,
+      "expectedValue": null,
+      "proposedValue": null,
+      "domValue": null,
+      "valueCorrect": null,
+      "confidence": 0,
+      "band": "low",
+      "usedAI": true
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Years of Experience",
+      "fieldType": "radio_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": "experience.years_of_experience",
+      "predictedConcept": "experience.years_of_experience",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "0-2 years",
+      "proposedValue": "0-2 years",
+      "domValue": "0-2 years",
+      "valueCorrect": true,
+      "confidence": 0.669,
+      "band": "low",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Technical Skills",
+      "fieldType": "checkbox_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": "skills.technical",
+      "predictedConcept": "skills.technical",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": [
+        "TypeScript",
+        "React",
+        "Python"
+      ],
+      "proposedValue": [
+        "TypeScript",
+        "React",
+        "Python"
+      ],
+      "domValue": [
+        "React",
+        "TypeScript",
+        "Python"
+      ],
+      "valueCorrect": true,
+      "confidence": 0.854,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Highest Qualification",
+      "fieldType": "select_one",
+      "labelSource": "platform-heading",
+      "expectedConcept": "education.degree",
+      "predictedConcept": "education.degree",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Bachelor's Degree",
+      "proposedValue": "Bachelor's Degree",
+      "domValue": "Bachelor's Degree",
+      "valueCorrect": true,
+      "confidence": 0.85,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Date of Birth",
+      "fieldType": "date",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.date_of_birth",
+      "predictedConcept": "person.date_of_birth",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "2001-07-14",
+      "proposedValue": "2001-07-14",
+      "domValue": "2001-07-14",
+      "valueCorrect": true,
+      "confidence": 1,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Graduation Year",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "education.graduation_year",
+      "predictedConcept": "education.graduation_year",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "2023",
+      "proposedValue": "2023",
+      "domValue": "2023",
+      "valueCorrect": true,
+      "confidence": 0.97,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "label": "Rate your React proficiency",
+      "fieldType": "rating",
+      "labelSource": "platform-heading",
+      "expectedConcept": null,
+      "predictedConcept": null,
+      "conceptCorrect": null,
+      "expectedOutcome": "review",
+      "predictedOutcome": "model",
+      "outcomeCorrect": true,
+      "expectedValue": null,
+      "proposedValue": null,
+      "domValue": null,
+      "valueCorrect": null,
+      "confidence": 0,
+      "band": "low",
+      "usedAI": true
+    },
+    {
       "page": "multi-step.html#step-1",
       "category": "Multi-step",
       "label": "Full Name",
@@ -2296,6 +3035,218 @@
       "valueCorrect": true,
       "confidence": 0.98,
       "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Full Name",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.full_name",
+      "predictedConcept": "person.full_name",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Saiteja Reddy Kotha",
+      "proposedValue": "Saiteja Reddy Kotha",
+      "domValue": "Saiteja Reddy Kotha",
+      "valueCorrect": true,
+      "confidence": 0.97,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Email Address",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.email",
+      "predictedConcept": "person.email",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "saiteja@example.com",
+      "proposedValue": "saiteja@example.com",
+      "domValue": "saiteja@example.com",
+      "valueCorrect": true,
+      "confidence": 0.97,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Years of Experience",
+      "fieldType": "radio_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": "experience.years_of_experience",
+      "predictedConcept": "experience.years_of_experience",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "0-2 years",
+      "proposedValue": "0-2 years",
+      "domValue": "0-2 years",
+      "valueCorrect": true,
+      "confidence": 0.669,
+      "band": "low",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Technical Skills",
+      "fieldType": "checkbox_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": "skills.technical",
+      "predictedConcept": "skills.technical",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": [
+        "TypeScript",
+        "React",
+        "Python"
+      ],
+      "proposedValue": [
+        "TypeScript",
+        "React",
+        "Python"
+      ],
+      "domValue": [
+        "React",
+        "TypeScript",
+        "Python"
+      ],
+      "valueCorrect": true,
+      "confidence": 0.854,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Highest Qualification",
+      "fieldType": "select_one",
+      "labelSource": "platform-heading",
+      "expectedConcept": "education.degree",
+      "predictedConcept": "education.degree",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Bachelor's Degree",
+      "proposedValue": "Bachelor's Degree",
+      "domValue": "Bachelor's Degree",
+      "valueCorrect": true,
+      "confidence": 0.85,
+      "band": "medium",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Rate your confidence: Frontend",
+      "fieldType": "radio_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": null,
+      "predictedConcept": null,
+      "conceptCorrect": null,
+      "expectedOutcome": "review",
+      "predictedOutcome": "manual",
+      "outcomeCorrect": true,
+      "expectedValue": null,
+      "proposedValue": null,
+      "domValue": null,
+      "valueCorrect": null,
+      "confidence": 0,
+      "band": "low",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Rate your confidence: Backend",
+      "fieldType": "radio_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": null,
+      "predictedConcept": null,
+      "conceptCorrect": null,
+      "expectedOutcome": "review",
+      "predictedOutcome": "manual",
+      "outcomeCorrect": true,
+      "expectedValue": null,
+      "proposedValue": null,
+      "domValue": null,
+      "valueCorrect": null,
+      "confidence": 0,
+      "band": "low",
+      "usedAI": false
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "label": "Anything else we should know?",
+      "fieldType": "textarea",
+      "labelSource": "platform-heading",
+      "expectedConcept": "freeform.other",
+      "predictedConcept": "freeform.other",
+      "conceptCorrect": true,
+      "expectedOutcome": "model",
+      "predictedOutcome": "model",
+      "outcomeCorrect": true,
+      "expectedValue": null,
+      "proposedValue": null,
+      "domValue": null,
+      "valueCorrect": null,
+      "confidence": 0,
+      "band": "low",
+      "usedAI": true
+    },
+    {
+      "page": "typeform-mock.html#block-1-short-text",
+      "category": "Typeform (experimental)",
+      "label": "What is your full name?",
+      "fieldType": "text",
+      "labelSource": "platform-heading",
+      "expectedConcept": "person.full_name",
+      "predictedConcept": "person.full_name",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "Saiteja Reddy Kotha",
+      "proposedValue": "Saiteja Reddy Kotha",
+      "domValue": "Saiteja Reddy Kotha",
+      "valueCorrect": true,
+      "confidence": 0.93,
+      "band": "high",
+      "usedAI": false
+    },
+    {
+      "page": "typeform-mock.html#block-4-choice",
+      "category": "Typeform (experimental)",
+      "label": "Years of Experience",
+      "fieldType": "radio_group",
+      "labelSource": "platform-heading",
+      "expectedConcept": "experience.years_of_experience",
+      "predictedConcept": "experience.years_of_experience",
+      "conceptCorrect": true,
+      "expectedOutcome": "fill",
+      "predictedOutcome": "fill",
+      "outcomeCorrect": true,
+      "expectedValue": "0-2 years",
+      "proposedValue": "0-2 years",
+      "domValue": "0-2 years",
+      "valueCorrect": true,
+      "confidence": 0.669,
+      "band": "low",
       "usedAI": false
     }
   ]

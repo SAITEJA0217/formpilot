@@ -59,7 +59,10 @@ export interface DetectFieldsOptions {
   idPrefix?: string;
 }
 
-type GroupKind = 'single' | 'radio_group' | 'checkbox_group';
+type GroupKind = 'single' | 'radio_group' | 'checkbox_group' | 'adapter_group';
+
+/** Types that mean "several controls, one logical field". */
+const GROUPING_TYPES: ReadonlySet<FieldType> = new Set(['radio_group', 'checkbox_group', 'rating']);
 
 interface ControlGroup {
   key: string;
@@ -246,14 +249,24 @@ function extractOptions(
         selected: (option as HTMLOptionElement).selected,
       }))
       .filter((option) => {
-        // Drop the classic empty placeholder row.
-        const placeholderish = /^(\s*|-+|select|choose|please select|none|--.*--)$/i.test(option.label.trim());
+        // Drop the valueless instruction row authors put first. Matched as a prefix because
+        // the wording varies endlessly: "Select", "Select one", "Please Select",
+        // "Choose an option", "-- none --".
+        const text = option.label.trim();
+        const placeholderish =
+          text.length === 0 ||
+          /^-+$/.test(text) ||
+          /^--.*--$/.test(text) ||
+          /^(please\s+)?(select|choose|pick)\b/i.test(text) ||
+          /^none$/i.test(text);
         return !(option.value === '' && placeholderish);
       });
     return options.length > 0 ? options : undefined;
   }
 
-  if (type === 'radio_group' || type === 'checkbox_group') {
+  // A rating is a radio group whose options happen to be a scale, so it is extracted the
+  // same way; without this a rating field would arrive with no choices at all.
+  if (type === 'radio_group' || type === 'checkbox_group' || type === 'rating') {
     if (members.length > 0 && members.every((m) => m.element.tagName === 'INPUT')) {
       return members.map((member) => {
         const label = memberLabel(member.element);
@@ -326,7 +339,13 @@ function currentValueOf(element: Element, type: FieldType, options?: FieldOption
     if (element.tagName === 'INPUT') return (element as HTMLInputElement).checked;
     return element.getAttribute('aria-checked') === 'true';
   }
-  if (type === 'radio_group' || type === 'checkbox_group' || type === 'select_one' || type === 'select_many') {
+  if (
+    type === 'radio_group' ||
+    type === 'checkbox_group' ||
+    type === 'rating' ||
+    type === 'select_one' ||
+    type === 'select_many'
+  ) {
     const selected = (options ?? []).filter((o) => o.selected).map((o) => o.value);
     if (type === 'select_many' || type === 'checkbox_group') return selected;
     return selected[0] ?? null;
@@ -391,6 +410,23 @@ export function detectFields(options: DetectFieldsOptions = {}): DetectionResult
     includeShadowRoots: options.includeShadowRoots,
   });
 
+  // Controls the generic selector cannot see, nominated by the adapter. Appended rather than
+  // merged into `CONTROL_SELECTOR` so no ordinary page gains button-shaped "fields".
+  if (hooks.extraControls) {
+    const seen = new Set(candidates.map((candidate) => candidate.element));
+    const ownerDocument = root instanceof Document ? root : (root.ownerDocument ?? document);
+    for (const element of hooks.extraControls(root)) {
+      if (seen.has(element)) continue;
+      seen.add(element);
+      candidates.push({
+        element,
+        root,
+        ownerDocument,
+        location: { framePath: [], shadowPath: [] },
+      });
+    }
+  }
+
   const rejected: Record<string, number> = {};
   const reject = (reason: string): void => {
     rejected[reason] = (rejected[reason] ?? 0) + 1;
@@ -444,7 +480,30 @@ export function detectFields(options: DetectFieldsOptions = {}): DetectionResult
 
     const role = resolveRole(element);
     const container = containerFor(element);
-    const type = hooks.classify?.(element, container) ?? classify(element, role);
+    const adapterType = hooks.classify?.(element, container) ?? null;
+    const type = adapterType ?? classify(element, role);
+
+    // An adapter that classifies several controls in one container as the same group type is
+    // telling us they are one field. This is how button-based choice sets are grouped without
+    // the generic engine knowing anything about the platform.
+    if (adapterType && GROUPING_TYPES.has(adapterType) && container) {
+      const key = `c${container.getAttribute('data-formpilot-container')}|adapter:${adapterType}`;
+      const existing = groups.get(key);
+      if (existing) {
+        existing.members.push(candidate);
+        continue;
+      }
+      const group: ControlGroup = {
+        key,
+        kind: 'adapter_group',
+        primary: candidate,
+        members: [candidate],
+        container,
+      };
+      groups.set(key, group);
+      ordered.push(group);
+      continue;
+    }
 
     // Native radio/checkbox sets and loose ARIA radio/checkbox nodes are grouped.
     const nativeRadio = isNativeInput(element) && inputType(element) === 'radio';
@@ -505,7 +564,10 @@ export function detectFields(options: DetectFieldsOptions = {}): DetectionResult
     const role = resolveRole(element);
     let type = hooks.classify?.(element, container) ?? classify(element, role);
 
-    if (group.kind === 'checkbox_group') {
+    if (group.kind === 'adapter_group') {
+      // The adapter already decided; `classify` is authoritative here.
+      type = hooks.classify?.(element, container) ?? type;
+    } else if (group.kind === 'checkbox_group') {
       type = group.members.length > 1 ? 'checkbox_group' : 'checkbox';
     } else if (group.kind === 'radio_group') {
       type = 'radio_group';

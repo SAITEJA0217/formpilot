@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Microsoft Forms structure (reproduction)</title>
+<style>
+  body{font:14px/1.5 "Segoe UI",system-ui,sans-serif;background:#faf9f8;padding:24px;color:#323130}
+  .form{max-width:680px;margin:0 auto;background:#fff;border-radius:8px;padding:28px;box-shadow:0 1.6px 3.6px rgba(0,0,0,.13)}
+  [data-automation-id="questionItem"]{padding:18px 0;border-bottom:1px solid #edebe9}
+  [data-automation-id="questionTitle"]{display:block;font-weight:600;margin-bottom:10px}
+  [data-automation-id="requiredMark"]{color:#a4262c;margin-left:3px}
+  input[type="text"],textarea{width:100%;padding:6px 8px;border:1px solid #605e5c;border-radius:2px;font:inherit}
+  [role="radio"],[role="checkbox"]{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer}
+  .mark{width:15px;height:15px;border:1px solid #605e5c;border-radius:50%}
+  [role="checkbox"] .mark{border-radius:2px}
+  [aria-checked="true"] .mark{background:#0078d4;border-color:#0078d4}
+  [role="listbox"]{border:1px solid #605e5c;border-radius:2px;padding:6px 8px;cursor:pointer}
+  .stars{display:flex;gap:6px}
+  .stars [role="radio"]{padding:2px 6px;border:1px solid #d2d0ce;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="form">
+  <h1>Graduate Programme Application</h1>
+  <p style="color:#605e5c">
+    Reproduction of Microsoft Forms' published <code>data-automation-id</code> markup, for adapter
+    development. Not a live Microsoft Forms page.
+  </p>
+
+  <div data-automation-id="questionItem" data-question-type="text">
+    <span data-automation-id="questionTitle">Full Name<span data-automation-id="requiredMark" aria-label="Required">*</span></span>
+    <input type="text" data-automation-id="textInput" aria-label="Full Name" />
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="text">
+    <span data-automation-id="questionTitle">Email Address<span data-automation-id="requiredMark" aria-label="Required">*</span></span>
+    <input type="text" data-automation-id="textInput" aria-label="Email Address" />
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="text">
+    <span data-automation-id="questionTitle">Phone Number</span>
+    <input type="text" data-automation-id="textInput" aria-label="Phone Number" />
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="longText">
+    <span data-automation-id="questionTitle">Why do you want to join our team?</span>
+    <textarea data-automation-id="textInput" rows="4" aria-label="Why do you want to join our team?"></textarea>
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="choice">
+    <span data-automation-id="questionTitle">Years of Experience<span data-automation-id="requiredMark" aria-label="Required">*</span></span>
+    <div role="radiogroup" aria-label="Years of Experience">
+      <div role="radio" aria-checked="false" aria-label="0-2 years" data-automation-id="choiceOption"><span class="mark"></span><span class="text-format-content">0-2 years</span></div>
+      <div role="radio" aria-checked="false" aria-label="3-5 years" data-automation-id="choiceOption"><span class="mark"></span><span class="text-format-content">3-5 years</span></div>
+      <div role="radio" aria-checked="false" aria-label="5+ years" data-automation-id="choiceOption"><span class="mark"></span><span class="text-format-content">5+ years</span></div>
+    </div>
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="choice">
+    <span data-automation-id="questionTitle">Technical Skills</span>
+    <div role="group" aria-label="Technical Skills">
+      <div role="checkbox" aria-checked="false" aria-label="React" data-automation-id="choiceOption"><span class="mark"></span><span class="text-format-content">React</span></div>
+      <div role="checkbox" aria-checked="false" aria-label="TypeScript" data-automation-id="choiceOption"><span class="mark"></span><span class="text-format-content">TypeScript</span></div>
+      <div role="checkbox" aria-checked="false" aria-label="Python" data-automation-id="choiceOption"><span class="mark"></span><span class="text-format-content">Python</span></div>
+    </div>
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="dropdown">
+    <span data-automation-id="questionTitle">Highest Qualification<span data-automation-id="requiredMark" aria-label="Required">*</span></span>
+    <div role="listbox" data-automation-id="dropdownButton" aria-label="Highest Qualification"
+         aria-owns="qual-options" tabindex="0">Select your answer</div>
+    <div id="qual-options" data-options hidden>
+      <div role="option" aria-label="High School" aria-selected="false">High School</div>
+      <div role="option" aria-label="Bachelor's Degree" aria-selected="false">Bachelor's Degree</div>
+      <div role="option" aria-label="Master's Degree" aria-selected="false">Master's Degree</div>
+      <div role="option" aria-label="PhD" aria-selected="false">PhD</div>
+    </div>
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="date">
+    <span data-automation-id="questionTitle">Date of Birth</span>
+    <input type="date" data-automation-id="dateInput" aria-label="Date of Birth" />
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="number">
+    <span data-automation-id="questionTitle">Graduation Year</span>
+    <input type="text" data-automation-id="numberInput" inputmode="numeric" aria-label="Graduation Year" />
+  </div>
+
+  <div data-automation-id="questionItem" data-question-type="rating">
+    <span data-automation-id="questionTitle">Rate your React proficiency</span>
+    <div role="radiogroup" class="stars" aria-label="Rate your React proficiency">
+      <div role="radio" aria-checked="false" aria-label="1 star" data-automation-id="ratingOption"><span class="mark"></span>1</div>
+      <div role="radio" aria-checked="false" aria-label="2 stars" data-automation-id="ratingOption"><span class="mark"></span>2</div>
+      <div role="radio" aria-checked="false" aria-label="3 stars" data-automation-id="ratingOption"><span class="mark"></span>3</div>
+      <div role="radio" aria-checked="false" aria-label="4 stars" data-automation-id="ratingOption"><span class="mark"></span>4</div>
+      <div role="radio" aria-checked="false" aria-label="5 stars" data-automation-id="ratingOption"><span class="mark"></span>5</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Wrapped in an IIFE so the page can be loaded repeatedly into one realm.
+(function () {
+  document.addEventListener('click', function (event) {
+    var option = event.target.closest('[role="radio"],[role="checkbox"]');
+    if (option) {
+      if (option.getAttribute('role') === 'radio') {
+        var scope = option.closest('[role="radiogroup"]');
+        if (scope) scope.querySelectorAll('[role="radio"]').forEach(function (s) { s.setAttribute('aria-checked', 'false'); });
+        option.setAttribute('aria-checked', 'true');
+      } else {
+        option.setAttribute('aria-checked', option.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+      }
+      return;
+    }
+    var control = event.target.closest('[role="listbox"]');
+    if (control) {
+      var owned = document.getElementById(control.getAttribute('aria-owns'));
+      if (owned) owned.hidden = !owned.hidden;
+      return;
+    }
+    var choice = event.target.closest('[role="option"]');
+    if (!choice) return;
+    var panel = choice.closest('[data-options]');
+    var listbox = document.querySelector('[aria-owns="' + panel.id + '"]');
+    panel.querySelectorAll('[role="option"]').forEach(function (o) {
+      o.setAttribute('aria-selected', String(o === choice));
+    });
+    if (listbox) listbox.textContent = choice.textContent;
+    panel.hidden = true;
+  });
+})();
+</script>
+</body>
+</html>

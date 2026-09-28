@@ -18,6 +18,18 @@ export interface DetectionHooks {
   classify?(element: Element, container: Element | null): FieldType | null;
   /** Provide options the generic extractor cannot see (e.g. collapsed dropdowns). */
   options?(element: Element, container: Element | null): FieldOption[] | null;
+  /**
+   * Controls the generic selector cannot know about.
+   *
+   * The generic `CONTROL_SELECTOR` deliberately excludes `<button>`, because on an ordinary
+   * page every Submit and Next button would become a candidate field. Some platforms
+   * nevertheless build their answer choices out of buttons (Typeform does), so an adapter can
+   * nominate those elements here instead of the generic selector being widened for everyone.
+   *
+   * Nominated elements are assumed to live in the root they were queried from; they are not
+   * traversed into shadow roots or frames.
+   */
+  extraControls?(root: Document | ShadowRoot): Element[];
   /** Last-chance adjustment of a completed field. */
   refineField?(field: UnifiedField, element: Element, container: Element | null): UnifiedField;
 }

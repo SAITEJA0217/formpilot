@@ -207,7 +207,15 @@ export const CONCEPTS: ConceptDef[] = [
     aliases: ['address', 'full address', 'postal address', 'residential address', 'current address', 'mailing address'],
     patterns: ['\\baddress\\b'],
     autocomplete: ['street-address'],
-    negative: ['email address', 'e mail address', 'ip address', 'web address', 'wallet address'],
+    // A field that names a *part* of an address is not the whole address. Composite address
+    // questions (Jotform, most checkout flows) label each input "Address — City" or
+    // "Address / Postal Code", and without these the generic `address` alias ties with the
+    // specific part and the match is reported as ambiguous.
+    negative: [
+      'email address', 'e mail address', 'ip address', 'web address', 'wallet address',
+      'city', 'town', 'state', 'province', 'postal code', 'zip', 'country',
+      'street address', 'address line 1', 'address line 2', 'line 1', 'line 2',
+    ],
     policy: 'allow',
   },
   {

@@ -1,0 +1,11 @@
+{
+  "page": "typeform-mock.html",
+  "variant": "block-1-short-text",
+  "category": "Typeform (experimental)",
+  "platform": "typeform",
+  "url": "https://benchmark.typeform.com/to/BENCHMARK",
+  "notes": "Typeform renders one question per screen, so a scan sees exactly one field. Reproduction of Typeform's data-qa markup; form.typeform.com is unreachable from the build environment.",
+  "fields": [
+    { "label": "What is your full name?", "type": "text", "concept": "person.full_name", "expected": "Saiteja Reddy Kotha", "outcome": "fill" }
+  ]
+}

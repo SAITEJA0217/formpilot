@@ -1,0 +1,16 @@
+{
+  "page": "typeform-mock.html",
+  "variant": "block-4-choice",
+  "category": "Typeform (experimental)",
+  "platform": "typeform",
+  "url": "https://benchmark.typeform.com/to/BENCHMARK",
+  "notes": "Reached by clicking the page's own OK button three times, so the reproduction's real navigation is exercised. Choices are buttons, which the adapter nominates through the extraControls hook.",
+  "mutations": [
+    { "click": "[data-qa=\"ok-button\"]" },
+    { "click": "[data-qa=\"ok-button\"]" },
+    { "click": "[data-qa=\"ok-button\"]" }
+  ],
+  "fields": [
+    { "label": "Years of Experience", "type": "radio_group", "concept": "experience.years_of_experience", "expected": "0-2 years", "outcome": "fill" }
+  ]
+}
