@@ -1,0 +1,13 @@
+{
+  "page": "shadow-dom.html",
+  "category": "Shadow DOM",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "Two levels of open shadow root plus a closed root. The closed root's field is intentionally absent from ground truth: it is unreachable by browser design, and detecting it would be the anomaly.",
+  "fields": [
+    { "label": "Full Name (light DOM)", "type": "text", "concept": "person.full_name", "expected": "Saiteja Reddy Kotha", "outcome": "fill" },
+    { "label": "Email Address", "type": "email", "concept": "person.email", "expected": "saiteja@example.com", "outcome": "fill" },
+    { "label": "Phone Number", "type": "tel", "concept": "person.phone", "expected": "+91 98765 43210", "outcome": "fill" },
+    { "label": "LinkedIn Profile", "type": "url", "concept": "links.linkedin", "expected": "https://linkedin.com/in/saiteja", "outcome": "fill" }
+  ]
+}

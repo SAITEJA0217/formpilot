@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --mode production",
-    "build:dev": "tsc && vite build --mode development",
+    "build": "tsc && vite build --mode production && vite build --config vite.inject.config.ts --mode production",
+    "build:dev": "tsc && vite build --mode development && vite build --config vite.inject.config.ts --mode development",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview"
   },
   "devDependencies": {

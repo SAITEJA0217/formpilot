@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 2 — Complex HTML form</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:700px;margin:40px auto;padding:0 16px;color:#111}
+  fieldset{border:1px solid #ddd;border-radius:8px;margin:20px 0;padding:14px 16px}
+  legend{font-weight:700;padding:0 6px}
+  label{display:block;margin:12px 0 4px;font-weight:600}
+  input,textarea,select{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+  .inline label{display:inline-flex;align-items:center;gap:6px;font-weight:400;margin:6px 14px 6px 0}
+  .inline input{width:auto}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th{text-align:left;padding:6px 8px;font-weight:600;width:40%}
+  td{padding:6px 8px}
+  button{margin-top:20px;padding:10px 16px;border-radius:6px;border:0;background:#2563eb;color:#fff;font:inherit}
+</style>
+</head>
+<body>
+<h1>Test 2 — Complex HTML form</h1>
+<p>Fieldsets, a table layout, native selects, radio and checkbox groups, and a long-form question.</p>
+
+<form id="complex">
+  <fieldset>
+    <legend>Personal details</legend>
+    <label for="c-first">First Name</label>
+    <input id="c-first" name="first_name" autocomplete="given-name" required />
+    <label for="c-last">Last Name</label>
+    <input id="c-last" name="last_name" autocomplete="family-name" required />
+    <label for="c-email">Email</label>
+    <input id="c-email" name="email" type="email" autocomplete="email" required />
+
+    <div class="inline" role="group" aria-label="Gender">
+      <span style="font-weight:600">Gender</span><br />
+      <label><input type="radio" name="gender" value="Female" /> Female</label>
+      <label><input type="radio" name="gender" value="Male" /> Male</label>
+      <label><input type="radio" name="gender" value="Non-binary" /> Non-binary</label>
+      <label><input type="radio" name="gender" value="Prefer not to say" /> Prefer not to say</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Education</legend>
+    <table>
+      <tr><th><label for="c-degree">Highest Qualification</label></th>
+          <td><select id="c-degree" name="degree">
+            <option value="">-- Select --</option>
+            <option>High School</option>
+            <option>Diploma</option>
+            <option>Bachelor's Degree</option>
+            <option>Master's Degree</option>
+            <option>PhD</option>
+          </select></td></tr>
+      <tr><th><label for="c-branch">Specialization</label></th>
+          <td><input id="c-branch" name="branch" /></td></tr>
+      <tr><th><label for="c-college">College Name</label></th>
+          <td><input id="c-college" name="college" /></td></tr>
+      <tr><th><label for="c-year">Year of Passing</label></th>
+          <td><input id="c-year" name="graduation_year" /></td></tr>
+      <tr><th><label for="c-cgpa">CGPA</label></th>
+          <td><input id="c-cgpa" name="cgpa" /></td></tr>
+    </table>
+  </fieldset>
+
+  <fieldset>
+    <legend>Experience</legend>
+    <label for="c-company">Current Company</label>
+    <input id="c-company" name="company" autocomplete="organization" />
+    <label for="c-title">Job Title</label>
+    <input id="c-title" name="job_title" autocomplete="organization-title" />
+  </fieldset>
+
+  <fieldset>
+    <legend>Skills</legend>
+    <div class="inline">
+      <label><input type="checkbox" name="skills" value="React" /> React</label>
+      <label><input type="checkbox" name="skills" value="TypeScript" /> TypeScript</label>
+      <label><input type="checkbox" name="skills" value="Python" /> Python</label>
+      <label><input type="checkbox" name="skills" value="Node.js" /> Node.js</label>
+      <label><input type="checkbox" name="skills" value="AWS" /> AWS</label>
+    </div>
+    <label for="c-linkedin">LinkedIn Profile</label>
+    <input id="c-linkedin" name="linkedin" type="url" />
+    <label for="c-github">GitHub Profile</label>
+    <input id="c-github" name="github" type="url" />
+  </fieldset>
+
+  <fieldset>
+    <legend>Additional questions</legend>
+    <label for="c-why">Why do you want to join our team?</label>
+    <textarea id="c-why" name="why" rows="5" maxlength="1200"></textarea>
+    <label for="c-resume">Upload Resume</label>
+    <input id="c-resume" name="resume" type="file" accept="application/pdf" />
+  </fieldset>
+
+  <button type="submit">Submit application</button>
+</form>
+</body>
+</html>

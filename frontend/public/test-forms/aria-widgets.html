@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 3 — ARIA-heavy form</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:660px;margin:40px auto;padding:0 16px;color:#111}
+  .q{border:1px solid #e2e2e2;border-radius:8px;padding:14px 16px;margin:16px 0}
+  .t{font-weight:600;margin-bottom:8px}
+  .hint{color:#666;font-size:12px;margin-bottom:8px}
+  .box{border:1px solid #ccc;border-radius:6px;padding:8px;min-height:20px}
+  .opt{display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer}
+  .dot{width:14px;height:14px;border:1px solid #666;border-radius:50%}
+  .sq{width:14px;height:14px;border:1px solid #666;border-radius:3px}
+  [aria-checked="true"] .dot,[aria-checked="true"] .sq{background:#2563eb;border-color:#2563eb}
+</style>
+</head>
+<body>
+<h1>Test 3 — ARIA-heavy form</h1>
+<p>No native inputs at all. Every control is a <code>div</code> with an ARIA role, named via
+   <code>aria-labelledby</code> or <code>aria-label</code>, described via <code>aria-describedby</code>.</p>
+
+<div class="q">
+  <div class="t" id="lbl-name">Full Name</div>
+  <div class="hint" id="hint-name">As it appears on your ID</div>
+  <div class="box" role="textbox" contenteditable="true"
+       aria-labelledby="lbl-name" aria-describedby="hint-name" aria-required="true"></div>
+</div>
+
+<div class="q">
+  <div class="t" id="lbl-email">Email Address</div>
+  <div class="box" role="textbox" contenteditable="true" aria-labelledby="lbl-email"></div>
+</div>
+
+<div class="q">
+  <div class="box" role="textbox" contenteditable="true" aria-label="Phone Number"></div>
+</div>
+
+<div class="q">
+  <div class="t" id="lbl-about">Tell us about yourself</div>
+  <div class="box" role="textbox" aria-multiline="true" contenteditable="true"
+       aria-labelledby="lbl-about" style="min-height:70px"></div>
+</div>
+
+<div class="q">
+  <div class="t" id="lbl-exp">Years of Experience</div>
+  <div role="radiogroup" aria-labelledby="lbl-exp">
+    <div class="opt" role="radio" aria-checked="false" data-value="0-2 years"><span class="dot"></span>0-2 years</div>
+    <div class="opt" role="radio" aria-checked="false" data-value="3-5 years"><span class="dot"></span>3-5 years</div>
+    <div class="opt" role="radio" aria-checked="false" data-value="5+ years"><span class="dot"></span>5+ years</div>
+  </div>
+</div>
+
+<div class="q">
+  <div class="t" id="lbl-skills">Technical Skills</div>
+  <div role="group" aria-labelledby="lbl-skills">
+    <div class="opt" role="checkbox" aria-checked="false" aria-label="React"><span class="sq"></span>React</div>
+    <div class="opt" role="checkbox" aria-checked="false" aria-label="TypeScript"><span class="sq"></span>TypeScript</div>
+    <div class="opt" role="checkbox" aria-checked="false" aria-label="Python"><span class="sq"></span>Python</div>
+  </div>
+</div>
+
+<div class="q">
+  <div class="t" id="lbl-degree">Highest Qualification</div>
+  <div class="box" role="listbox" aria-labelledby="lbl-degree" tabindex="0">Choose</div>
+  <div hidden data-options>
+    <div role="option" data-value="High School">High School</div>
+    <div role="option" data-value="Bachelor's Degree">Bachelor's Degree</div>
+    <div role="option" data-value="Master's Degree">Master's Degree</div>
+    <div role="option" data-value="PhD">PhD</div>
+  </div>
+</div>
+
+<script>
+// Wrapped in an IIFE so the page can be loaded repeatedly into one window (the benchmark
+// harness reuses a single jsdom realm) without redeclaring globals.
+(function () {
+  // Radio and checkbox widgets: clicks change aria-checked, as a real widget would.
+  document.addEventListener('click', function (event) {
+    var option = event.target.closest('[role="radio"],[role="checkbox"]');
+    if (!option) return;
+    if (option.getAttribute('role') === 'radio') {
+      var scope = option.closest('[role="row"]') || option.closest('[role="radiogroup"]');
+      if (scope) {
+        scope.querySelectorAll('[role="radio"]').forEach(function (sibling) {
+          sibling.setAttribute('aria-checked', 'false');
+        });
+      }
+      option.setAttribute('aria-checked', 'true');
+    } else {
+      option.setAttribute('aria-checked', option.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+    }
+  });
+
+  // Custom listbox: clicking the control reveals the options, clicking an option selects
+  // it, and the control reflects the selection. This mirrors what a real listbox does, so
+  // an autofill that cannot verify its own write here would not work in production either.
+  document.addEventListener('click', function (event) {
+    var control = event.target.closest('[role="listbox"]');
+    if (control) {
+      var ownPanel = control.parentElement.querySelector('[data-options]');
+      if (ownPanel) ownPanel.hidden = !ownPanel.hidden;
+      return;
+    }
+    var option = event.target.closest('[role="option"]');
+    if (!option) return;
+    var panel = option.closest('[data-options]');
+    if (!panel) return;
+    var listbox = panel.parentElement.querySelector('[role="listbox"]');
+    if (!listbox) return;
+    panel.querySelectorAll('[role="option"]').forEach(function (other) {
+      other.setAttribute('aria-selected', String(other === option));
+    });
+    listbox.textContent = option.textContent;
+    panel.hidden = true;
+  });
+})();
+</script>
+</body>
+</html>

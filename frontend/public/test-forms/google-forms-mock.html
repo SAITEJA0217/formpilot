@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 9 — Google Forms structure (regression fixture)</title>
+<style>
+  body{font:14px/1.5 Roboto,Arial,sans-serif;background:#f0ebf8;padding:24px;color:#202124}
+  .form-container{max-width:640px;margin:0 auto;background:#fff;border-radius:8px;padding:24px}
+  div[role="listitem"]{margin-bottom:24px;padding:20px;border:1px solid #dadce0;border-radius:8px}
+  div[role="heading"]{font-size:15px;font-weight:500;margin-bottom:14px}
+  input[type="text"],textarea{width:100%;padding:6px 0;border:0;border-bottom:1px solid #dadce0;outline:none;font:inherit}
+  div[role="radio"],div[role="checkbox"]{display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer}
+  .mark{width:16px;height:16px;border:2px solid #5f6368;border-radius:50%}
+  div[role="checkbox"] .mark{border-radius:3px}
+  [aria-checked="true"] .mark{background:#673ab7;border-color:#673ab7}
+  div[role="listbox"]{border:1px solid #dadce0;border-radius:4px;padding:8px;cursor:pointer}
+  div[role="grid"]{display:table;width:100%}
+  div[role="row"]{display:table-row}
+  div[role="columnheader"],div[role="rowheader"]{display:table-cell;padding:6px 8px;font-size:13px}
+  div[role="row"] div[role="radio"]{display:table-cell;text-align:center}
+  .scale{display:flex;gap:18px;align-items:center}
+</style>
+</head>
+<body>
+<div class="form-container">
+  <h1 role="heading" aria-level="1">Software Engineer Application</h1>
+
+  <!-- Short answer -->
+  <div role="listitem" data-params="short-answer">
+    <div role="heading">Full Name<span aria-label="Required question">*</span></div>
+    <input type="text" aria-labelledby="" placeholder="Your answer" />
+  </div>
+
+  <div role="listitem" data-params="short-answer">
+    <div role="heading">Email Address<span aria-label="Required question">*</span></div>
+    <input type="text" placeholder="Your answer" />
+  </div>
+
+  <div role="listitem" data-params="short-answer">
+    <div role="heading">Phone Number</div>
+    <input type="text" placeholder="Your answer" />
+  </div>
+
+  <!-- Paragraph -->
+  <div role="listitem" data-params="paragraph">
+    <div role="heading">Why do you want to join our team?</div>
+    <textarea rows="3" placeholder="Your answer"></textarea>
+  </div>
+
+  <!-- Multiple choice -->
+  <div role="listitem" data-params="radio">
+    <div role="heading">Years of Experience<span aria-label="Required question">*</span></div>
+    <div role="radiogroup" aria-label="Years of Experience">
+      <div role="radio" aria-checked="false" data-value="0-2 years"><span class="mark"></span>0-2 years</div>
+      <div role="radio" aria-checked="false" data-value="3-5 years"><span class="mark"></span>3-5 years</div>
+      <div role="radio" aria-checked="false" data-value="5+ years"><span class="mark"></span>5+ years</div>
+    </div>
+  </div>
+
+  <!-- Checkboxes -->
+  <div role="listitem" data-params="checkbox">
+    <div role="heading">Technical Skills</div>
+    <div>
+      <div role="checkbox" aria-checked="false" aria-label="React" data-value="React"><span class="mark"></span>React</div>
+      <div role="checkbox" aria-checked="false" aria-label="TypeScript" data-value="TypeScript"><span class="mark"></span>TypeScript</div>
+      <div role="checkbox" aria-checked="false" aria-label="Python" data-value="Python"><span class="mark"></span>Python</div>
+      <div role="checkbox" aria-checked="false" aria-label="AWS" data-value="AWS"><span class="mark"></span>AWS</div>
+    </div>
+  </div>
+
+  <!-- Dropdown -->
+  <div role="listitem" data-params="dropdown">
+    <div role="heading">Highest Qualification<span aria-label="Required question">*</span></div>
+    <div>
+      <div role="listbox" aria-label="Highest Qualification" tabindex="0">Choose</div>
+      <div data-options hidden>
+        <div role="option" data-value="Choose">Choose</div>
+        <div role="option" data-value="High School">High School</div>
+        <div role="option" data-value="Bachelor's Degree">Bachelor's Degree</div>
+        <div role="option" data-value="Master's Degree">Master's Degree</div>
+        <div role="option" data-value="PhD">PhD</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date -->
+  <div role="listitem" data-params="date">
+    <div role="heading">Date of Birth</div>
+    <input type="date" aria-label="Date of Birth" />
+  </div>
+
+  <!-- Time -->
+  <div role="listitem" data-params="time">
+    <div role="heading">Preferred Interview Time</div>
+    <input type="time" aria-label="Preferred Interview Time" />
+  </div>
+
+  <!-- Linear scale -->
+  <div role="listitem" data-params="linear-scale">
+    <div role="heading">Rate your React proficiency</div>
+    <div role="radiogroup" class="scale" aria-label="Rate your React proficiency">
+      <div role="presentation"></div>
+      <div role="radio" aria-checked="false" data-value="1"><span class="mark"></span>1</div>
+      <div role="radio" aria-checked="false" data-value="2"><span class="mark"></span>2</div>
+      <div role="radio" aria-checked="false" data-value="3"><span class="mark"></span>3</div>
+      <div role="radio" aria-checked="false" data-value="4"><span class="mark"></span>4</div>
+      <div role="radio" aria-checked="false" data-value="5"><span class="mark"></span>5</div>
+    </div>
+  </div>
+
+  <!-- Grid (matrix) -->
+  <div role="listitem" data-params="grid">
+    <div role="heading">Rate your confidence</div>
+    <div role="grid">
+      <div role="row">
+        <div role="columnheader"></div>
+        <div role="columnheader">Beginner</div>
+        <div role="columnheader">Intermediate</div>
+        <div role="columnheader">Expert</div>
+      </div>
+      <div role="row">
+        <div role="rowheader">Frontend</div>
+        <div role="radio" aria-checked="false" data-value="Beginner"><span class="mark"></span></div>
+        <div role="radio" aria-checked="false" data-value="Intermediate"><span class="mark"></span></div>
+        <div role="radio" aria-checked="false" data-value="Expert"><span class="mark"></span></div>
+      </div>
+      <div role="row">
+        <div role="rowheader">Backend</div>
+        <div role="radio" aria-checked="false" data-value="Beginner"><span class="mark"></span></div>
+        <div role="radio" aria-checked="false" data-value="Intermediate"><span class="mark"></span></div>
+        <div role="radio" aria-checked="false" data-value="Expert"><span class="mark"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Wrapped in an IIFE so the page can be loaded repeatedly into one window (the benchmark
+// harness reuses a single jsdom realm) without redeclaring globals.
+(function () {
+  // Radio and checkbox widgets: clicks change aria-checked, as a real widget would.
+  document.addEventListener('click', function (event) {
+    var option = event.target.closest('[role="radio"],[role="checkbox"]');
+    if (!option) return;
+    if (option.getAttribute('role') === 'radio') {
+      var scope = option.closest('[role="row"]') || option.closest('[role="radiogroup"]');
+      if (scope) {
+        scope.querySelectorAll('[role="radio"]').forEach(function (sibling) {
+          sibling.setAttribute('aria-checked', 'false');
+        });
+      }
+      option.setAttribute('aria-checked', 'true');
+    } else {
+      option.setAttribute('aria-checked', option.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+    }
+  });
+
+  // Custom listbox: clicking the control reveals the options, clicking an option selects
+  // it, and the control reflects the selection. This mirrors what a real listbox does, so
+  // an autofill that cannot verify its own write here would not work in production either.
+  document.addEventListener('click', function (event) {
+    var control = event.target.closest('[role="listbox"]');
+    if (control) {
+      var ownPanel = control.parentElement.querySelector('[data-options]');
+      if (ownPanel) ownPanel.hidden = !ownPanel.hidden;
+      return;
+    }
+    var option = event.target.closest('[role="option"]');
+    if (!option) return;
+    var panel = option.closest('[data-options]');
+    if (!panel) return;
+    var listbox = panel.parentElement.querySelector('[role="listbox"]');
+    if (!listbox) return;
+    panel.querySelectorAll('[role="option"]').forEach(function (other) {
+      other.setAttribute('aria-selected', String(other === option));
+    });
+    listbox.textContent = option.textContent;
+    panel.hidden = true;
+  });
+})();
+</script>
+</body>
+</html>

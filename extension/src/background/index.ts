@@ -1,202 +1,231 @@
-import type { FormQuestion, AIResponse } from '../../../shared/types';
+/**
+ * Service worker — message router and privileged operations.
+ *
+ * The worker owns everything the page must not: the cached profile, the Firebase ID
+ * token, and all network access. The content script never sees a token and never
+ * talks to the API directly.
+ *
+ * v1 message names are still handled so a half-updated install degrades rather than
+ * breaks: `ANALYZE_FORM` (legacy whole-form request), `SEND_CORRECTION`,
+ * `CACHE_PROFILE`, `CACHE_AUTH`.
+ */
+import type { UnifiedForm } from '../../../shared/types/form';
+import type { FormQuestion } from '../../../shared/types';
+import { authorizedFetch, readJson, STORAGE_KEYS } from './api';
+import { buildSuggestionsForForm, loadSettings, saveSettings, type ExtensionSettings } from './pipeline';
 
-const getApiBaseUrl = () => {
-  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-};
+type Respond = (response: unknown) => void;
 
-// ─── Token Lifecycle ──────────────────────────────────────────────────────────
-//
-// Firebase ID tokens expire after 1 hour.
-// The token is cached in chrome.storage.local by dashboardSync.ts when
-// the user is on the FormPilot dashboard.
-//
-// Token refresh strategy:
-//  - The dashboard (auth-context.tsx) already calls onAuthStateChanged and
-//    posts a fresh token via window.postMessage on every page load.
-//  - When the cached token is rejected (HTTP 401), the background worker
-//    broadcasts a TOKEN_REFRESH_REQUIRED message to any open dashboard tabs
-//    so auth-context can re-post a fresh token automatically.
-//  - Passwords and raw refresh tokens are never stored here.
-//  - On sign-out (isAuthenticated: false), all auth data is cleared from storage.
-
-async function requestTokenRefresh(): Promise<string | null> {
-  // Find an open tab that is the FormPilot dashboard and ask it to re-sync the token.
-  const baseUrl = getApiBaseUrl().replace(/\/$/, '');
-  const tabs = await chrome.tabs.query({ url: [`${baseUrl}/*`] });
-  for (const tab of tabs) {
-    if (tab.id) {
-      try {
-        const promise = chrome.tabs.sendMessage(tab.id, { action: 'REQUEST_TOKEN_REFRESH' });
-        if (promise) promise.catch(() => {}); // Catch unhandled promise rejection if content script is missing
-      } catch (_) { /* tab may not have the content script */ }
-    }
-  }
-  // Wait up to 4 seconds for the dashboard to post back a fresh token.
-  return new Promise((resolve) => {
-    let resolved = false;
-    const timeout = setTimeout(() => {
-      if (!resolved) { resolved = true; resolve(null); }
-    }, 4000);
-
-    const handler = (changes: { [key: string]: chrome.storage.StorageChange }, area: string) => {
-      if (area === 'local' && changes.idToken?.newValue && !resolved) {
-        resolved = true;
-        clearTimeout(timeout);
-        chrome.storage.onChanged.removeListener(handler);
-        resolve(changes.idToken.newValue as string);
-      }
-    };
-    chrome.storage.onChanged.addListener(handler);
-  });
+interface IncomingMessage {
+  type?: string;
+  payload?: unknown;
+  form?: UnifiedForm;
+  tabId?: number;
+  settings?: Partial<ExtensionSettings>;
 }
 
-// ─── Message Router ───────────────────────────────────────────────────────────
+/** Run an async handler and always answer the sender, error or not. */
+function handle(promise: Promise<unknown>, respond: Respond): true {
+  promise
+    .then((result) => respond(result ?? { ok: true }))
+    .catch((error: unknown) =>
+      respond({ error: error instanceof Error ? error.message : 'Unexpected background error.' }),
+    );
+  return true;
+}
 
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-  if (request.type === 'ANALYZE_FORM') {
-    handleAnalyzeForm(request.payload, request.tabId)
-      .then(response => sendResponse(response))
-      .catch(err => {
-        sendResponse({ error: err.message });
-      });
-    return true; // async
-  }
-  
-  if (request.type === 'SEND_CORRECTION') {
-    handleSendCorrection(request.payload)
-      .then(response => sendResponse(response))
-      .catch(err => {
-        sendResponse({ error: err.message });
-      });
-    return true;
-  }
-
-  if (request.type === 'CACHE_PROFILE') {
-    chrome.storage.local.set({ 
-      userProfile: request.payload.profile,
-      isProfileComplete: request.payload.isComplete
-    }, () => {
-      sendResponse({ status: 'Profile cached' });
-    });
-    return true;
-  }
-  
-  if (request.type === 'CACHE_AUTH') {
-    if (request.payload.isAuthenticated === false) {
-      // Sign-out: clear all auth and profile data from local storage
-      chrome.storage.local.remove(
-        ['isAuthenticated', 'userUid', 'idToken', 'userProfile', 'isProfileComplete'],
-        () => { sendResponse({ status: 'Auth cleared' }); }
-      );
-    } else {
-      chrome.storage.local.set({
-        isAuthenticated: request.payload.isAuthenticated,
-        userUid: request.payload.uid,
-        idToken: request.payload.token,
-      }, () => {
-        sendResponse({ status: 'Auth cached' });
-      });
+chrome.runtime.onMessage.addListener((request: IncomingMessage, _sender, sendResponse) => {
+  switch (request.type) {
+    case 'BUILD_SUGGESTIONS': {
+      if (!request.form) {
+        sendResponse({ error: 'No form supplied.' });
+        return false;
+      }
+      return handle(buildSuggestionsForForm(request.form), sendResponse);
     }
-    return true;
+
+    case 'GET_STATE':
+      return handle(getState(), sendResponse);
+
+    case 'GET_SETTINGS':
+      return handle(loadSettings(), sendResponse);
+
+    case 'SET_SETTINGS':
+      return handle(saveSettings(request.settings ?? {}), sendResponse);
+
+    case 'CLEAR_LOCAL_DATA':
+      return handle(clearLocalData(), sendResponse);
+
+    case 'EXPORT_PROFILE':
+      return handle(exportProfile(), sendResponse);
+
+    case 'SEND_CORRECTION':
+      return handle(sendCorrection(request.payload as Record<string, unknown>), sendResponse);
+
+    case 'DELETE_CORRECTIONS':
+      return handle(deleteCorrections(), sendResponse);
+
+    case 'CACHE_PROFILE':
+      return handle(cacheProfile(request.payload as { profile: unknown; isComplete: boolean }), sendResponse);
+
+    case 'CACHE_AUTH':
+      return handle(cacheAuth(request.payload as { isAuthenticated: boolean; uid?: string; token?: string }), sendResponse);
+
+    // ── v1 compatibility ────────────────────────────────────────────────────
+    case 'ANALYZE_FORM':
+      return handle(legacyAnalyzeForm(request.payload as FormQuestion[], request.tabId), sendResponse);
+
+    default:
+      return false;
   }
 });
 
-// Listener for external website pings (from official website via externally_connectable)
+/** Website install check, unchanged from v1. */
 if (typeof chrome !== 'undefined' && chrome.runtime?.onMessageExternal) {
-  chrome.runtime.onMessageExternal.addListener((request, _sender, sendResponse) => {
+  chrome.runtime.onMessageExternal.addListener((request: { type?: string; action?: string }, _sender, sendResponse) => {
     if (request.type === 'PING' || request.action === 'PING') {
-      sendResponse({ status: 'OK', version: '1.0.0', installed: true });
+      sendResponse({ status: 'OK', version: chrome.runtime.getManifest().version, installed: true });
       return true;
     }
+    return false;
   });
 }
 
-// ─── API Helpers ──────────────────────────────────────────────────────────────
+// ─── Handlers ─────────────────────────────────────────────────────────────────
 
-async function authorizedFetch(url: string, options: RequestInit, token: string): Promise<Response> {
-  const baseHeaders: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
+async function getState(): Promise<{
+  isAuthenticated: boolean;
+  isProfileComplete: boolean;
+  hasProfile: boolean;
+  settings: ExtensionSettings;
+}> {
+  const stored = await chrome.storage.local.get([
+    STORAGE_KEYS.authenticated,
+    STORAGE_KEYS.profileComplete,
+    STORAGE_KEYS.profile,
+  ]);
+  return {
+    isAuthenticated: stored[STORAGE_KEYS.authenticated] === true,
+    isProfileComplete: stored[STORAGE_KEYS.profileComplete] === true,
+    hasProfile: !!stored[STORAGE_KEYS.profile],
+    settings: await loadSettings(),
   };
-
-  let response = await fetch(url, { ...options, headers: baseHeaders });
-
-  // If the token was rejected, attempt a single token refresh and retry.
-  if (response.status === 401) {
-    const freshToken = await requestTokenRefresh();
-    if (freshToken && freshToken !== token) {
-      const retryHeaders = { ...baseHeaders, 'Authorization': `Bearer ${freshToken}` };
-      response = await fetch(url, { ...options, headers: retryHeaders });
-    }
-  }
-
-  return response;
 }
 
-async function handleAnalyzeForm(questions: FormQuestion[], targetTabId: number) {
-  const data = await chrome.storage.local.get(['userProfile', 'idToken']);
-  const profile = data.userProfile;
-  const token = data.idToken;
-  
-  if (!profile) {
-    throw new Error('No profile found. Please login to FormPilot dashboard first.');
+async function cacheProfile(payload: { profile: unknown; isComplete: boolean }): Promise<{ ok: true }> {
+  await chrome.storage.local.set({
+    [STORAGE_KEYS.profile]: payload.profile,
+    [STORAGE_KEYS.profileComplete]: payload.isComplete,
+  });
+  return { ok: true };
+}
+
+async function cacheAuth(payload: {
+  isAuthenticated: boolean;
+  uid?: string;
+  token?: string;
+}): Promise<{ ok: true }> {
+  if (payload.isAuthenticated === false) {
+    // Sign-out clears every trace of the account from local storage.
+    await chrome.storage.local.remove([
+      STORAGE_KEYS.authenticated,
+      STORAGE_KEYS.uid,
+      STORAGE_KEYS.token,
+      STORAGE_KEYS.profile,
+      STORAGE_KEYS.profileComplete,
+      STORAGE_KEYS.corrections,
+      STORAGE_KEYS.correctionsFetchedAt,
+    ]);
+    return { ok: true };
   }
-  if (!token) {
-    throw new Error('Authentication expired or missing. Please open the FormPilot dashboard.');
+  await chrome.storage.local.set({
+    [STORAGE_KEYS.authenticated]: payload.isAuthenticated,
+    [STORAGE_KEYS.uid]: payload.uid,
+    [STORAGE_KEYS.token]: payload.token,
+  });
+  return { ok: true };
+}
+
+/** Privacy control: wipe everything FormPilot keeps on this device. */
+async function clearLocalData(): Promise<{ ok: true; cleared: string[] }> {
+  const keys = Object.values(STORAGE_KEYS);
+  await chrome.storage.local.remove(keys as string[]);
+  return { ok: true, cleared: keys as string[] };
+}
+
+/** Privacy control: hand the user their own cached data back. */
+async function exportProfile(): Promise<{ ok: true; export: Record<string, unknown> }> {
+  const stored = await chrome.storage.local.get([
+    STORAGE_KEYS.profile,
+    STORAGE_KEYS.profileComplete,
+    STORAGE_KEYS.corrections,
+    STORAGE_KEYS.settings,
+  ]);
+  return {
+    ok: true,
+    export: {
+      exportedAt: new Date().toISOString(),
+      profile: stored[STORAGE_KEYS.profile] ?? null,
+      isProfileComplete: stored[STORAGE_KEYS.profileComplete] ?? false,
+      corrections: stored[STORAGE_KEYS.corrections] ?? [],
+      settings: stored[STORAGE_KEYS.settings] ?? null,
+    },
+  };
+}
+
+async function sendCorrection(payload: Record<string, unknown>): Promise<unknown> {
+  const settings = await loadSettings();
+  if (!settings.allowCorrectionLearning) {
+    return { ok: true, skipped: 'Correction learning is turned off.' };
   }
+  const stored = await chrome.storage.local.get(STORAGE_KEYS.token);
+  const token = stored[STORAGE_KEYS.token] as string | undefined;
+  if (!token) throw new Error('Not signed in.');
 
   const response = await authorizedFetch(
-    `${getApiBaseUrl()}/api/ai/generate`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ profile, questions })
-    },
-    token as string
+    '/api/ai/corrections',
+    { method: 'POST', body: JSON.stringify(payload) },
+    token,
   );
+  const result = await readJson<{ success?: boolean; type?: string }>(response, 'Could not save the correction');
+  // Invalidate the local cache so the next form sees this correction.
+  await chrome.storage.local.remove(STORAGE_KEYS.correctionsFetchedAt);
+  return result;
+}
 
-  if (!response.ok) {
-    let errorMessage = `Failed to generate answers: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      if (errorData.error) {
-        errorMessage = `API Error (${response.status}): ${errorData.error}`;
-      }
-    } catch (e) {
-      // Ignore if no JSON body
-    }
-    throw new Error(errorMessage);
-  }
+/** Privacy control: delete the learned corrections, locally and server-side. */
+async function deleteCorrections(): Promise<unknown> {
+  await chrome.storage.local.remove([STORAGE_KEYS.corrections, STORAGE_KEYS.correctionsFetchedAt]);
+  const stored = await chrome.storage.local.get(STORAGE_KEYS.token);
+  const token = stored[STORAGE_KEYS.token] as string | undefined;
+  if (!token) return { ok: true, remote: false };
+  const response = await authorizedFetch('/api/ai/corrections', { method: 'DELETE' }, token);
+  await readJson<{ deleted?: number }>(response, 'Could not delete corrections');
+  return { ok: true, remote: true };
+}
 
-  const aiData: AIResponse = await response.json();
-  
-  if (targetTabId) {
-    const promise = chrome.tabs.sendMessage(targetTabId, { 
-      action: 'SHOW_REVIEW_PANEL', 
-      answers: aiData.answers 
-    });
+/**
+ * v1 request shape: a bare `FormQuestion[]`. Forwarded to the legacy endpoint
+ * unchanged and pushed to the tab with the v1 message name, so an older content
+ * script still works against this worker.
+ */
+async function legacyAnalyzeForm(questions: FormQuestion[], tabId?: number): Promise<unknown> {
+  const stored = await chrome.storage.local.get([STORAGE_KEYS.profile, STORAGE_KEYS.token]);
+  const profile = stored[STORAGE_KEYS.profile];
+  const token = stored[STORAGE_KEYS.token] as string | undefined;
+  if (!profile) throw new Error('No profile found. Please sign in to the FormPilot dashboard first.');
+  if (!token) throw new Error('Authentication expired or missing. Please open the FormPilot dashboard.');
+
+  const response = await authorizedFetch(
+    '/api/ai/generate',
+    { method: 'POST', body: JSON.stringify({ profile, questions }) },
+    token,
+  );
+  const data = await readJson<{ answers: unknown[] }>(response, 'Failed to generate answers');
+
+  if (tabId !== undefined) {
+    const promise = chrome.tabs.sendMessage(tabId, { action: 'SHOW_REVIEW_PANEL', answers: data.answers });
     if (promise) promise.catch(() => {});
   }
-
-  return aiData;
-}
-
-async function handleSendCorrection(payload: any) {
-  const data = await chrome.storage.local.get(['idToken']);
-  const token = data.idToken;
-  if (!token) throw new Error('Missing token');
-
-  const response = await authorizedFetch(
-    `${getApiBaseUrl()}/api/ai/corrections`,
-    {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    },
-    token as string
-  );
-
-  if (!response.ok) {
-    throw new Error('Failed to save correction');
-  }
-
-  return await response.json();
+  return data;
 }

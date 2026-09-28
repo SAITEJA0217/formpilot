@@ -1,5 +1,31 @@
 {
   "dependencies": {
     "firebase": "^12.15.0"
+  },
+  "name": "formpilot",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "FormPilot — universal semantic web form understanding and human-in-the-loop autofill",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck:extension": "npm --prefix extension run typecheck",
+    "typecheck:frontend": "tsc --noEmit -p frontend/tsconfig.json",
+    "typecheck:all": "npm run typecheck && npm run typecheck:extension && npm run typecheck:frontend",
+    "lint": "npm --prefix frontend run lint",
+    "build:extension": "npm --prefix extension run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "bench": "vite-node research/benchmark/run.ts"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^22.10.2",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.7.2",
+    "vite-node": "^3.0.0",
+    "vitest": "^3.0.0"
   }
 }

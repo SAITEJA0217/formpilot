@@ -101,7 +101,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-slate-400 max-w-2xl mb-12 leading-relaxed font-light"
           >
-            Stop typing the same information again and again. FormPilot uses AI to fill Google Forms instantly using your profile, skills, projects, and experience.
+            Stop typing the same information again and again. FormPilot reads the form in front of you, suggests answers grounded in your profile, and fills them once you approve — on Google Forms and on ordinary websites alike.
           </motion.p>
           
           <motion.div 
@@ -154,7 +154,7 @@ export default function LandingPage() {
 
             {/* Social Proof */}
             <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-400 font-medium mt-4">
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Supports Google Forms</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Google Forms &amp; standard web forms</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> AI-Powered Answers</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Review Before Submit</div>
             </div>
@@ -180,7 +180,7 @@ export default function LandingPage() {
             transition={{ duration: 0.7, delay: 0.4 }}
             className="mt-20 w-full max-w-5xl mx-auto rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden text-left relative"
           >
-             <img src="/demo-screenshot.png" alt="FormPilot extending Google Forms" className="w-full h-auto object-cover" />
+             <img src="/demo-screenshot.png" alt="The FormPilot review panel open on a web form" className="w-full h-auto object-cover" />
              <div className="absolute top-4 right-4 bg-slate-900/80 backdrop-blur text-xs px-3 py-1.5 rounded-full text-slate-300 border border-white/10 pointer-events-none">
                Update public/demo-screenshot.png with your real screenshot
              </div>

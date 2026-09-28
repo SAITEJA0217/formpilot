@@ -1,41 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from '../../../../lib/firebase-admin';
 import https from 'https';
+import { corsHeaders as buildCorsHeaders, preflight, requireAuth, HttpError } from '../../../../lib/api/guards';
 
-function getCorsHeaders(req: NextRequest) {
-  const origin = req.headers.get('origin');
-  const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
-  const isAllowed = origin && (
-    allowedOrigins.includes(origin) ||
-    origin.startsWith('chrome-extension://') ||
-    origin.includes('localhost') ||
-    origin.includes('127.0.0.1')
-  );
-  return {
-    'Access-Control-Allow-Origin': isAllowed && origin ? origin : (allowedOrigins[0] || '*'),
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  };
-}
+/**
+ * Resume → profile extraction.
+ *
+ * This is the one route that does not go through `lib/ai`: it is a multimodal call
+ * (an inline PDF), which the text-only `AIProvider` interface does not model. It
+ * therefore remains Gemini-specific, and is documented as such rather than pretending
+ * to be provider-agnostic. Adding multimodal support to the abstraction is recorded
+ * as future work.
+ */
 
 export async function OPTIONS(req: NextRequest) {
-  return new NextResponse(null, { status: 200, headers: getCorsHeaders(req) });
+  return preflight(req);
 }
 
 export async function POST(req: NextRequest) {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = buildCorsHeaders(req);
   try {
-    // Require a valid Firebase ID token in all environments
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
-    }
-    const token = authHeader.split('Bearer ')[1];
-    try {
-      await adminAuth.verifyIdToken(token);
-    } catch (e) {
-      return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401, headers: corsHeaders });
-    }
+    await requireAuth(req);
 
     const formData = await req.formData();
     const file = formData.get('resume') as File | null;
@@ -174,14 +158,20 @@ JSON Schema required:
 
       // Sanitize: replace all null values with "" so React controlled inputs don't warn
       parsedData = JSON.parse(JSON.stringify(parsedData, (_key, val) => val === null ? '' : val));
-    } catch (aiError: any) {
-      console.error('AI extraction failed:', aiError?.message || aiError);
+    } catch (aiError: unknown) {
+      console.error('AI extraction failed:', aiError instanceof Error ? aiError.message : aiError);
       return NextResponse.json({ error: 'AI extraction failed. Please try again.' }, { status: 502, headers: corsHeaders });
     }
 
     return NextResponse.json(parsedData, { headers: corsHeaders });
-  } catch (error: any) {
-    console.error('Unexpected error parsing resume:', error);
-    return NextResponse.json({ error: 'An unexpected error occurred while processing your request.' }, { status: 500, headers: corsHeaders });
+  } catch (error: unknown) {
+    if (error instanceof HttpError) {
+      return NextResponse.json({ error: error.message }, { status: error.status, headers: corsHeaders });
+    }
+    console.error('Unexpected error parsing resume:', error instanceof Error ? error.message : error);
+    return NextResponse.json(
+      { error: 'An unexpected error occurred while processing your request.' },
+      { status: 500, headers: corsHeaders },
+    );
   }
 }

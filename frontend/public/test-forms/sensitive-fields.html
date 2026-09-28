@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 10 — Fields that must never be autofilled</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;color:#111}
+  label{display:block;margin:14px 0 4px;font-weight:600}
+  input{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+  .chk{display:flex;gap:8px;align-items:flex-start;margin:12px 0;font-weight:400}
+  .chk input{width:auto;margin-top:3px}
+</style>
+</head>
+<body>
+<h1>Test 10 — Fields that must never be autofilled</h1>
+<p>A safety fixture. Every control below must be reported as <strong>protected</strong>, with a
+   reason, and must never receive a value — whatever the confidence.</p>
+
+<form id="sensitive">
+  <label for="s-pass">Password</label>
+  <input id="s-pass" name="password" type="password" autocomplete="new-password" />
+
+  <label for="s-otp">One-Time Code</label>
+  <input id="s-otp" name="otp" inputmode="numeric" autocomplete="one-time-code" />
+
+  <label for="s-card">Card Number</label>
+  <input id="s-card" name="cardNumber" autocomplete="cc-number" />
+
+  <label for="s-cvv">CVV</label>
+  <input id="s-cvv" name="cvv" autocomplete="cc-csc" />
+
+  <label for="s-ssn">Social Security Number</label>
+  <input id="s-ssn" name="ssn" />
+
+  <label for="s-aadhaar">Aadhaar Number</label>
+  <input id="s-aadhaar" name="aadhaar" />
+
+  <label class="chk"><input type="checkbox" name="terms" /> I agree to the Terms and Conditions</label>
+  <label class="chk"><input type="checkbox" name="privacy" /> I accept the Privacy Policy</label>
+  <label class="chk"><input type="checkbox" name="news" /> Subscribe me to marketing emails</label>
+  <label class="chk"><input type="checkbox" name="certify" /> I certify that the information above is true</label>
+</form>
+</body>
+</html>

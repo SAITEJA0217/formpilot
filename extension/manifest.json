@@ -1,17 +1,20 @@
 {
   "manifest_version": 3,
   "name": "FormPilot",
-  "version": "1.0.0",
-  "description": "AI-powered Google Forms Autofill. Fill your profile once, autofill job applications everywhere.",
+  "version": "2.0.0",
+  "description": "Universal form assistant. Understands web forms, suggests answers from your profile, and fills them only after you review.",
   "permissions": [
     "storage",
     "activeTab",
     "scripting"
   ],
   "host_permissions": [
-    "https://docs.google.com/forms/*",
     "http://localhost:3000/*",
     "http://127.0.0.1:3000/*"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
   ],
   "icons": {
     "16": "icon16.png",
@@ -27,24 +30,15 @@
       "128": "icon128.png"
     }
   },
+  "options_page": "options.html",
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["https://docs.google.com/forms/*"],
-      "js": ["src/content/index.tsx"]
-    },
-    {
       "matches": ["http://localhost:3000/*", "http://127.0.0.1:3000/*"],
       "js": ["src/content/dashboardSync.ts"]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["assets/*", "logo.png", "logo-icon.png", "icon16.png", "icon48.png", "icon128.png"],
-      "matches": ["https://docs.google.com/*"]
     }
   ],
   "externally_connectable": {

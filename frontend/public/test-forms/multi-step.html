@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 6 — Multi-step form</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:660px;margin:40px auto;padding:0 16px;color:#111}
+  ol.steps{display:flex;gap:8px;list-style:none;padding:0;margin:0 0 20px;flex-wrap:wrap}
+  ol.steps li{font-size:12px;padding:4px 10px;border:1px solid #ddd;border-radius:999px;color:#777}
+  ol.steps li[aria-current="step"]{border-color:#2563eb;color:#2563eb;font-weight:600}
+  fieldset{border:1px solid #ddd;border-radius:8px;padding:14px 16px}
+  legend{font-weight:700;padding:0 6px}
+  label{display:block;margin:12px 0 4px;font-weight:600}
+  input,textarea,select{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+  nav{margin-top:16px;display:flex;gap:8px}
+  button{padding:8px 14px;border-radius:6px;border:1px solid #ccc;background:#f6f6f6;font:inherit}
+  button.primary{background:#2563eb;border-color:#2563eb;color:#fff}
+</style>
+</head>
+<body>
+<h1>Test 6 — Multi-step form</h1>
+<p>Five steps; only the current one is in the DOM as visible content. Exercises step detection and
+   session continuity across steps.</p>
+
+<ol class="steps" role="tablist">
+  <li role="tab" aria-current="step" data-step="1">Personal</li>
+  <li role="tab" data-step="2">Education</li>
+  <li role="tab" data-step="3">Experience</li>
+  <li role="tab" data-step="4">Documents</li>
+  <li role="tab" data-step="5">Review</li>
+</ol>
+
+<form id="wizard">
+  <fieldset data-step-panel="1">
+    <legend>Personal Information</legend>
+    <label for="w-name">Full Name</label><input id="w-name" name="fullName" autocomplete="name" />
+    <label for="w-email">Email Address</label><input id="w-email" name="email" type="email" autocomplete="email" />
+    <label for="w-phone">Phone Number</label><input id="w-phone" name="phone" type="tel" autocomplete="tel" />
+  </fieldset>
+
+  <fieldset data-step-panel="2" hidden>
+    <legend>Education</legend>
+    <label for="w-degree">Degree</label><input id="w-degree" name="degree" />
+    <label for="w-branch">Specialization</label><input id="w-branch" name="branch" />
+    <label for="w-univ">University</label><input id="w-univ" name="university" />
+    <label for="w-year">Graduation Year</label><input id="w-year" name="graduation_year" />
+  </fieldset>
+
+  <fieldset data-step-panel="3" hidden>
+    <legend>Experience</legend>
+    <label for="w-company">Company</label><input id="w-company" name="company" />
+    <label for="w-role">Role</label><input id="w-role" name="job_title" />
+    <label for="w-desc">Describe your previous experience</label>
+    <textarea id="w-desc" name="experience_description" rows="4"></textarea>
+  </fieldset>
+
+  <fieldset data-step-panel="4" hidden>
+    <legend>Documents</legend>
+    <label for="w-resume">Upload Resume</label>
+    <input id="w-resume" name="resume" type="file" accept=".pdf,.doc,.docx" />
+    <label for="w-cover">Upload Cover Letter</label>
+    <input id="w-cover" name="cover_letter" type="file" accept=".pdf" />
+  </fieldset>
+
+  <fieldset data-step-panel="5" hidden>
+    <legend>Review</legend>
+    <label for="w-why">Why should we select you?</label>
+    <textarea id="w-why" name="why" rows="5" maxlength="1500"></textarea>
+  </fieldset>
+
+  <nav>
+    <button type="button" id="prev">Back</button>
+    <button type="button" id="next" class="primary">Next</button>
+  </nav>
+</form>
+
+<script>
+// Wrapped in an IIFE so the page can be loaded repeatedly into one window
+// (the benchmark harness reuses a single jsdom realm) without redeclaring globals.
+(function () {
+    let step = 1;
+    const total = 5;
+    const show = () => {
+      document.querySelectorAll('[data-step-panel]').forEach((panel) => {
+        panel.hidden = Number(panel.dataset.stepPanel) !== step;
+      });
+      document.querySelectorAll('ol.steps li').forEach((item) => {
+        if (Number(item.dataset.step) === step) item.setAttribute('aria-current', 'step');
+        else item.removeAttribute('aria-current');
+      });
+    };
+    document.getElementById('next').addEventListener('click', () => { step = Math.min(total, step + 1); show(); });
+    document.getElementById('prev').addEventListener('click', () => { step = Math.max(1, step - 1); show(); });
+    show();
+})();
+</script>
+</body>
+</html>

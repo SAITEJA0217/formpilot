@@ -1,193 +1,262 @@
+/**
+ * Answer generation endpoint.
+ *
+ * Accepts two request shapes:
+ *
+ *  - **v1 (legacy)** `{ profile, questions }` — a whole form of `FormQuestion`s in one
+ *    call, answered with the original prompt and post-processing. Byte-compatible with
+ *    what the v1 extension expects, so an extension that has not updated keeps working.
+ *
+ *  - **v2** `{ profile, fields, formContext }` — only the fields the client-side rule
+ *    engine could not resolve, each tagged `assist` (pick among candidate concepts) or
+ *    `generate` (write prose). Deterministic fields never reach this endpoint at all,
+ *    which is where the cost and latency savings come from.
+ */
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { FORMPILOT_SYSTEM_PROMPT } from '../../../../../../shared/prompts';
-import { UserProfile, FormQuestion, AIAnswer } from '../../../../../../shared/types';
-import { adminAuth, adminDb } from '../../../../lib/firebase-admin';
+import {
+  FIELD_ASSIST_PROMPT,
+  FORMPILOT_SYSTEM_PROMPT,
+  LONG_FORM_PROMPT,
+} from '../../../../../../shared/prompts';
+import type { AIAnswer, FormQuestion, UserProfile } from '../../../../../../shared/types';
+import type { AIFieldRequest } from '../../../../../../shared/matching/pipeline';
+import { evaluateFieldSafety } from '../../../../../../shared/safety/policy';
+import { adminDb } from '../../../../lib/firebase-admin';
+import { corsHeaders, enforceRateLimit, errorResponse, HttpError, preflight, requireAuth } from '../../../../lib/api/guards';
+import { getProvider, parseJsonObject, AIConfigurationError, type AIProvider } from '../../../../lib/ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const MAX_REQUESTS_PER_DAY = 1000;
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+export async function OPTIONS(req: Request) {
+  return preflight(req);
+}
 
-function getCorsHeaders(req: Request) {
-  const origin = req.headers.get('origin');
-  const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
-  
-  const isAllowed = origin && (
-    allowedOrigins.includes(origin) ||
-    origin.startsWith('chrome-extension://') ||
-    origin.includes('localhost') ||
-    origin.includes('127.0.0.1')
-  );
-  
-  return {
-    'Access-Control-Allow-Origin': isAllowed && origin ? origin : (allowedOrigins[0] || '*'),
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+interface LegacyBody {
+  profile?: UserProfile;
+  questions?: FormQuestion[];
+}
+
+interface V2Body {
+  profile?: UserProfile;
+  fields?: AIFieldRequest[];
+  formContext?: {
+    title?: string;
+    platform?: string;
+    url?: string;
+    sections?: { id: string; title?: string }[];
   };
 }
 
-export async function OPTIONS(req: Request) {
-  return new NextResponse(null, {
-    status: 200,
-    headers: getCorsHeaders(req),
-  });
+/** Recent corrections, used as few-shot phrasing examples. */
+async function loadCorrectionsContext(uid: string): Promise<string> {
+  try {
+    const snapshot = await adminDb
+      .collection(`users/${uid}/corrections`)
+      .orderBy('timestamp', 'desc')
+      .limit(15)
+      .get();
+    if (snapshot.empty) return '';
+    const lines = snapshot.docs.map((doc) => {
+      const data = doc.data() as { originalQuestion?: string; userCorrection?: string };
+      return `- For question: "${data.originalQuestion ?? ''}"\n  User corrected to: "${data.userCorrection ?? ''}"`;
+    });
+    return `USER'S PAST CORRECTIONS (USE THESE PREFERENCES):\n${lines.join('\n')}`;
+  } catch (error) {
+    console.error('[ai/generate] could not load corrections', error instanceof Error ? error.message : error);
+    return '';
+  }
 }
 
 export async function POST(req: Request) {
-  const corsHeaders = getCorsHeaders(req);
+  const headers = corsHeaders(req);
 
   try {
-    console.log(`[API /ai/generate] Endpoint reached. Method: ${req.method}`);
-    
-    // 1. Verify Authentication Token
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.warn(`[API /ai/generate] Auth failed: Missing or invalid Authorization header`);
-      return NextResponse.json({ error: 'Missing or invalid Authorization header' }, { status: 401, headers: corsHeaders });
+    const { uid } = await requireAuth(req);
+    const body = (await req.json()) as LegacyBody & V2Body;
+
+    if (!body.profile) {
+      throw new HttpError(400, 'Missing profile');
     }
-    const token = authHeader.split('Bearer ')[1];
-    
-    let decodedToken;
+
+    let provider: AIProvider;
     try {
-      decodedToken = await adminAuth.verifyIdToken(token);
-      console.log(`[API /ai/generate] Authenticated: true (User ID: ${decodedToken.uid})`);
-    } catch (err: any) {
-      console.error(`[API /ai/generate] Auth verification failed: ${err.message}`);
-      return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401, headers: corsHeaders });
-    }
-    
-    const uid = decodedToken.uid;
-
-    const body = await req.json();
-    const { profile, questions }: { profile: UserProfile, questions: FormQuestion[] } = body;
-
-    if (!profile || !questions) {
-      console.warn(`[API /ai/generate] Invalid request: Missing profile or questions array`);
-      return NextResponse.json({ error: 'Missing profile or questions' }, { status: 400, headers: corsHeaders });
-    }
-    
-    console.log(`[API /ai/generate] Payload received: ${questions.length} questions, ${Object.keys(profile).length} profile fields`);
-
-    // 2. Persistent Rate Limiting via Firestore
-    const rateLimitRef = adminDb.collection('rateLimits').doc(uid);
-    const now = Date.now();
-    
-    await adminDb.runTransaction(async (transaction) => {
-      const doc = await transaction.get(rateLimitRef);
-      if (!doc.exists) {
-        transaction.set(rateLimitRef, { count: 1, timestamp: now });
-      } else {
-        const data = doc.data()!;
-        if (now - data.timestamp > ONE_DAY_MS) {
-          transaction.set(rateLimitRef, { count: 1, timestamp: now });
-        } else if (data.count >= MAX_REQUESTS_PER_DAY) {
-          throw new Error('RateLimitExceeded');
-        } else {
-          transaction.update(rateLimitRef, { count: data.count + 1 });
-        }
+      provider = getProvider();
+    } catch (error) {
+      if (error instanceof AIConfigurationError) {
+        throw new HttpError(500, error.message);
       }
-    }).catch(err => {
-      if (err.message === 'RateLimitExceeded') {
-        throw err;
-      }
-      console.error("Rate limit transaction failed", err);
-    });
-
-    // 3. Fetch past corrections for few-shot learning
-    let correctionsContext = "";
-    try {
-      const correctionsSnap = await adminDb.collection(`users/${uid}/corrections`)
-        .orderBy('timestamp', 'desc')
-        .limit(15)
-        .get();
-        
-      if (!correctionsSnap.empty) {
-        correctionsContext = "USER'S PAST CORRECTIONS (USE THESE PREFERENCES):\n";
-        correctionsSnap.docs.forEach(doc => {
-          const c = doc.data();
-          correctionsContext += `- For question: "${c.originalQuestion}"\n  User corrected to: "${c.userCorrection}"\n`;
-        });
-      }
-    } catch (e) {
-      console.error("Failed to fetch corrections", e);
-      // Continue anyway
+      throw error;
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      console.error(`[API /ai/generate] Server misconfiguration: GEMINI_API_KEY is missing`);
-      return NextResponse.json({ error: 'Server misconfiguration: AI provider key missing' }, { status: 500, headers: corsHeaders });
+    await enforceRateLimit(uid);
+    const corrections = await loadCorrectionsContext(uid);
+
+    if (Array.isArray(body.fields)) {
+      return await handleV2(body, provider, corrections, headers);
     }
-
-    console.log(`[API /ai/generate] AI Provider selected: Gemini (gemini-2.5-flash)`);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-    const prompt = `
-      ${FORMPILOT_SYSTEM_PROMPT}
-      
-      ${correctionsContext}
-
-      USER PROFILE:
-      ${JSON.stringify(profile, null, 2)}
-
-      FORM QUESTIONS:
-      ${JSON.stringify(questions, null, 2)}
-    `;
-
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
-    
-    let cleanedText = responseText;
-    const startIdx = cleanedText.indexOf('{');
-    const endIdx = cleanedText.lastIndexOf('}');
-    if (startIdx !== -1 && endIdx !== -1) {
-      cleanedText = cleanedText.substring(startIdx, endIdx + 1);
+    if (Array.isArray(body.questions)) {
+      return await handleLegacy(body, provider, corrections, headers);
     }
-    
-    let parsedResponse;
-    try {
-      parsedResponse = JSON.parse(cleanedText);
-      if (!parsedResponse || !Array.isArray(parsedResponse.answers)) {
-        throw new Error('Response is missing answers array');
-      }
-      console.log(`[API /ai/generate] AI Generation successful. Parsed ${parsedResponse.answers.length} answers.`);
-    } catch (e: any) {
-      console.error(`[API /ai/generate] AI returned malformed JSON: ${e.message}. Raw text preview: ${responseText.substring(0, 100)}...`);
-      return NextResponse.json({ error: 'AI returned invalid response format. Please try again.' }, { status: 502, headers: corsHeaders });
+    throw new HttpError(400, 'Request must include either "fields" (v2) or "questions" (v1)');
+  } catch (error) {
+    if (!(error instanceof HttpError)) {
+      console.error('[ai/generate] unexpected error', error instanceof Error ? error.message : error);
     }
-
-    // 4. Honesty Check for Confidence & Provenance
-    const enhancedAnswers = parsedResponse.answers.map((ans: any) => {
-      let source: AIAnswer['source'] = 'generated';
-      let confidence = ans.confidence || 0;
-      
-      if (!ans.answer) {
-        source = 'missing';
-        confidence = 0;
-      } else if (ans.isGenerated || !ans.sourceDetail || ans.sourceDetail.trim() === '') {
-        // If the AI generated it instead of directly retrieving, penalize confidence
-        confidence = Math.min(confidence, 70); 
-        source = 'generated';
-      } else {
-        source = 'profile';
-      }
-      
-      return { ...ans, source, confidence };
-    });
-
-    return NextResponse.json({ answers: enhancedAnswers }, { headers: corsHeaders });
-
-  } catch (error: any) {
-    console.error(`[API /ai/generate] Unexpected AI Generation Route Error:`, error);
-    
-    // Check if it's a Gemini API error (quota, invalid key, etc)
-    if (error.message?.includes('API key not valid') || error.message?.includes('API_KEY_INVALID')) {
-      return NextResponse.json({ error: 'AI Provider Error: Invalid API Key' }, { status: 502, headers: corsHeaders });
-    }
-    
-    if (error.message === 'RateLimitExceeded') {
-      return NextResponse.json({ error: 'Rate limit exceeded. Try again tomorrow.' }, { status: 429, headers: corsHeaders });
-    }
-    
-    return NextResponse.json({ error: error.message || 'An unexpected error occurred during AI generation' }, { status: 500, headers: corsHeaders });
+    return errorResponse(error, headers);
   }
+}
+
+// ─── v2 ───────────────────────────────────────────────────────────────────────
+
+interface V2Answer {
+  fieldId: string;
+  value: string | string[] | null;
+  confidence: number;
+  conceptId?: string;
+  humanPath?: string;
+  explanation?: string;
+  model?: string;
+}
+
+/** Fields the safety policy refuses are dropped before any prompt is built. */
+function dropUnsafeFields(fields: AIFieldRequest[]): { safe: AIFieldRequest[]; refused: string[] } {
+  const safe: AIFieldRequest[] = [];
+  const refused: string[] = [];
+  for (const field of fields) {
+    const verdict = evaluateFieldSafety({
+      type: field.type,
+      label: field.label,
+      placeholder: undefined,
+      autocomplete: undefined,
+    });
+    if (verdict.sensitivity === 'blocked') {
+      refused.push(field.fieldId);
+    } else {
+      safe.push(field);
+    }
+  }
+  return { safe, refused };
+}
+
+function describeField(field: AIFieldRequest): Record<string, unknown> {
+  return {
+    fieldId: field.fieldId,
+    label: field.label,
+    description: field.description,
+    type: field.type,
+    required: field.required,
+    maxLength: field.maxLength,
+    section: field.sectionTitle,
+    nearbyText: field.context,
+    options: field.options?.slice(0, 40).map((option) => option.label),
+    candidateConcepts: field.candidates.slice(0, 4),
+  };
+}
+
+async function runBatch(
+  provider: AIProvider,
+  system: string,
+  profile: UserProfile,
+  fields: AIFieldRequest[],
+  corrections: string,
+  formContext: V2Body['formContext'],
+): Promise<V2Answer[]> {
+  if (fields.length === 0) return [];
+  const user = [
+    corrections,
+    `FORM CONTEXT:\n${JSON.stringify(formContext ?? {}, null, 2)}`,
+    `USER PROFILE:\n${JSON.stringify(profile, null, 2)}`,
+    `FIELDS:\n${JSON.stringify(fields.map(describeField), null, 2)}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
+  const result = await provider.generate({ system, user, temperature: 0.2 });
+  const parsed = parseJsonObject<{ answers?: V2Answer[] }>(result.text);
+  const answers = Array.isArray(parsed.answers) ? parsed.answers : [];
+  const known = new Set(fields.map((field) => field.fieldId));
+  return answers
+    .filter((answer) => answer && typeof answer.fieldId === 'string' && known.has(answer.fieldId))
+    .map((answer) => ({
+      ...answer,
+      confidence: typeof answer.confidence === 'number' ? answer.confidence : 0,
+      model: result.model,
+    }));
+}
+
+async function handleV2(
+  body: V2Body,
+  provider: AIProvider,
+  corrections: string,
+  headers: Record<string, string>,
+) {
+  const profile = body.profile as UserProfile;
+  const { safe, refused } = dropUnsafeFields(body.fields ?? []);
+  const assist = safe.filter((field) => field.mode === 'assist');
+  const generate = safe.filter((field) => field.mode === 'generate');
+
+  // One call per mode at most: the two prompts are incompatible, everything else batches.
+  const [assistAnswers, generateAnswers] = await Promise.all([
+    runBatch(provider, FIELD_ASSIST_PROMPT, profile, assist, corrections, body.formContext),
+    runBatch(provider, LONG_FORM_PROMPT, profile, generate, corrections, body.formContext),
+  ]);
+
+  const providerCalls = (assist.length > 0 ? 1 : 0) + (generate.length > 0 ? 1 : 0);
+  return NextResponse.json(
+    {
+      answers: [...assistAnswers, ...generateAnswers],
+      refusedFieldIds: refused,
+      model: provider.model,
+      provider: provider.id,
+      providerCalls,
+    },
+    { headers },
+  );
+}
+
+// ─── v1 (legacy) ──────────────────────────────────────────────────────────────
+
+/**
+ * Unchanged v1 behaviour, including the confidence penalty applied to generated
+ * answers. Kept verbatim so a v1 extension sees identical responses.
+ */
+async function handleLegacy(
+  body: LegacyBody,
+  provider: AIProvider,
+  corrections: string,
+  headers: Record<string, string>,
+) {
+  const { profile, questions } = body;
+  if (!profile || !questions) {
+    throw new HttpError(400, 'Missing profile or questions');
+  }
+
+  const user = [
+    corrections,
+    `USER PROFILE:\n${JSON.stringify(profile, null, 2)}`,
+    `FORM QUESTIONS:\n${JSON.stringify(questions, null, 2)}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
+  const result = await provider.generate({ system: FORMPILOT_SYSTEM_PROMPT, user, temperature: 0.2 });
+  const parsed = parseJsonObject<{ answers?: (AIAnswer & { isGenerated?: boolean })[] }>(result.text);
+  if (!Array.isArray(parsed.answers)) {
+    throw new HttpError(502, 'AI returned invalid response format. Please try again.');
+  }
+
+  const answers = parsed.answers.map((answer) => {
+    let source: AIAnswer['source'] = 'generated';
+    let confidence = answer.confidence ?? 0;
+    if (!answer.answer) {
+      source = 'missing';
+      confidence = 0;
+    } else if (answer.isGenerated || !answer.sourceDetail || answer.sourceDetail.trim() === '') {
+      confidence = Math.min(confidence, 70);
+      source = 'generated';
+    } else {
+      source = 'profile';
+    }
+    return { ...answer, source, confidence };
+  });
+
+  return NextResponse.json({ answers, model: provider.model, provider: provider.id }, { headers });
 }

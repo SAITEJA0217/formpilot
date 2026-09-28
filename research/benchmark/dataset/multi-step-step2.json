@@ -1,0 +1,15 @@
+{
+  "page": "multi-step.html",
+  "variant": "step-2",
+  "category": "Multi-step",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "Step 2 reached by clicking the page's own Next button.",
+  "mutations": [{ "click": "#next" }],
+  "fields": [
+    { "label": "Degree", "type": "text", "concept": "education.degree", "expected": "B.Tech", "outcome": "fill" },
+    { "label": "Specialization", "type": "text", "concept": "education.field_of_study", "expected": "Computer Science and Engineering", "outcome": "fill" },
+    { "label": "University", "type": "text", "concept": "education.university", "expected": "Osmania University", "outcome": "fill" },
+    { "label": "Graduation Year", "type": "text", "concept": "education.graduation_year", "expected": "2023", "outcome": "fill" }
+  ]
+}

@@ -1,91 +1,151 @@
+/**
+ * Correction learning endpoint.
+ *
+ * `POST` records a correction and classifies it (does it change a durable fact, or
+ * just the wording?). `GET` and `DELETE` are new in v2 and exist for privacy: the user
+ * can see exactly what has been learned about them, and delete it.
+ *
+ * Nothing here writes back into the profile. A fact-level correction is recorded and
+ * surfaced; changing stored profile data stays an explicit action in the dashboard.
+ */
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { adminAuth, adminDb } from '../../../../lib/firebase-admin';
+import type { CorrectionRecord } from '../../../../../../shared/types/profile';
+import { adminDb } from '../../../../lib/firebase-admin';
+import { corsHeaders, errorResponse, HttpError, preflight, requireAuth } from '../../../../lib/api/guards';
+import { getProvider, parseJsonObject, AIConfigurationError } from '../../../../lib/ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-
-function getCorsHeaders(req: Request) {
-  const origin = req.headers.get('origin');
-  const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
-  const isAllowed = origin && (
-    allowedOrigins.includes(origin) ||
-    origin.startsWith('chrome-extension://') ||
-    origin.includes('localhost') ||
-    origin.includes('127.0.0.1')
-  );
-  return {
-    'Access-Control-Allow-Origin': isAllowed && origin ? origin : (allowedOrigins[0] || '*'),
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  };
-}
+const MAX_LISTED = 100;
 
 export async function OPTIONS(req: Request) {
-  return new NextResponse(null, { status: 200, headers: getCorsHeaders(req) });
+  return preflight(req);
+}
+
+/** Classify a correction. Falls back to `phrasing-level`, the safer assumption. */
+async function classify(input: {
+  originalQuestion: string;
+  originalAnswer?: string | null;
+  userCorrection: string;
+  sourceDetail?: string;
+}): Promise<'fact-level' | 'phrasing-level'> {
+  let provider;
+  try {
+    provider = getProvider();
+  } catch (error) {
+    if (error instanceof AIConfigurationError) return 'phrasing-level';
+    throw error;
+  }
+
+  const prompt = `
+Analyze this user correction to an AI-generated form answer.
+Question: "${input.originalQuestion}"
+Original AI Answer: "${input.originalAnswer ?? ''}"
+User's Correction: "${input.userCorrection}"
+Source Field Used: "${input.sourceDetail ?? ''}"
+
+Classify this correction as either 'fact-level' or 'phrasing-level'.
+- fact-level: the user is correcting a durable fact (e.g. a graduation year, a new skill).
+- phrasing-level: the user is changing tone or wording; the underlying fact is unchanged.
+
+Return ONLY a JSON object: {"type": "fact-level" | "phrasing-level"}
+`;
+
+  try {
+    const result = await provider.generate({ system: 'You classify user corrections.', user: prompt, temperature: 0 });
+    const parsed = parseJsonObject<{ type?: string }>(result.text);
+    return parsed.type === 'fact-level' ? 'fact-level' : 'phrasing-level';
+  } catch {
+    return 'phrasing-level';
+  }
 }
 
 export async function POST(req: Request) {
-  const corsHeaders = getCorsHeaders(req);
+  const headers = corsHeaders(req);
   try {
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
-    }
-    const token = authHeader.split('Bearer ')[1];
-    const decodedToken = await adminAuth.verifyIdToken(token);
-    const uid = decodedToken.uid;
+    const { uid } = await requireAuth(req);
+    const body = (await req.json()) as {
+      originalQuestion?: string;
+      originalAnswer?: string | null;
+      userCorrection?: string;
+      sourceDetail?: string;
+      conceptId?: string;
+    };
 
-    const { originalQuestion, originalAnswer, userCorrection, sourceDetail } = await req.json();
-
-    if (!originalQuestion || !userCorrection) {
-      return NextResponse.json({ error: 'Missing fields' }, { status: 400, headers: corsHeaders });
-    }
-
-    // Classify the correction
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const prompt = `
-      Analyze this user correction to an AI-generated form answer.
-      Question: "${originalQuestion}"
-      Original AI Answer: "${originalAnswer}"
-      User's Correction: "${userCorrection}"
-      Source Field Used: "${sourceDetail}"
-
-      Classify this correction as either 'fact-level' or 'phrasing-level'.
-      - fact-level: The user is correcting a durable fact (e.g. changing graduation year from 2023 to 2024, or adding a new skill).
-      - phrasing-level: The user is just changing the tone or wording for this specific context, but the underlying fact hasn't changed.
-
-      Return ONLY a JSON object: {"type": "fact-level" | "phrasing-level"}
-    `;
-
-    const result = await model.generateContent(prompt);
-    let type = 'phrasing-level'; // default
-    try {
-      let cleaned = result.response.text();
-      cleaned = cleaned.substring(cleaned.indexOf('{'), cleaned.lastIndexOf('}') + 1);
-      const parsed = JSON.parse(cleaned);
-      if (parsed.type === 'fact-level') type = 'fact-level';
-    } catch (e) {
-      console.error("Failed to parse classification", e);
+    if (!body.originalQuestion || !body.userCorrection) {
+      throw new HttpError(400, 'Missing originalQuestion or userCorrection');
     }
 
-    // Save correction
-    const correctionRef = adminDb.collection(`users/${uid}/corrections`).doc();
-    await correctionRef.set({
-      originalQuestion,
-      originalAnswer,
-      userCorrection,
-      sourceDetail,
-      type,
-      timestamp: Date.now()
+    const type = await classify({
+      originalQuestion: body.originalQuestion,
+      originalAnswer: body.originalAnswer,
+      userCorrection: body.userCorrection,
+      sourceDetail: body.sourceDetail,
     });
 
-    // If fact-level, we should ideally update the profile, but safely doing deep updates based on sourceDetail is risky without a second AI pass.
-    // For this MVP, we save the classification and return it.
+    const record: Omit<CorrectionRecord, 'id'> = {
+      originalQuestion: body.originalQuestion,
+      originalAnswer: body.originalAnswer ?? null,
+      userCorrection: body.userCorrection,
+      sourceDetail: body.sourceDetail,
+      conceptId: body.conceptId,
+      type,
+      timestamp: Date.now(),
+    };
+    // Firestore rejects explicit `undefined`; drop the optional keys that are unset.
+    const payload = Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined));
 
-    return NextResponse.json({ success: true, type }, { headers: corsHeaders });
+    await adminDb.collection(`users/${uid}/corrections`).doc().set(payload);
+    return NextResponse.json({ success: true, type }, { headers });
+  } catch (error) {
+    return errorResponse(error, headers);
+  }
+}
 
-  } catch (error: any) {
-    console.error("Corrections Route Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
+/** Privacy: let the user (and the extension's local matcher) read their corrections. */
+export async function GET(req: Request) {
+  const headers = corsHeaders(req);
+  try {
+    const { uid } = await requireAuth(req);
+    const snapshot = await adminDb
+      .collection(`users/${uid}/corrections`)
+      .orderBy('timestamp', 'desc')
+      .limit(MAX_LISTED)
+      .get();
+
+    const corrections: CorrectionRecord[] = snapshot.docs.map((doc) => {
+      const data = doc.data() as Omit<CorrectionRecord, 'id'>;
+      return { id: doc.id, ...data };
+    });
+    return NextResponse.json({ corrections }, { headers });
+  } catch (error) {
+    return errorResponse(error, headers);
+  }
+}
+
+/** Privacy: delete one correction (`?id=`) or every correction for this user. */
+export async function DELETE(req: Request) {
+  const headers = corsHeaders(req);
+  try {
+    const { uid } = await requireAuth(req);
+    const id = new URL(req.url).searchParams.get('id');
+
+    if (id) {
+      await adminDb.collection(`users/${uid}/corrections`).doc(id).delete();
+      return NextResponse.json({ deleted: 1 }, { headers });
+    }
+
+    // Batched delete, paged so a large history cannot exceed the batch limit.
+    let deleted = 0;
+    for (;;) {
+      const snapshot = await adminDb.collection(`users/${uid}/corrections`).limit(300).get();
+      if (snapshot.empty) break;
+      const batch = adminDb.batch();
+      snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
+      deleted += snapshot.size;
+      if (snapshot.size < 300) break;
+    }
+    return NextResponse.json({ deleted }, { headers });
+  } catch (error) {
+    return errorResponse(error, headers);
   }
 }
