@@ -23,3 +23,7 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Playwright artifacts: the browser profile, traces and screenshots each run rewrites
+tests/e2e/.artifacts/
+playwright-report/

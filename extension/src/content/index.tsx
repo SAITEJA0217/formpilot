@@ -395,6 +395,19 @@ chrome.runtime.onMessage.addListener((request: { action?: string; suggestions?: 
     return true;
   }
 
+  if (action === 'APPLY_SUGGESTIONS') {
+    // Declared in the message contract and used by callers that already have a reviewed
+    // set (and by the adversarial safety tests, which deliberately try to push a tampered
+    // suggestion past the UI — the interaction engine re-checks policy either way).
+    const list = request.suggestions ?? [];
+    applyFill(list)
+      .then(() => sendResponse({ ok: true, report: state.report }))
+      .catch((error: unknown) =>
+        sendResponse({ ok: false, error: error instanceof Error ? error.message : 'Fill failed.' }),
+      );
+    return true;
+  }
+
   if (action === 'CLOSE_PANEL') {
     closePanel();
     sendResponse({ ok: true });

@@ -31,14 +31,27 @@ async function activeTab(): Promise<chrome.tabs.Tab | undefined> {
   return tab;
 }
 
+/**
+ * How long to wait for a liveness ping before injecting anyway.
+ *
+ * `chrome.tabs.sendMessage` only rejects quickly when *no* listener exists. A page carrying
+ * any other extension content script that claims messages it does not answer leaves the port
+ * open until Chrome's own ~30s timeout. Injection is idempotent (the engine guards against a
+ * second load), so a fast timeout costs nothing and removes a 30-second stall.
+ */
+const PING_TIMEOUT_MS = 400;
+
 /** Inject the engine if it is not already present in this tab. */
 async function ensureEngine(tabId: number): Promise<void> {
-  try {
-    const pong = await chrome.tabs.sendMessage(tabId, { action: 'PING_CONTENT' });
-    if (pong?.ok) return;
-  } catch {
-    // Not injected yet — that is the normal path.
-  }
+  const ping = chrome.tabs
+    .sendMessage(tabId, { action: 'PING_CONTENT' })
+    .then((response: { ok?: boolean } | undefined) => response?.ok === true)
+    .catch(() => false);
+  const timeout = new Promise<boolean>((resolve) => {
+    setTimeout(() => resolve(false), PING_TIMEOUT_MS);
+  });
+
+  if (await Promise.race([ping, timeout])) return;
   await chrome.scripting.executeScript({ target: { tabId }, files: [ENGINE_BUNDLE] });
 }
 

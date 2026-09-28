@@ -21,6 +21,8 @@
     "bench": "vite-node research/benchmark/run.ts"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/chrome": "^0.3.1",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^22.10.2",
     "jsdom": "^26.0.0",

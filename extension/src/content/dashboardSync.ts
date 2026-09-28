@@ -22,11 +22,20 @@ window.addEventListener('message', (event: MessageEvent) => {
 
 // Forward messages from the extension background script to the web page
 if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) {
-  chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-    if (request.action === 'REQUEST_TOKEN_REFRESH') {
-      window.postMessage({ action: 'REQUEST_TOKEN_REFRESH' }, '*');
-      sendResponse({ status: 'Refresh requested' });
-    }
-    return true;
-  });
+  chrome.runtime.onMessage.addListener(
+    (request: { action?: string }, _sender, sendResponse: (response: unknown) => void) => {
+      if (request?.action === 'REQUEST_TOKEN_REFRESH') {
+        window.postMessage({ action: 'REQUEST_TOKEN_REFRESH' }, '*');
+        sendResponse({ status: 'Refresh requested' });
+        // Answered synchronously, so the channel can close now.
+        return false;
+      }
+
+      // Returning `true` here would claim the message and promise a reply that never comes.
+      // Chrome then holds the sender's port open until its own ~30s timeout instead of
+      // reporting "no receiver" immediately — which stalled the popup's first scan on any
+      // dashboard-origin tab by a full 30 seconds. Only claim messages we actually handle.
+      return false;
+    },
+  );
 }
