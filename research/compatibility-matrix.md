@@ -21,19 +21,27 @@ point of this file.
 
 | Source | Scope |
 | --- | --- |
-| `npm test` | 536 assertions, 29 files, jsdom |
-| `npm run test:safety` | 121 of those, safety invariants only, its own CI job |
-| `npx playwright test` | 42 specs, Chromium 141.0.7390.37, the built extension loaded, real MV3 service worker |
+| `npm test` | 732 assertions, 37 files, jsdom |
+| `npm run test:safety` | 232 of those, safety invariants only, its own CI job |
+| `npx playwright test` | 83 specs, 10 files, Chromium 141.0.7390.37, the built extension loaded, real MV3 service worker |
 | `npm run bench` | 17 page states, 120 labelled fields, **synthetic, self-authored** |
+| `npm run study:safety-corpus` | 196 cases, **a specification of required behaviour**, not a measurement |
 | `npm run study:matching` | 69 cases, **post-hoc regression suite** — read `matching/README.md` first |
-| `npm run study:heldout` | **307 controls from 55 third-party files, ground truth from the HTML spec** |
+| `npm run study:heldout` | **307 controls from 55 third-party files, ground truth from the HTML spec** (v1) |
+| `npm run study:heldout-v2` | **467 controls from 105 third-party files, zero overlap with v1** |
 | `npm run study:routing` | 13 pages, 109 fields, routing decisions; hybrid vs always-ask |
 | `npm run study:performance` | 10–500 fields, jsdom scaling curve |
 | `./research/platform-probe/probe.sh` | whether the five hosted platforms are reachable |
 
-The only row above that supports a claim about behaviour on pages nobody here wrote is
-`study:heldout`. It reports **82.1% accuracy, 73.1% macro F1** — see `held-out-evaluation.md`. Every
-100% in this document comes from a corpus this project authored and means "no regression", not
+Only the two held-out rows support a claim about behaviour on pages nobody here wrote. **v1** reports
+82.1% accuracy and 73.1% macro F1 with four missed payment-field refusals
+(`held-out-evaluation.md`); that record is frozen as measured and is not restated after the fix.
+**v2**, built after the fix with no file in common, reports **93.6% accuracy [87.3%, 96.9%]**, a 0.9%
+incorrect-fill rate and **45/45 credential and payment controls refused** — and is deliberately
+payment-heavy, so its accuracy is **not** a like-for-like improvement on v1's
+(`held-out-evaluation-v2.md`).
+
+Every 100% in this document comes from a corpus this project authored and means "no regression", not
 "works in general".
 
 **Two constraints bound every row below, and neither is a code problem.**
@@ -73,6 +81,44 @@ The only row above that supports a claim about behaviour on pages nobody here wr
 | Svelte, Solid, Ember, others | — | — | — | **Untested** | No fixture. They listen to the same native `input`/`change` events, which is an argument, not a measurement. |
 
 ## Platforms
+
+The release brief asks for this shape, so it comes first. Every cell is one of:
+
+- **yes** — executed and asserted in an automated test
+- **n/t** — not tested; no claim either way
+- **n/a** — the platform has no such behaviour to test
+
+| Platform | Detection | Mapping | Autofill | Dynamic | Multi-step | Chrome | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Generic HTML | 100% | 100% | 100% | yes | yes | yes | **Verified** |
+| Google Forms | 100% | 100% | 7/7 | yes | yes | yes | **Partial** |
+| Microsoft Forms | 100% | 100% | 100% | n/t | n/t | yes | **Experimental** |
+| Typeform | 100% | 100% | 100% | yes | yes | yes | **Experimental** |
+| Jotform | 100% | 100% | 100% | n/t | n/t | yes | **Experimental** |
+| SurveyMonkey | 100% | 100% | 100% | n/t | n/t | yes | **Experimental** |
+| Any unrecognised site | — | — | — | yes | yes | yes | **Partial** |
+
+Reading the columns honestly:
+
+- **Detection / Mapping / Autofill** percentages are against **self-authored fixtures**, so they mean
+  "no regression on the structures we wrote", not "works on the live product". The independent numbers
+  are the two held-out rows above, and they are lower.
+- **Dynamic** means the content script's own MutationObserver noticed a change and re-detected, with no
+  rescan triggered by the test. Generic: `dynamic.spec.ts`. Google Forms: `google-forms-sections.spec.ts`,
+  including a conditional branch where the answer to one question decides which section comes next.
+  Typeform: its one-question-per-screen advance in `platform-adapters.spec.ts`.
+- **Multi-step** means fields were re-detected per step *and* the user's decisions survived the walk.
+  Generic: `multi-step.spec.ts`, six steps, with identity, value, confidence, provenance and a
+  hand-made edit each asserted separately. Google Forms and Typeform as above.
+- **n/t for three adapters is a real gap, not an omission.** Microsoft Forms, Jotform and SurveyMonkey
+  reproductions are single-screen, so nothing multi-step or dynamic has been exercised on them. Their
+  platforms do support both, which is exactly why the cell says "not tested" rather than "no".
+- **Chrome** means at least one spec drives that platform's reproduction in real Chromium with the
+  built extension loaded. It says nothing about the live site.
+- **Status** is defined above. No hosted platform can leave **Experimental** from this environment; see
+  the two constraints below.
+
+The same rows with their adapter ids and the reason each is not Verified:
 
 | Platform | Recognised | Dedicated adapter | Detection | Mapping | Autofill | Status | Why not Verified |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -146,25 +192,59 @@ These are refusals, not gaps. Each is asserted by a test rather than left to con
 
 ## Independently measured accuracy
 
-The held-out evaluation is the one place this repository measures behaviour on pages nobody here
-wrote. 307 controls from 55 third-party files, ground truth from their own `autocomplete` attributes:
+The held-out evaluations are the only place this repository measures behaviour on pages nobody here
+wrote. There are two, and **they are not two readings of the same thing.**
 
-| Measure | Value |
-| --- | --- |
-| Accuracy | **82.1%** |
-| Macro precision | 80.4% |
-| Macro recall | 69.3% |
-| Macro F1 | **73.1%** |
-| Real credential/payment controls correctly refused | 29 of 33 |
+| | **v1** | **v2** |
+| --- | --- | --- |
+| Controls / source files | 307 from 55 | 467 from 105 |
+| Overlap with the other | — | **none** |
+| Built | before the payment-field fix | after it |
+| Accuracy | **82.1%** | **93.6%**  [87.3%, 96.9%] |
+| Macro precision | 80.4% | 78.9% |
+| Macro recall | 69.3% | 70.5% |
+| Macro F1 | **73.1%** | **72.8%** |
+| Abstention rate | — | 46.8%  [37.7%, 56.1%] |
+| Incorrect-fill rate | — | **0.9%**  [0.2%, 5.0%] |
+| Credential / payment controls refused | **29 of 33** | **45 of 45**  [92.1%, 100%] |
 
-By concept: contact fields 93–99% F1; address composition and job title 56–73%; `links.portfolio`
-and `person.middle_name` 0% on 3 records each. Non-Latin labels 50.1% macro F1 against 72.1% for
-Latin ones — the English-only scope boundary with a number attached.
+**v2's higher accuracy is not an improvement on v1.** v2 was built deliberately payment- and
+credential-heavy so the safety fix would be measured on markup it had never seen, which changes the
+base rates: a corpus with more fields that should be refused, and refusal being the thing that was
+fixed, scores higher for reasons that have nothing to do with getting better at names and addresses.
+Macro F1 — which weights every concept equally rather than by frequency — is flat at 73.1 against 72.8,
+and that is the more honest comparison. Intervals are Wilson, not normal, because several proportions
+sit near 1.
 
-Against baselines on the same set: exact-label 41.3 F1, exact+metadata 68.9, substring 71.8,
-token-similarity 72.9, FormPilot 73.1. **FormPilot's margin over plain substring matching is 1.3 F1
-points.** Its distinguishable advantage is calibration rather than accuracy: it turns eight confident
-errors into eight abstentions.
+**v1's record is frozen as measured**, including its four missed refusals, in
+`research/heldout/results/latest.json`. A post-fix rescore of v1 exists and reads 83.4% with zero
+misses; it is stored separately and labelled **not independent**, because the fix was made after seeing
+those four failures. See that directory's `README.md`.
+
+By concept on v1: contact fields 93–99% F1; address composition and job title 56–73%;
+`links.portfolio` and `person.middle_name` 0% on 3 records each. Non-Latin labels 50.1% macro F1
+against 72.1% for Latin ones — the English-only scope boundary with a number attached.
+
+### Against baselines, on v2
+
+| Method | Accuracy | Macro F1 | Abstain | Incorrect-fill | Missed refusals |
+| --- | --- | --- | --- | --- | --- |
+| A exact label | 81.7% | 61.5% | 58.7% | 0.9% | 0 |
+| B substring | 84.4% | 66.5% | 48.6% | 4.6% | 4 |
+| C metadata | 88.1% | 68.1% | 43.1% | 6.4% | 4 |
+| D semantic | 88.1% | 71.1% | 34.9% | 11.0% | 8 |
+| FormPilot (matching only) | 89.0% | 71.2% | 42.2% | 5.5% | 5 |
+
+**FormPilot's margin over the best baseline is 0.1 macro F1 points.** On accuracy alone the difference
+between it and semantic matching is not the story either.
+
+The last two columns are. The matching layer scored on its own leaves 5 credential or payment controls
+unrefused and a 5.5% incorrect-fill rate; the **shipped pipeline** — matching plus the routing and
+safety layers — refuses 45 of 45 and fills 0.9% wrongly. The measurable advantage of this architecture
+is therefore **not** its matcher: it is that a wrong-but-plausible match is stopped before it is
+offered, and that the abstention is visible to the user rather than silent. Row D is the cautionary
+one: the most accurate baseline is also the one that fills wrongly most often, which is what optimising
+for accuracy alone buys.
 
 ## What this matrix cannot tell you
 
