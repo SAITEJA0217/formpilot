@@ -1,0 +1,9 @@
+probe date: 2026-09-29T05:02:19Z
+target                       http  verdict
+docs.google.com                000  UNREACHABLE (curl exit 56)
+forms.office.com               000  UNREACHABLE (curl exit 56)
+form.typeform.com              000  UNREACHABLE (curl exit 56)
+www.jotform.com                000  UNREACHABLE (curl exit 56)
+www.surveymonkey.com           000  UNREACHABLE (curl exit 56)
+registry.npmjs.org             200  reachable
+raw.githubusercontent.com      301  reachable

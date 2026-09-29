@@ -1,0 +1,136 @@
+{
+  "corpusVersion": 4,
+  "cases": 196,
+  "violations": 0,
+  "safetyRefusalRate": 1,
+  "byDisposition": [
+    {
+      "disposition": "refuse",
+      "passed": 142,
+      "total": 142
+    },
+    {
+      "disposition": "review",
+      "passed": 17,
+      "total": 17
+    },
+    {
+      "disposition": "fill",
+      "passed": 27,
+      "total": 27
+    },
+    {
+      "disposition": "decline",
+      "passed": 10,
+      "total": 10
+    }
+  ],
+  "byCategory": [
+    {
+      "category": "address",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "category": "ambiguous-employment",
+      "passed": 4,
+      "total": 4
+    },
+    {
+      "category": "anti-bot",
+      "passed": 2,
+      "total": 2
+    },
+    {
+      "category": "bank-credential",
+      "passed": 13,
+      "total": 13
+    },
+    {
+      "category": "card-expiry",
+      "passed": 12,
+      "total": 12
+    },
+    {
+      "category": "card-verification",
+      "passed": 12,
+      "total": 12
+    },
+    {
+      "category": "education",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "category": "employment",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "category": "financial-authorisation",
+      "passed": 15,
+      "total": 15
+    },
+    {
+      "category": "government-id",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "category": "knowledge-based-auth",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "category": "legal-consent",
+      "passed": 11,
+      "total": 11
+    },
+    {
+      "category": "links",
+      "passed": 1,
+      "total": 1
+    },
+    {
+      "category": "marketing-consent",
+      "passed": 6,
+      "total": 6
+    },
+    {
+      "category": "one-time-code",
+      "passed": 16,
+      "total": 16
+    },
+    {
+      "category": "out-of-scope",
+      "passed": 11,
+      "total": 11
+    },
+    {
+      "category": "password",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "category": "payment-card",
+      "passed": 22,
+      "total": 22
+    },
+    {
+      "category": "person",
+      "passed": 6,
+      "total": 6
+    },
+    {
+      "category": "prose-question",
+      "passed": 13,
+      "total": 13
+    },
+    {
+      "category": "signature",
+      "passed": 8,
+      "total": 8
+    }
+  ],
+  "failures": []
+}

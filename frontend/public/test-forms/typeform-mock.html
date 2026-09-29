@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Typeform structure (reproduction)</title>
+<style>
+  body{font:16px/1.5 system-ui,sans-serif;background:#fff;color:#262627;margin:0}
+  .shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  [data-qa="block-container"]{max-width:620px;width:100%}
+  [data-qa="question-header"]{font-size:24px;font-weight:600;margin-bottom:6px}
+  .hint{color:#6b6b6f;font-size:14px;margin-bottom:20px}
+  input[data-qa],textarea[data-qa]{width:100%;font:inherit;padding:8px 0;border:0;border-bottom:2px solid #cfcfd4;outline:none;background:transparent}
+  input[data-qa]:focus,textarea[data-qa]:focus{border-color:#4a4ae0}
+  [data-qa="multiple-choice-option"],[data-qa="rating-option"]{display:flex;align-items:center;gap:10px;width:100%;
+    text-align:left;font:inherit;padding:10px 12px;margin:6px 0;border:1px solid #c9c9f0;border-radius:6px;
+    background:rgba(74,74,224,.05);cursor:pointer}
+  [aria-checked="true"]{background:rgba(74,74,224,.22);border-color:#4a4ae0}
+  .key{border:1px solid #c9c9f0;border-radius:3px;padding:0 5px;font-size:12px;background:#fff}
+  .nav{margin-top:26px;display:flex;gap:10px;align-items:center}
+  button.ok{font:inherit;font-weight:600;padding:9px 20px;border:0;border-radius:5px;background:#4a4ae0;color:#fff;cursor:pointer}
+  .progress{position:fixed;top:0;left:0;height:3px;background:#4a4ae0}
+  .count{position:fixed;bottom:16px;right:20px;font-size:13px;color:#6b6b6f}
+  .rating{display:flex;gap:8px}
+  .rating [data-qa="rating-option"]{width:auto;justify-content:center;min-width:52px}
+</style>
+</head>
+<body>
+<div class="progress" id="progress" style="width:12.5%"></div>
+<div class="shell" data-qa="form-renderer">
+  <!-- Typeform renders one block at a time; the others are not in the DOM. -->
+  <div data-qa="block-container" id="block" data-qa-block-index="1"></div>
+</div>
+<div class="count" data-qa="progress-indicator"><span id="idx">1</span> of <span id="total">8</span> answered</div>
+
+<script>
+(function () {
+  // Reproduction of Typeform's data-qa contract, for adapter development.
+  // Not a live Typeform. One question per screen, choices as buttons.
+  var BLOCKS = [
+    { type: 'short_text', title: 'What is your full name?', hint: 'As it appears on your ID', required: true },
+    { type: 'email', title: 'What is your email address?', required: true },
+    { type: 'number', title: 'What is your phone number?', hint: 'Digits only' },
+    { type: 'choice', title: 'Years of Experience', required: true, choices: ['0-2 years', '3-5 years', '5+ years'] },
+    { type: 'multi', title: 'Technical Skills', hint: 'Choose as many as you like', choices: ['React', 'TypeScript', 'Python', 'AWS'] },
+    { type: 'dropdown', title: 'Highest Qualification', choices: ["High School", "Bachelor's Degree", "Master's Degree", 'PhD'] },
+    { type: 'yesno', title: 'Are you willing to relocate?', choices: ['Yes', 'No'] },
+    { type: 'rating', title: 'Rate your React proficiency', choices: ['1', '2', '3', '4', '5'] },
+    { type: 'long_text', title: 'Why do you want to join our team?' },
+  ];
+  var index = 0;
+
+  function letter(i) { return String.fromCharCode(65 + i); }
+
+  function render() {
+    var block = BLOCKS[index];
+    var host = document.getElementById('block');
+    host.setAttribute('data-qa-block-index', String(index + 1));
+    if (block.type === 'multi') host.setAttribute('data-qa-multiple', 'true');
+    else host.removeAttribute('data-qa-multiple');
+
+    var html = '<div data-qa="question-header">' + block.title +
+      (block.required ? '<span data-qa="required-indicator" aria-label="Required">*</span>' : '') + '</div>';
+    if (block.hint) html += '<div class="hint" data-qa="question-description">' + block.hint + '</div>';
+
+    if (block.type === 'short_text' || block.type === 'email') {
+      html += '<input data-qa="input-text" type="text" aria-label="' + block.title + '" />';
+    } else if (block.type === 'number') {
+      html += '<input data-qa="input-number" type="text" inputmode="numeric" aria-label="' + block.title + '" />';
+    } else if (block.type === 'long_text') {
+      html += '<textarea data-qa="input-long-text" rows="4" aria-label="' + block.title + '"></textarea>';
+    } else if (block.type === 'rating') {
+      html += '<div class="rating">' + block.choices.map(function (c, i) {
+        return '<button type="button" data-qa="rating-option" aria-checked="false" aria-label="' + c + '">' + c + '</button>';
+      }).join('') + '</div>';
+    } else {
+      var wrap = block.type === 'dropdown' ? '' : '';
+      html += block.choices.map(function (c, i) {
+        return '<button type="button" data-qa="multiple-choice-option" aria-checked="false" aria-label="' + c + '">' +
+          '<span class="key">' + letter(i) + '</span><span>' + c + '</span></button>';
+      }).join('');
+    }
+
+    html += '<div class="nav"><button type="button" class="ok" data-qa="ok-button">OK</button>' +
+            '<span class="hint" style="margin:0">press <b>Enter</b> ↵</span></div>';
+    host.innerHTML = html;
+    document.getElementById('idx').textContent = String(index + 1);
+    document.getElementById('total').textContent = String(BLOCKS.length);
+    document.getElementById('progress').style.width = ((index + 1) / BLOCKS.length * 100) + '%';
+  }
+
+  document.addEventListener('click', function (event) {
+    var option = event.target.closest('[data-qa="multiple-choice-option"],[data-qa="rating-option"]');
+    if (option) {
+      var multi = document.getElementById('block').getAttribute('data-qa-multiple') === 'true';
+      if (!multi) {
+        option.parentElement.querySelectorAll('[aria-checked]').forEach(function (o) { o.setAttribute('aria-checked', 'false'); });
+      }
+      option.setAttribute('aria-checked', multi && option.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+      return;
+    }
+    if (event.target.closest('[data-qa="ok-button"]')) {
+      index = Math.min(BLOCKS.length - 1, index + 1);
+      render();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

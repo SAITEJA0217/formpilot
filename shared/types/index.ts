@@ -88,3 +88,11 @@ export interface AIAnswer {
 export interface AIResponse {
   answers: AIAnswer[];
 }
+
+// ─── v2 re-exports ────────────────────────────────────────────────────────────
+// The v1 interfaces above are unchanged so stored profiles and the legacy
+// `/api/ai/generate` request shape keep working. Everything below is additive.
+
+export * from './form';
+export * from './suggestion';
+export * from './profile';

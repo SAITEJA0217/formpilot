@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>FormPilot sync bridge (test)</title>
+<style>body{font:14px/1.6 system-ui,sans-serif;max-width:640px;margin:60px auto;padding:0 16px}</style>
+</head>
+<body>
+<h1>Sync bridge</h1>
+<p>Stands in for the dashboard during end-to-end runs. The test posts the same
+<code>FORMPILOT_AUTH_SYNC</code> and <code>FORMPILOT_PROFILE_SYNC</code> window messages the real
+dashboard posts, so the run exercises the shipped <code>dashboardSync</code> content script and the
+service worker's real cache handlers rather than writing to extension storage directly.</p>
+<p id="status">idle</p>
+</body>
+</html>

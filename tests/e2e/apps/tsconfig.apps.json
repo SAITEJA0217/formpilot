@@ -1,0 +1,14 @@
+{
+  "//": "Only for bundling the Angular test app. esbuild cannot emit decorator metadata, so the app deliberately injects nothing through its constructor.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["angular/**/*.ts"]
+}

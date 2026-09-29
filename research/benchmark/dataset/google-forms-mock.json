@@ -1,0 +1,21 @@
+{
+  "page": "google-forms-mock.html",
+  "category": "Google Forms",
+  "platform": "google-forms",
+  "url": "https://docs.google.com/forms/d/e/benchmark/viewform",
+  "notes": "Regression fixture covering every question type the v1 extension supported, including a flattened grid.",
+  "fields": [
+    { "label": "Full Name", "type": "text", "concept": "person.full_name", "expected": "Saiteja Reddy Kotha", "outcome": "fill" },
+    { "label": "Email Address", "type": "text", "concept": "person.email", "expected": "saiteja@example.com", "outcome": "fill" },
+    { "label": "Phone Number", "type": "text", "concept": "person.phone", "expected": "+91 98765 43210", "outcome": "fill" },
+    { "label": "Why do you want to join our team?", "type": "textarea", "concept": "freeform.motivation", "expected": null, "outcome": "model" },
+    { "label": "Years of Experience", "type": "radio_group", "concept": "experience.years_of_experience", "expected": "0-2 years", "outcome": "fill" },
+    { "label": "Technical Skills", "type": "checkbox_group", "concept": "skills.technical", "expected": ["TypeScript", "React", "Python"], "outcome": "fill" },
+    { "label": "Highest Qualification", "type": "select_one", "concept": "education.degree", "expected": "Bachelor's Degree", "outcome": "fill" },
+    { "label": "Date of Birth", "type": "date", "concept": "person.date_of_birth", "expected": "2001-07-14", "outcome": "fill" },
+    { "label": "Preferred Interview Time", "type": "time", "concept": null, "expected": null, "outcome": "manual" },
+    { "label": "Rate your React proficiency", "type": "radio_group", "concept": null, "expected": null, "outcome": "manual" },
+    { "label": "Rate your confidence: Frontend", "type": "radio_group", "concept": null, "expected": null, "outcome": "manual" },
+    { "label": "Rate your confidence: Backend", "type": "radio_group", "concept": null, "expected": null, "outcome": "manual" }
+  ]
+}

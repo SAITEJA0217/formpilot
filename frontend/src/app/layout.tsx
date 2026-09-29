@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FormPilot — AI-Powered Smart Google Forms Autofill",
-  description: "Fill your profile once. Use it everywhere. AI-powered smart Google Forms autofill system for applications, hackathons, and jobs.",
+  title: "FormPilot — Universal AI Form Assistant",
+  description: "Fill your profile once. FormPilot understands web forms, suggests grounded answers, and fills them only after you review. Verified on Google Forms and standard HTML, ARIA, dynamic and multi-step forms.",
   icons: {
     icon: [
       { url: "/logo-icon.png" },

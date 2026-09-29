@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 5 — Dynamic form</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;color:#111}
+  label{display:block;margin:14px 0 4px;font-weight:600}
+  input,select,textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+  section{border:1px solid #e2e2e2;border-radius:8px;padding:12px 14px;margin:16px 0}
+  button{padding:8px 12px;border-radius:6px;border:1px solid #ccc;background:#f6f6f6;font:inherit;margin-top:10px}
+</style>
+</head>
+<body>
+<h1>Test 5 — Dynamic form</h1>
+<p>Fields appear and disappear after the page has loaded. Exercises the MutationObserver path:
+   choose an employment status, or add a project row, and the field set changes.</p>
+
+<form id="dynamic">
+  <section>
+    <label for="d-name">Full Name</label>
+    <input id="d-name" name="fullName" autocomplete="name" />
+
+    <label for="d-status">Employment Status</label>
+    <select id="d-status" name="status">
+      <option value="">-- Select --</option>
+      <option value="student">Student</option>
+      <option value="employed">Employed</option>
+    </select>
+  </section>
+
+  <section id="conditional"></section>
+
+  <section id="projects">
+    <div id="project-rows"></div>
+    <button type="button" id="add-project">Add another project</button>
+  </section>
+</form>
+
+<script>
+// Wrapped in an IIFE so the page can be loaded repeatedly into one window
+// (the benchmark harness reuses a single jsdom realm) without redeclaring globals.
+(function () {
+    const conditional = document.getElementById('conditional');
+    document.getElementById('d-status').addEventListener('change', (event) => {
+      const value = event.target.value;
+      conditional.innerHTML = '';
+      if (value === 'student') {
+        conditional.innerHTML = `
+          <label for="d-college">College Name</label>
+          <input id="d-college" name="college" />
+          <label for="d-year">Expected Graduation Year</label>
+          <input id="d-year" name="graduation_year" />`;
+      } else if (value === 'employed') {
+        conditional.innerHTML = `
+          <label for="d-company">Current Company</label>
+          <input id="d-company" name="company" autocomplete="organization" />
+          <label for="d-title">Job Title</label>
+          <input id="d-title" name="job_title" autocomplete="organization-title" />`;
+      }
+    });
+
+    let projectCount = 0;
+    document.getElementById('add-project').addEventListener('click', () => {
+      projectCount += 1;
+      const row = document.createElement('div');
+      row.innerHTML = `
+        <label for="p-name-${projectCount}">Project ${projectCount} Name</label>
+        <input id="p-name-${projectCount}" name="project_name_${projectCount}" />
+        <label for="p-desc-${projectCount}">Project ${projectCount} Description</label>
+        <textarea id="p-desc-${projectCount}" name="project_desc_${projectCount}" rows="2"></textarea>`;
+      document.getElementById('project-rows').appendChild(row);
+    });
+})();
+</script>
+</body>
+</html>

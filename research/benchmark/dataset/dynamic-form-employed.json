@@ -1,0 +1,46 @@
+{
+  "page": "dynamic-form.html",
+  "variant": "employed",
+  "category": "Dynamic",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "After selecting 'Employed', the page's own script renders two more fields. The mutation drives the page rather than injecting markup, so the fixture's real behaviour is what is measured.",
+  "mutations": [
+    {
+      "selectOption": {
+        "selector": "#d-status",
+        "value": "employed"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "label": "Full Name",
+      "type": "text",
+      "concept": "person.full_name",
+      "expected": "Saiteja Reddy Kotha",
+      "outcome": "fill"
+    },
+    {
+      "label": "Employment Status",
+      "type": "select_one",
+      "concept": null,
+      "expected": null,
+      "outcome": "review"
+    },
+    {
+      "label": "Current Company",
+      "type": "text",
+      "concept": "experience.company",
+      "expected": "Nexturn Solutions",
+      "outcome": "fill"
+    },
+    {
+      "label": "Job Title",
+      "type": "text",
+      "concept": "experience.job_title",
+      "expected": "Software Engineer",
+      "outcome": "fill"
+    }
+  ]
+}

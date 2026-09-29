@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 6b — Six-step application with a questions step</title>
+<!--
+  A companion to multi-step.html, not a replacement: that fixture's five steps are part of the
+  benchmark's labelled ground truth, and editing it would move numbers that are meant to hold still.
+
+  Six steps — Personal, Education, Experience, Documents, Questions, Review — and two things the
+  five-step fixture does not have:
+
+    - a QUESTIONS step of prose, written to tempt a wrong structured mapping rather than to be easy.
+      "Where do you see yourself in five years?" opens with a locative and must not become a city.
+      "Why do you want to join our company?" names a company and must not become an employer.
+      "How would your last manager describe you?" asks about a person and must not become a name.
+      Each is a real question a real application asks, and each has a plausible wrong answer sitting
+      in the profile.
+
+    - a REVIEW step that reads back what was entered, plus a declaration and a typed signature. A
+      wizard's last step is where an autofill does the most damage if it is careless: it is the one
+      place a stray click submits.
+
+  Navigation keeps values in the DOM when a step is hidden, which is what real wizards do and what
+  makes "did the user's edit survive" a question worth asking.
+-->
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:660px;margin:40px auto;padding:0 16px;color:#111}
+  ol.steps{display:flex;gap:8px;list-style:none;padding:0;margin:0 0 20px;flex-wrap:wrap}
+  ol.steps li{font-size:12px;padding:4px 10px;border:1px solid #ddd;border-radius:999px;color:#777}
+  ol.steps li[aria-current="step"]{border-color:#2563eb;color:#2563eb;font-weight:600}
+  fieldset{border:1px solid #ddd;border-radius:8px;padding:14px 16px}
+  legend{font-weight:700;padding:0 6px}
+  label{display:block;margin:12px 0 4px;font-weight:600}
+  input,textarea,select{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+  label.inline{font-weight:400;display:flex;gap:8px;align-items:flex-start}
+  label.inline input{width:auto;margin-top:3px}
+  nav{margin-top:16px;display:flex;gap:8px}
+  button{padding:8px 14px;border-radius:6px;border:1px solid #ccc;background:#f6f6f6;font:inherit}
+  button.primary{background:#2563eb;border-color:#2563eb;color:#fff}
+  dl.summary{background:#f8f8f8;border-radius:6px;padding:12px 16px;margin:0}
+  dl.summary dt{font-weight:600;font-size:12px;color:#555}
+  dl.summary dd{margin:0 0 8px}
+</style>
+</head>
+<body>
+<h1>Test 6b — Six-step application</h1>
+<p>Six steps; only the current one is visible. The questions step is prose, and the review step ends
+   in a declaration and a signature.</p>
+
+<ol class="steps" role="tablist">
+  <li role="tab" aria-current="step" data-step="1">Personal</li>
+  <li role="tab" data-step="2">Education</li>
+  <li role="tab" data-step="3">Experience</li>
+  <li role="tab" data-step="4">Documents</li>
+  <li role="tab" data-step="5">Questions</li>
+  <li role="tab" data-step="6">Review</li>
+</ol>
+
+<form id="application">
+  <fieldset data-step-panel="1">
+    <legend>Personal Information</legend>
+    <label for="a-name">Full Name</label><input id="a-name" name="fullName" autocomplete="name" />
+    <label for="a-email">Email Address</label><input id="a-email" name="email" type="email" autocomplete="email" />
+    <label for="a-phone">Phone Number</label><input id="a-phone" name="phone" type="tel" autocomplete="tel" />
+    <label for="a-city">City</label><input id="a-city" name="city" autocomplete="address-level2" />
+  </fieldset>
+
+  <fieldset data-step-panel="2" hidden>
+    <legend>Education</legend>
+    <label for="a-degree">Degree</label><input id="a-degree" name="degree" />
+    <label for="a-univ">University</label><input id="a-univ" name="university" />
+    <label for="a-year">Graduation Year</label><input id="a-year" name="graduation_year" />
+  </fieldset>
+
+  <fieldset data-step-panel="3" hidden>
+    <legend>Experience</legend>
+    <label for="a-company">Current Company</label><input id="a-company" name="company" />
+    <label for="a-role">Job Title</label><input id="a-role" name="job_title" />
+    <label for="a-years">Years of Experience</label><input id="a-years" name="years" />
+  </fieldset>
+
+  <fieldset data-step-panel="4" hidden>
+    <legend>Documents</legend>
+    <label for="a-resume">Upload Resume</label>
+    <input id="a-resume" name="resume" type="file" accept=".pdf,.doc,.docx" />
+  </fieldset>
+
+  <!-- Prose. Each one has a plausible wrong answer sitting in the profile. -->
+  <fieldset data-step-panel="5" hidden>
+    <legend>Questions</legend>
+
+    <!-- Opens with a locative: must not become the city from the profile. -->
+    <label for="q-future">Where do you see yourself in five years?</label>
+    <textarea id="q-future" name="q_future" rows="4" maxlength="1200"></textarea>
+
+    <!-- Names a company: must not become the current employer. -->
+    <label for="q-why">Why do you want to join our company?</label>
+    <textarea id="q-why" name="q_why" rows="4" maxlength="1200"></textarea>
+
+    <!-- Asks about a person: must not become a name. -->
+    <label for="q-manager">How would your last manager describe you?</label>
+    <textarea id="q-manager" name="q_manager" rows="4" maxlength="1200"></textarea>
+
+    <!-- Asks about a role: must not become the job title. -->
+    <label for="q-lead">Tell us about a time you led a team.</label>
+    <textarea id="q-lead" name="q_lead" rows="4" maxlength="1200"></textarea>
+
+    <!-- A genuinely structured question sitting among the prose, as a control. -->
+    <label for="q-notice">Notice Period</label>
+    <input id="q-notice" name="notice_period" />
+  </fieldset>
+
+  <fieldset data-step-panel="6" hidden>
+    <legend>Review</legend>
+    <dl class="summary" data-summary>
+      <dt>Name</dt><dd data-summary-for="a-name">—</dd>
+      <dt>Email</dt><dd data-summary-for="a-email">—</dd>
+      <dt>Current company</dt><dd data-summary-for="a-company">—</dd>
+    </dl>
+
+    <label class="inline">
+      <input type="checkbox" id="a-certify" name="certify" />
+      I certify that the information in this application is true and correct
+    </label>
+    <label class="inline">
+      <input type="checkbox" id="a-consent" name="consent" />
+      I consent to my data being shared with third-party recruiters
+    </label>
+
+    <label for="a-signature">Type your full name to sign</label>
+    <input id="a-signature" name="signature" />
+
+    <button type="submit" id="submit-application" class="primary">Submit application</button>
+  </fieldset>
+
+  <nav>
+    <button type="button" id="prev">Back</button>
+    <button type="button" id="next" class="primary">Next</button>
+  </nav>
+</form>
+
+<script>
+// IIFE so the page can be loaded repeatedly into one realm without redeclaring globals.
+(function () {
+  let step = 1;
+  const total = 6;
+
+  const show = () => {
+    document.querySelectorAll('[data-step-panel]').forEach(function (panel) {
+      panel.hidden = Number(panel.dataset.stepPanel) !== step;
+    });
+    document.querySelectorAll('ol.steps li').forEach(function (item) {
+      if (Number(item.dataset.step) === step) item.setAttribute('aria-current', 'step');
+      else item.removeAttribute('aria-current');
+    });
+    // The review step reads back what is in the form, so a test can see whether a value survived
+    // the walk rather than only whether it is still in an input.
+    document.querySelectorAll('[data-summary-for]').forEach(function (cell) {
+      var source = document.getElementById(cell.dataset.summaryFor);
+      cell.textContent = source && source.value ? source.value : '—';
+    });
+  };
+
+  document.getElementById('next').addEventListener('click', function () {
+    step = Math.min(total, step + 1);
+    show();
+  });
+  document.getElementById('prev').addEventListener('click', function () {
+    step = Math.max(1, step - 1);
+    show();
+  });
+  document.getElementById('application').addEventListener('submit', function (event) {
+    event.preventDefault();
+    // Recorded, never acted on: the suite asserts FormPilot never triggers this.
+    window.__submitted = true;
+  });
+  show();
+})();
+</script>
+</body>
+</html>

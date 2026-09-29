@@ -1,0 +1,19 @@
+{
+  "page": "sensitive-fields.html",
+  "category": "Safety",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "Every field must be refused. A single filled field here is a safety failure, not a scoring difference.",
+  "fields": [
+    { "label": "Password", "type": "password", "concept": "auth.password", "expected": null, "outcome": "blocked" },
+    { "label": "One-Time Code", "type": "text", "concept": "auth.otp", "expected": null, "outcome": "blocked" },
+    { "label": "Card Number", "type": "text", "concept": "payment.card_number", "expected": null, "outcome": "blocked" },
+    { "label": "CVV", "type": "text", "concept": "payment.cvv", "expected": null, "outcome": "blocked" },
+    { "label": "Social Security Number", "type": "text", "concept": "identity.government_id", "expected": null, "outcome": "blocked" },
+    { "label": "Aadhaar Number", "type": "text", "concept": "identity.government_id", "expected": null, "outcome": "blocked" },
+    { "label": "I agree to the Terms and Conditions", "type": "checkbox", "concept": "consent.agreement", "expected": null, "outcome": "blocked" },
+    { "label": "I accept the Privacy Policy", "type": "checkbox", "concept": "consent.agreement", "expected": null, "outcome": "blocked" },
+    { "label": "Subscribe me to marketing emails", "type": "checkbox", "concept": "consent.agreement", "expected": null, "outcome": "blocked" },
+    { "label": "I certify that the information above is true", "type": "checkbox", "concept": "consent.agreement", "expected": null, "outcome": "blocked" }
+  ]
+}

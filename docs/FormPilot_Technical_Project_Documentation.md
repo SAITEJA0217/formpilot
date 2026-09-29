@@ -1,3 +1,11 @@
+> **Status: historical (v1).** This document describes the FormPilot v1 implementation, whose
+> form extraction was built specifically around the Google Forms DOM. It remains accurate about
+> v1 and is kept as a record. For the current system — the unified form schema, the adapter layer,
+> the semantic matcher, the safety policy and what has actually been verified — see the root
+> [README](../README.md), [docs/MIGRATION_PLAN.md](./MIGRATION_PLAN.md) and
+> [research/](../research/). Sections below that describe Google Forms as the only supported
+> platform describe v1, not the current code.
+
 # FormPilot AI
 **Intelligent AI-Powered Form Auto-Fill Browser Extension**
 

@@ -6,6 +6,8 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "chrome"],
     "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -1,0 +1,449 @@
+{
+  "//": "Semantic matching ground truth. Each case is a field as a real form would present it, paired with the concept a careful human would assign. Written before the harness was run, and never edited to match an engine output \u2014 a case the engine gets wrong stays as written and shows up as an error.",
+  "//ambiguity": "`concept: null` means no concept is correct and the engine must decline rather than guess. `ambiguous: true` means a human could not resolve it from the label alone either, so the requirement is that the engine flags it rather than answers it.",
+  "cases": [
+    {
+      "group": "canonical",
+      "label": "Full Name",
+      "type": "text",
+      "concept": "person.full_name",
+      "autocomplete": "name"
+    },
+    {
+      "group": "canonical",
+      "label": "Email Address",
+      "type": "email",
+      "concept": "person.email",
+      "autocomplete": "email"
+    },
+    {
+      "group": "canonical",
+      "label": "Phone Number",
+      "type": "tel",
+      "concept": "person.phone",
+      "autocomplete": "tel"
+    },
+    {
+      "group": "canonical",
+      "label": "Date of Birth",
+      "type": "date",
+      "concept": "person.date_of_birth",
+      "autocomplete": "bday"
+    },
+    {
+      "group": "canonical",
+      "label": "Gender",
+      "type": "radio_group",
+      "concept": "person.gender"
+    },
+    {
+      "group": "canonical",
+      "label": "LinkedIn Profile",
+      "type": "url",
+      "concept": "links.linkedin"
+    },
+    {
+      "group": "canonical",
+      "label": "GitHub Profile",
+      "type": "url",
+      "concept": "links.github"
+    },
+    {
+      "group": "canonical",
+      "label": "Portfolio Website",
+      "type": "url",
+      "concept": "links.portfolio"
+    },
+    {
+      "group": "name variants",
+      "label": "Your full name",
+      "type": "text",
+      "concept": "person.full_name"
+    },
+    {
+      "group": "name variants",
+      "label": "Name (as per records)",
+      "type": "text",
+      "concept": "person.full_name"
+    },
+    {
+      "group": "name variants",
+      "label": "Candidate Name",
+      "type": "text",
+      "concept": "person.full_name"
+    },
+    {
+      "group": "name variants",
+      "label": "Applicant name",
+      "type": "text",
+      "concept": "person.full_name"
+    },
+    {
+      "group": "name variants",
+      "label": "First Name",
+      "type": "text",
+      "concept": "person.first_name",
+      "autocomplete": "given-name"
+    },
+    {
+      "group": "name variants",
+      "label": "Given name",
+      "type": "text",
+      "concept": "person.first_name"
+    },
+    {
+      "group": "name variants",
+      "label": "Last Name",
+      "type": "text",
+      "concept": "person.last_name",
+      "autocomplete": "family-name"
+    },
+    {
+      "group": "name variants",
+      "label": "Surname",
+      "type": "text",
+      "concept": "person.last_name"
+    },
+    {
+      "group": "name variants",
+      "label": "Family name",
+      "type": "text",
+      "concept": "person.last_name"
+    },
+    {
+      "group": "email variants",
+      "label": "E-mail",
+      "type": "email",
+      "concept": "person.email",
+      "autocomplete": "email"
+    },
+    {
+      "group": "email variants",
+      "label": "Your email id",
+      "type": "text",
+      "concept": "person.email"
+    },
+    {
+      "group": "email variants",
+      "label": "Contact email",
+      "type": "email",
+      "concept": "person.email"
+    },
+    {
+      "group": "email variants",
+      "label": "Email (we will reply here)",
+      "type": "email",
+      "concept": "person.email"
+    },
+    {
+      "group": "phone variants",
+      "label": "Mobile Number",
+      "type": "tel",
+      "concept": "person.phone",
+      "autocomplete": "tel"
+    },
+    {
+      "group": "phone variants",
+      "label": "Contact No.",
+      "type": "tel",
+      "concept": "person.phone"
+    },
+    {
+      "group": "phone variants",
+      "label": "Cell phone",
+      "type": "tel",
+      "concept": "person.phone"
+    },
+    {
+      "group": "phone variants",
+      "label": "WhatsApp number",
+      "type": "tel",
+      "concept": "person.phone"
+    },
+    {
+      "group": "address parts",
+      "label": "Address Line 1",
+      "type": "text",
+      "concept": "address.line1",
+      "autocomplete": "address-line1"
+    },
+    {
+      "group": "address parts",
+      "label": "Street address",
+      "type": "text",
+      "concept": "address.line1"
+    },
+    {
+      "group": "address parts",
+      "label": "Address Line 2",
+      "type": "text",
+      "concept": "address.line2",
+      "autocomplete": "address-line2"
+    },
+    {
+      "group": "address parts",
+      "label": "City",
+      "type": "text",
+      "concept": "address.city",
+      "autocomplete": "address-level2"
+    },
+    {
+      "group": "address parts",
+      "label": "Town/City",
+      "type": "text",
+      "concept": "address.city"
+    },
+    {
+      "group": "address parts",
+      "label": "State",
+      "type": "text",
+      "concept": "address.state",
+      "autocomplete": "address-level1"
+    },
+    {
+      "group": "address parts",
+      "label": "State / Province",
+      "type": "text",
+      "concept": "address.state"
+    },
+    {
+      "group": "address parts",
+      "label": "PIN Code",
+      "type": "text",
+      "concept": "address.postal_code"
+    },
+    {
+      "group": "address parts",
+      "label": "ZIP / Postal Code",
+      "type": "text",
+      "concept": "address.postal_code",
+      "autocomplete": "postal-code"
+    },
+    {
+      "group": "address parts",
+      "label": "Country",
+      "type": "select_one",
+      "concept": "address.country",
+      "autocomplete": "country-name"
+    },
+    {
+      "group": "address parts",
+      "label": "Full postal address",
+      "type": "textarea",
+      "concept": "address.full"
+    },
+    {
+      "group": "education",
+      "label": "Highest Qualification",
+      "type": "select_one",
+      "concept": "education.degree"
+    },
+    {
+      "group": "education",
+      "label": "Degree",
+      "type": "text",
+      "concept": "education.degree"
+    },
+    {
+      "group": "education",
+      "label": "College Name",
+      "type": "text",
+      "concept": "education.institution"
+    },
+    {
+      "group": "education",
+      "label": "Institution",
+      "type": "text",
+      "concept": "education.institution"
+    },
+    {
+      "group": "education",
+      "label": "University",
+      "type": "text",
+      "concept": "education.university"
+    },
+    {
+      "group": "education",
+      "label": "Branch / Specialization",
+      "type": "text",
+      "concept": "education.field_of_study"
+    },
+    {
+      "group": "education",
+      "label": "Major",
+      "type": "text",
+      "concept": "education.field_of_study"
+    },
+    {
+      "group": "education",
+      "label": "Year of Passing",
+      "type": "text",
+      "concept": "education.graduation_year"
+    },
+    {
+      "group": "education",
+      "label": "Graduation Year",
+      "type": "text",
+      "concept": "education.graduation_year"
+    },
+    {
+      "group": "education",
+      "label": "CGPA / Percentage",
+      "type": "text",
+      "concept": "education.gpa"
+    },
+    {
+      "group": "experience",
+      "label": "Current Company",
+      "type": "text",
+      "concept": "experience.company",
+      "autocomplete": "organization"
+    },
+    {
+      "group": "experience",
+      "label": "Employer",
+      "type": "text",
+      "concept": "experience.company"
+    },
+    {
+      "group": "experience",
+      "label": "Organisation you work for",
+      "type": "text",
+      "concept": "experience.company"
+    },
+    {
+      "group": "experience",
+      "label": "Job Title",
+      "type": "text",
+      "concept": "experience.job_title",
+      "autocomplete": "organization-title"
+    },
+    {
+      "group": "experience",
+      "label": "Designation",
+      "type": "text",
+      "concept": "experience.job_title"
+    },
+    {
+      "group": "experience",
+      "label": "Current Role",
+      "type": "text",
+      "concept": "experience.job_title"
+    },
+    {
+      "group": "experience",
+      "label": "Total Years of Experience",
+      "type": "text",
+      "concept": "experience.years_of_experience"
+    },
+    {
+      "group": "must decline",
+      "label": "Notice Period",
+      "type": "text",
+      "concept": null,
+      "note": "The ontology has no notice-period concept and the profile holds no such value."
+    },
+    {
+      "group": "must decline",
+      "label": "Expected CTC",
+      "type": "text",
+      "concept": null,
+      "note": "The ontology has no salary-expectation concept; it is also information a user should state deliberately."
+    },
+    {
+      "group": "must decline",
+      "label": "Current CTC",
+      "type": "text",
+      "concept": null,
+      "note": "The ontology has no current-salary concept; it is also information a user should state deliberately."
+    },
+    {
+      "group": "skills",
+      "label": "Technical Skills",
+      "type": "checkbox_group",
+      "concept": "skills.technical"
+    },
+    {
+      "group": "skills",
+      "label": "Key skills",
+      "type": "text",
+      "concept": "skills.technical"
+    },
+    {
+      "group": "company-ambiguity",
+      "label": "Company",
+      "type": "text",
+      "concept": "experience.company",
+      "ambiguous": true,
+      "note": "Could be the applicant's employer or the company being applied to. The engine must not answer this confidently from the label alone."
+    },
+    {
+      "group": "company-ambiguity",
+      "label": "Company Name",
+      "type": "text",
+      "concept": "experience.company",
+      "ambiguous": true,
+      "note": "Same ambiguity as `Company`."
+    },
+    {
+      "group": "company-ambiguity",
+      "label": "Company Email",
+      "type": "email",
+      "concept": "person.email",
+      "ambiguous": true,
+      "note": "A work email address, which the profile does not hold separately from the personal one.",
+      "autocomplete": "email"
+    },
+    {
+      "group": "company-ambiguity",
+      "label": "Current Company",
+      "type": "text",
+      "concept": "experience.company",
+      "note": "`Current` disambiguates it: this one is not ambiguous and must resolve.",
+      "autocomplete": "organization"
+    },
+    {
+      "group": "must decline",
+      "label": "Favourite ice cream flavour",
+      "type": "text",
+      "concept": null
+    },
+    {
+      "group": "must decline",
+      "label": "Referral code",
+      "type": "text",
+      "concept": null
+    },
+    {
+      "group": "must decline",
+      "label": "How did you hear about us?",
+      "type": "select_one",
+      "concept": null
+    },
+    {
+      "group": "must decline",
+      "label": "Preferred interview slot",
+      "type": "text",
+      "concept": null
+    },
+    {
+      "group": "must decline",
+      "label": "Employee ID",
+      "type": "text",
+      "concept": null
+    },
+    {
+      "group": "must decline",
+      "label": "Reason for leaving",
+      "type": "textarea",
+      "concept": null
+    },
+    {
+      "group": "must decline",
+      "label": "Vehicle registration",
+      "type": "text",
+      "concept": null
+    }
+  ],
+  "//autocomplete": "`autocomplete` is present only where a well-built real form would plausibly set it. It is deliberately absent elsewhere: most real forms omit it, and the autocomplete-only baseline exists to quantify what that omission costs."
+}

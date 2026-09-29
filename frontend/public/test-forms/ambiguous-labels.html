@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 4 — Ambiguous labels</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;color:#111}
+  .row{margin:14px 0}
+  .row span{display:block;font-weight:600;margin-bottom:4px}
+  input,textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+</style>
+</head>
+<body>
+<h1>Test 4 — Ambiguous labels</h1>
+<p>Deliberately hard: bare words, near-duplicate labels, placeholder-only fields, and fields
+   identifiable only by their <code>name</code> attribute. Several of these <em>should</em> land in
+   the review or manual buckets rather than being confidently filled.</p>
+
+<form id="ambiguous">
+  <div class="row"><span>Name</span><input name="nm" /></div>
+  <div class="row"><span>Contact</span><input name="contact" /></div>
+  <div class="row"><span>Email</span><input name="email1" /></div>
+  <div class="row"><span>Company Email</span><input name="email2" /></div>
+  <div class="row"><span>Organisation</span><input name="org" /></div>
+  <div class="row"><span>Reference Name</span><input name="ref_name" /></div>
+  <div class="row"><input placeholder="Enter your mobile number" name="m" /></div>
+  <div class="row"><input placeholder="yyyy-mm-dd" name="dt" /></div>
+  <div class="row"><input name="cgpa_or_percentage" /></div>
+  <div class="row"><input name="grad_yr" /></div>
+  <div class="row"><span>Other</span><input name="other" /></div>
+  <div class="row"><span>Anything else we should know?</span><textarea name="misc" rows="3"></textarea></div>
+</form>
+</body>
+</html>

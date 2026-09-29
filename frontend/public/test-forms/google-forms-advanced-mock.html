@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 9b — Google Forms, the question types the first fixture leaves out</title>
+<!--
+  A companion to google-forms-mock.html, not a replacement.
+
+  The first fixture covers short answer, paragraph, multiple choice, checkboxes, dropdown, date,
+  time, linear scale and a radio grid, and fifteen integration assertions are written against it.
+  This one covers what it does not, so those assertions keep testing exactly what they were written
+  for:
+
+    - a CHECKBOX GRID, where every row accepts several answers rather than one. Google calls it a
+      grid too, so an adapter that assumes "grid means one choice per row" reads it wrongly while
+      looking correct.
+    - SECTIONS reached by pressing Next, where later questions are absent from the DOM rather than
+      hidden. Detection has to report what is reachable now and re-detect after the move.
+    - CONDITIONAL sections: the answer to one question decides which section comes next, so a form
+      has no fixed field count.
+    - Google's SPLIT date and time widgets. The real product emits three inputs for a date and two
+      for a time, not `<input type="date">`. The first fixture uses the native controls, which is
+      the easier case; this one uses the split form.
+    - Questions with a description line under the heading, which is where Google puts hint text.
+      The description must not become part of the question text.
+
+  Markup conventions follow the first fixture: role="listitem" per question, role="heading" for the
+  question text, aria-label="Required question" on the asterisk.
+-->
+<style>
+  body{font:14px/1.5 Roboto,Arial,sans-serif;background:#f0ebf8;padding:24px;color:#202124}
+  .form-container{max-width:680px;margin:0 auto;background:#fff;border-radius:8px;padding:24px}
+  div[role="listitem"]{margin-bottom:24px;padding:20px;border:1px solid #dadce0;border-radius:8px}
+  div[role="heading"]{font-size:15px;font-weight:500;margin-bottom:4px}
+  .desc{font-size:13px;color:#5f6368;margin-bottom:12px}
+  input[type="text"],input[type="number"],textarea{padding:6px 0;border:0;border-bottom:1px solid #dadce0;outline:none;font:inherit}
+  input[type="text"]{width:100%}
+  .split input{width:56px;text-align:center;margin-right:6px}
+  div[role="radio"],div[role="checkbox"]{display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer}
+  .mark{width:16px;height:16px;border:2px solid #5f6368;border-radius:50%}
+  div[role="checkbox"] .mark{border-radius:3px}
+  [aria-checked="true"] .mark{background:#673ab7;border-color:#673ab7}
+  div[role="grid"]{display:table;width:100%}
+  div[role="row"]{display:table-row}
+  div[role="columnheader"],div[role="rowheader"]{display:table-cell;padding:6px 8px;font-size:13px}
+  div[role="row"] div[role="radio"],div[role="row"] div[role="checkbox"]{display:table-cell;text-align:center}
+  .nav{display:flex;justify-content:space-between;margin-top:8px}
+  button{font:inherit;color:#673ab7;background:#fff;border:1px solid #dadce0;border-radius:4px;padding:8px 20px;cursor:pointer}
+  button[data-primary]{background:#673ab7;color:#fff;border-color:#673ab7}
+</style>
+</head>
+<body>
+<div class="form-container">
+  <h1 role="heading" aria-level="1">Contractor onboarding</h1>
+
+  <!-- ══ Section 1 ══ -->
+  <div data-section="1">
+    <!-- Split date: three inputs, which is what Google actually renders. -->
+    <div role="listitem" data-params="date">
+      <div role="heading">Start date<span aria-label="Required question">*</span></div>
+      <div class="desc">The first day you are available.</div>
+      <div class="split">
+        <input type="number" aria-label="Day of the month" placeholder="DD" min="1" max="31" />
+        <input type="number" aria-label="Month" placeholder="MM" min="1" max="12" />
+        <input type="number" aria-label="Year" placeholder="YYYY" min="1900" max="2100" />
+      </div>
+    </div>
+
+    <!-- Split time: hour and minute. -->
+    <div role="listitem" data-params="time">
+      <div role="heading">Preferred daily start time</div>
+      <div class="split">
+        <input type="number" aria-label="Hour" placeholder="HH" min="0" max="23" />
+        <input type="number" aria-label="Minute" placeholder="MM" min="0" max="59" />
+      </div>
+    </div>
+
+    <div role="listitem" data-params="short-answer">
+      <div role="heading">Full Name<span aria-label="Required question">*</span></div>
+      <div class="desc">As it appears on your government ID.</div>
+      <input type="text" placeholder="Your answer" />
+    </div>
+
+    <div role="listitem" data-params="short-answer">
+      <div role="heading">Email Address<span aria-label="Required question">*</span></div>
+      <input type="text" placeholder="Your answer" />
+    </div>
+
+    <!-- The branch: the answer decides which section comes next. -->
+    <div role="listitem" data-params="radio">
+      <div role="heading">Engagement type<span aria-label="Required question">*</span></div>
+      <div role="radiogroup" aria-label="Engagement type" data-branch>
+        <div role="radio" aria-checked="false" data-value="Full time" data-goto="2"><span class="mark"></span>Full time</div>
+        <div role="radio" aria-checked="false" data-value="Contract" data-goto="3"><span class="mark"></span>Contract</div>
+      </div>
+    </div>
+
+    <div class="nav"><span></span><button type="button" data-next data-primary>Next</button></div>
+  </div>
+
+  <!-- ══ Section 2: reached by answering "Full time" ══ -->
+  <div data-section="2" hidden>
+    <div role="listitem" data-params="short-answer">
+      <div role="heading">Current Company</div>
+      <input type="text" placeholder="Your answer" />
+    </div>
+
+    <!-- Checkbox grid: several answers per row. -->
+    <div role="listitem" data-params="checkbox-grid">
+      <div role="heading">Which days can you work on site?</div>
+      <div class="desc">Tick every day that applies, per location.</div>
+      <div role="grid">
+        <div role="row">
+          <div role="columnheader"></div>
+          <div role="columnheader">Monday</div>
+          <div role="columnheader">Wednesday</div>
+          <div role="columnheader">Friday</div>
+        </div>
+        <div role="row">
+          <div role="rowheader">London office</div>
+          <div role="checkbox" aria-checked="false" data-value="Monday"><span class="mark"></span></div>
+          <div role="checkbox" aria-checked="false" data-value="Wednesday"><span class="mark"></span></div>
+          <div role="checkbox" aria-checked="false" data-value="Friday"><span class="mark"></span></div>
+        </div>
+        <div role="row">
+          <div role="rowheader">Client site</div>
+          <div role="checkbox" aria-checked="false" data-value="Monday"><span class="mark"></span></div>
+          <div role="checkbox" aria-checked="false" data-value="Wednesday"><span class="mark"></span></div>
+          <div role="checkbox" aria-checked="false" data-value="Friday"><span class="mark"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav"><button type="button" data-back>Back</button><button type="button" data-next data-primary>Next</button></div>
+  </div>
+
+  <!-- ══ Section 3: reached by answering "Contract" ══ -->
+  <div data-section="3" hidden>
+    <div role="listitem" data-params="short-answer">
+      <div role="heading">Registered company name</div>
+      <input type="text" placeholder="Your answer" />
+    </div>
+
+    <div role="listitem" data-params="paragraph">
+      <div role="heading">Describe your contracting experience</div>
+      <textarea rows="3" placeholder="Your answer"></textarea>
+    </div>
+
+    <div class="nav"><button type="button" data-back>Back</button><button type="button" data-next data-primary>Next</button></div>
+  </div>
+
+  <!-- ══ Section 4: both branches converge here ══ -->
+  <div data-section="4" hidden>
+    <div role="listitem" data-params="short-answer">
+      <div role="heading">Phone Number</div>
+      <input type="text" placeholder="Your answer" />
+    </div>
+
+    <!-- Consent, which must never be ticked automatically. -->
+    <div role="listitem" data-params="checkbox">
+      <div role="heading">Declaration<span aria-label="Required question">*</span></div>
+      <div>
+        <div role="checkbox" aria-checked="false" aria-label="I certify that the information above is true and correct" data-value="certify"><span class="mark"></span>I certify that the information above is true and correct</div>
+      </div>
+    </div>
+
+    <div class="nav"><button type="button" data-back>Back</button><button type="button" data-submit data-primary>Submit</button></div>
+  </div>
+</div>
+
+<script>
+// IIFE so the page can be loaded repeatedly into one jsdom realm without redeclaring globals.
+(function () {
+  var branchTarget = null;
+  var history = [];
+
+  function sections() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-section]'));
+  }
+  function current() {
+    return sections().filter(function (s) { return !s.hidden; })[0] || null;
+  }
+  function show(id) {
+    sections().forEach(function (s) { s.hidden = s.getAttribute('data-section') !== String(id); });
+  }
+
+  // Radio and checkbox widgets. A radio clears its siblings within its own row or group; a
+  // checkbox toggles independently, which is what makes the checkbox grid a different case.
+  document.addEventListener('click', function (event) {
+    var option = event.target.closest('[role="radio"],[role="checkbox"]');
+    if (!option) return;
+    if (option.getAttribute('role') === 'radio') {
+      var scope = option.closest('[role="row"]') || option.closest('[role="radiogroup"]');
+      if (scope) {
+        scope.querySelectorAll('[role="radio"]').forEach(function (sibling) {
+          sibling.setAttribute('aria-checked', 'false');
+        });
+      }
+      option.setAttribute('aria-checked', 'true');
+      if (option.hasAttribute('data-goto')) branchTarget = option.getAttribute('data-goto');
+    } else {
+      option.setAttribute('aria-checked', option.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+    }
+  });
+
+  document.addEventListener('click', function (event) {
+    var section = current();
+    if (!section) return;
+
+    if (event.target.closest('[data-next]')) {
+      var here = section.getAttribute('data-section');
+      // Section 1 branches on the answer; 2 and 3 both converge on 4.
+      var next = here === '1' ? (branchTarget || '2') : '4';
+      history.push(here);
+      show(next);
+      return;
+    }
+    if (event.target.closest('[data-back]')) {
+      var previous = history.pop();
+      if (previous) show(previous);
+      return;
+    }
+    if (event.target.closest('[data-submit]')) {
+      window.__submitted = true;
+    }
+  });
+})();
+</script>
+</body>
+</html>

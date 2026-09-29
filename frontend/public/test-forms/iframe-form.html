@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 8 — iframe form</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#111}
+  iframe{width:100%;height:320px;border:1px solid #ddd;border-radius:8px;margin:12px 0}
+  input{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+</style>
+</head>
+<body>
+<h1>Test 8 — iframe form</h1>
+<p>The first frame is <strong>same-origin</strong> and its fields should be detected and fillable.
+   The second is <strong>cross-origin</strong>; it must be reported as unreachable rather than silently
+   skipped. Browser security forbids reading it, and FormPilot does not try.</p>
+
+<label for="host-name">Full Name (host page)</label>
+<input id="host-name" name="fullName" autocomplete="name" />
+
+<h2>Same-origin frame</h2>
+<iframe src="./basic-html.html" title="Same-origin application form"></iframe>
+
+<h2>Cross-origin frame</h2>
+<iframe src="https://example.com/" title="Cross-origin embedded form"></iframe>
+</body>
+</html>

@@ -1,3 +1,9 @@
+> **Status: historical (v1).** This document describes FormPilot v1, which supported Google
+> Forms only. The current system is a general-purpose form engine; its scope, architecture and
+> verified capabilities are in the root [README](../README.md),
+> [docs/MIGRATION_PLAN.md](./MIGRATION_PLAN.md) and [research/](../research/). This file is kept
+> as a record of the original requirements and is not maintained.
+
 # FormPilot Product Requirements Document (PRD)
 
 ## Product Vision

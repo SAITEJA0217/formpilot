@@ -1,0 +1,503 @@
+{
+  "//": "Held-out v2. Independent measurement after the payment-field safety fix.",
+  "//notComparableToV1": "v2 is payment- and credential-heavy by design so the safety fix is measured on unseen markup. Base rates differ from v1, so the accuracy figures are not like-for-like.",
+  "freezeCommit": "62eb9c073d31a2a1b3f55cc6adb3e197470f81e3",
+  "corpusFetchedAt": "2026-09-29T05:45:51.398Z",
+  "population": {
+    "controls": 467,
+    "files": 105,
+    "splits": {
+      "dev": 267,
+      "validation": 91,
+      "heldout": 109
+    },
+    "heldout": {
+      "controls": 109,
+      "files": 30,
+      "mustRefuse": 45,
+      "unlabelled": 15,
+      "nonLatin": 0
+    },
+    "goldConcepts": 15
+  },
+  "headline": {
+    "records": 109,
+    "accuracy": 0.936,
+    "accuracyCI95": {
+      "low": 0.8733427970076003,
+      "high": 0.9685463538579127
+    },
+    "macroPrecision": 0.789,
+    "macroRecall": 0.705,
+    "macroF1": 0.728,
+    "abstentionRate": 0.468,
+    "abstentionCI95": {
+      "low": 0.3769132848696109,
+      "high": 0.5610527776981935
+    },
+    "incorrectFillRate": 0.009,
+    "incorrectFillCI95": {
+      "low": 0.0016213312746297518,
+      "high": 0.050145625118950245
+    },
+    "safetyRefusalRate": 1,
+    "safetyRefusalCI95": {
+      "low": 0.921348400123914,
+      "high": 1
+    },
+    "correctConcept": 57,
+    "wrongConcept": 1,
+    "abstainedWhenAnswerable": 6,
+    "correctRefusal": 45,
+    "missedRefusal": 0,
+    "missedRefusalAtAutoAccept": 0
+  },
+  "baselines": [
+    {
+      "method": "A exact label",
+      "note": "normalized label == an alias",
+      "accuracy": 0.817,
+      "accuracyCI": {
+        "low": 0.7335141264663265,
+        "high": 0.8779632567938882
+      },
+      "macroPrecision": 0.767,
+      "macroRecall": 0.545,
+      "macroF1": 0.615,
+      "abstentionRate": 0.587,
+      "incorrectFillRate": 0.009,
+      "correctConcept": 44,
+      "wrongConcept": 1,
+      "correctRefusal": 45,
+      "missedRefusal": 0
+    },
+    {
+      "method": "B substring",
+      "note": "longest alias inside the label",
+      "accuracy": 0.844,
+      "accuracyCI": {
+        "low": 0.7643647772703313,
+        "high": 0.900284552360337
+      },
+      "macroPrecision": 0.758,
+      "macroRecall": 0.624,
+      "macroF1": 0.665,
+      "abstentionRate": 0.486,
+      "incorrectFillRate": 0.046,
+      "correctConcept": 51,
+      "wrongConcept": 1,
+      "correctRefusal": 41,
+      "missedRefusal": 4
+    },
+    {
+      "method": "C metadata",
+      "note": "as B, over label/aria/name/id/placeholder",
+      "accuracy": 0.881,
+      "accuracyCI": {
+        "low": 0.806584996767204,
+        "high": 0.9289602613574023
+      },
+      "macroPrecision": 0.747,
+      "macroRecall": 0.676,
+      "macroF1": 0.681,
+      "abstentionRate": 0.431,
+      "incorrectFillRate": 0.064,
+      "correctConcept": 55,
+      "wrongConcept": 3,
+      "correctRefusal": 41,
+      "missedRefusal": 4
+    },
+    {
+      "method": "D semantic",
+      "note": "token and character similarity, no gates",
+      "accuracy": 0.881,
+      "accuracyCI": {
+        "low": 0.806584996767204,
+        "high": 0.9289602613574023
+      },
+      "macroPrecision": 0.752,
+      "macroRecall": 0.723,
+      "macroF1": 0.711,
+      "abstentionRate": 0.349,
+      "incorrectFillRate": 0.11,
+      "correctConcept": 59,
+      "wrongConcept": 4,
+      "correctRefusal": 37,
+      "missedRefusal": 8
+    },
+    {
+      "method": "FormPilot (match only)",
+      "note": "no safety policy in front",
+      "accuracy": 0.89,
+      "accuracyCI": {
+        "low": 0.8173772793973142,
+        "high": 0.9358919608507764
+      },
+      "macroPrecision": 0.767,
+      "macroRecall": 0.705,
+      "macroF1": 0.712,
+      "abstentionRate": 0.422,
+      "incorrectFillRate": 0.055,
+      "correctConcept": 57,
+      "wrongConcept": 1,
+      "correctRefusal": 40,
+      "missedRefusal": 5
+    }
+  ],
+  "ablation": [
+    {
+      "configuration": "1 label only",
+      "note": "the label alone",
+      "policyApplied": false,
+      "accuracy": 0.844,
+      "macroF1": 0.679,
+      "abstentionRate": 0.45,
+      "incorrectFillRate": 0.073,
+      "wrongConcept": 2,
+      "missedRefusal": 6,
+      "correctRefusal": 39
+    },
+    {
+      "configuration": "2 + name/id",
+      "note": "plus name, id, placeholder, aria-label",
+      "policyApplied": false,
+      "accuracy": 0.826,
+      "macroF1": 0.678,
+      "abstentionRate": 0.312,
+      "incorrectFillRate": 0.165,
+      "wrongConcept": 6,
+      "missedRefusal": 12,
+      "correctRefusal": 33
+    },
+    {
+      "configuration": "3 + control type",
+      "note": "plus the input type",
+      "policyApplied": false,
+      "accuracy": 0.826,
+      "macroF1": 0.678,
+      "abstentionRate": 0.312,
+      "incorrectFillRate": 0.165,
+      "wrongConcept": 6,
+      "missedRefusal": 12,
+      "correctRefusal": 33
+    },
+    {
+      "configuration": "4 + semantic gates",
+      "note": "plus the commitment threshold",
+      "policyApplied": false,
+      "accuracy": 0.881,
+      "macroF1": 0.698,
+      "abstentionRate": 0.394,
+      "incorrectFillRate": 0.083,
+      "wrongConcept": 3,
+      "missedRefusal": 6,
+      "correctRefusal": 39
+    },
+    {
+      "configuration": "5 + confidence calib.",
+      "note": "plus the ambiguity guard",
+      "policyApplied": false,
+      "accuracy": 0.89,
+      "macroF1": 0.712,
+      "abstentionRate": 0.422,
+      "incorrectFillRate": 0.055,
+      "wrongConcept": 1,
+      "missedRefusal": 5,
+      "correctRefusal": 40
+    },
+    {
+      "configuration": "6 full system",
+      "note": "plus the safety policy",
+      "policyApplied": true,
+      "accuracy": 0.936,
+      "macroF1": 0.728,
+      "abstentionRate": 0.468,
+      "incorrectFillRate": 0.009,
+      "wrongConcept": 1,
+      "missedRefusal": 0,
+      "correctRefusal": 45
+    }
+  ],
+  "strata": [
+    {
+      "stratum": "all held-out",
+      "n": 109,
+      "accuracy": 0.936,
+      "accuracyCI": {
+        "low": 0.8733427970076003,
+        "high": 0.9685463538579127
+      },
+      "abstentionRate": 0.468,
+      "incorrectFillRate": 0.009,
+      "correctConcept": 57,
+      "wrongConcept": 1,
+      "correctRefusal": 45,
+      "missedRefusal": 0
+    },
+    {
+      "stratum": "must-refuse",
+      "n": 45,
+      "accuracy": 1,
+      "accuracyCI": {
+        "low": 0.921348400123914,
+        "high": 1
+      },
+      "abstentionRate": 1,
+      "incorrectFillRate": 0,
+      "correctConcept": 0,
+      "wrongConcept": 0,
+      "correctRefusal": 45,
+      "missedRefusal": 0
+    },
+    {
+      "stratum": "answerable",
+      "n": 64,
+      "accuracy": 0.891,
+      "accuracyCI": {
+        "low": 0.7910135857782372,
+        "high": 0.94599886685027
+      },
+      "abstentionRate": 0.094,
+      "incorrectFillRate": 0.016,
+      "correctConcept": 57,
+      "wrongConcept": 1,
+      "correctRefusal": 0,
+      "missedRefusal": 0
+    },
+    {
+      "stratum": "Latin labels",
+      "n": 94,
+      "accuracy": 0.947,
+      "accuracyCI": {
+        "low": 0.8814635096204768,
+        "high": 0.9770682514595695
+      },
+      "abstentionRate": 0.426,
+      "incorrectFillRate": 0,
+      "correctConcept": 54,
+      "wrongConcept": 0,
+      "correctRefusal": 35,
+      "missedRefusal": 0
+    },
+    {
+      "stratum": "non-Latin labels",
+      "n": 0,
+      "accuracy": 0,
+      "accuracyCI": {
+        "low": 0,
+        "high": 0
+      },
+      "abstentionRate": 0,
+      "incorrectFillRate": 0,
+      "correctConcept": 0,
+      "wrongConcept": 0,
+      "correctRefusal": 0,
+      "missedRefusal": 0
+    },
+    {
+      "stratum": "no label",
+      "n": 15,
+      "accuracy": 0.867,
+      "accuracyCI": {
+        "low": 0.6211801694601944,
+        "high": 0.9626387412357151
+      },
+      "abstentionRate": 0.733,
+      "incorrectFillRate": 0.067,
+      "correctConcept": 3,
+      "wrongConcept": 1,
+      "correctRefusal": 10,
+      "missedRefusal": 0
+    }
+  ],
+  "perConcept": [
+    {
+      "conceptId": "address.city",
+      "support": 6,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 6,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.full",
+      "support": 3,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 3,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.line1",
+      "support": 5,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.line2",
+      "support": 5,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.postal_code",
+      "support": 6,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 6,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.state",
+      "support": 4,
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 3
+      }
+    },
+    {
+      "conceptId": "person.email",
+      "support": 8,
+      "precision": 1,
+      "recall": 0.875,
+      "f1": 0.933,
+      "counts": {
+        "truePositives": 7,
+        "falsePositives": 0,
+        "falseNegatives": 1
+      }
+    },
+    {
+      "conceptId": "person.first_name",
+      "support": 5,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.full_name",
+      "support": 5,
+      "precision": 0.833,
+      "recall": 1,
+      "f1": 0.909,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 1,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.last_name",
+      "support": 5,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.middle_name",
+      "support": 5,
+      "precision": 1,
+      "recall": 0.6,
+      "f1": 0.75,
+      "counts": {
+        "truePositives": 3,
+        "falsePositives": 0,
+        "falseNegatives": 2
+      }
+    },
+    {
+      "conceptId": "person.phone",
+      "support": 7,
+      "precision": 1,
+      "recall": 0.857,
+      "f1": 0.923,
+      "counts": {
+        "truePositives": 6,
+        "falsePositives": 0,
+        "falseNegatives": 1
+      }
+    }
+  ],
+  "errors": [
+    {
+      "label": "({{ input_name }})",
+      "expected": "address.state",
+      "got": "person.full_name",
+      "provenance": "code4romania/redirectioneaza/backend/templates/v2/components/input/county.html"
+    },
+    {
+      "label": "County (optional):",
+      "expected": "address.state",
+      "got": null,
+      "provenance": "Dan-Q/freedeedpoll/views/start.html"
+    },
+    {
+      "label": "Telefone:",
+      "expected": "person.phone",
+      "got": null,
+      "provenance": "Luiz0tavi0/agenda_js_vanilla/index.html"
+    },
+    {
+      "label": "Endereço:",
+      "expected": "address.state",
+      "got": null,
+      "provenance": "Luiz0tavi0/agenda_js_vanilla/index.html"
+    },
+    {
+      "label": "Confirm Email",
+      "expected": "person.email",
+      "got": null,
+      "provenance": "greenido/Product-Site-101/form-cc-example-m.html"
+    },
+    {
+      "label": "(q)",
+      "expected": "person.middle_name",
+      "got": null,
+      "provenance": "CamiloVacaA/App-de-ventas--5CDs/login/3.1-busquedaProductos.html"
+    },
+    {
+      "label": "Name:",
+      "expected": "person.middle_name",
+      "got": null,
+      "provenance": "kwabenaaseda/ExpenseTracker/signup.html"
+    }
+  ]
+}

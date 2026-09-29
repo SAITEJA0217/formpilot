@@ -1,0 +1,18 @@
+{
+  "page": "basic-html.html",
+  "category": "Generic HTML",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "label[for] plus autocomplete on every field. The easiest case and the detection baseline.",
+  "fields": [
+    { "label": "Full Name", "type": "text", "concept": "person.full_name", "expected": "Saiteja Reddy Kotha", "outcome": "fill" },
+    { "label": "Email Address", "type": "email", "concept": "person.email", "expected": "saiteja@example.com", "outcome": "fill" },
+    { "label": "Phone Number", "type": "tel", "concept": "person.phone", "expected": "+91 98765 43210", "outcome": "fill" },
+    { "label": "Date of Birth", "type": "date", "concept": "person.date_of_birth", "expected": "2001-07-14", "outcome": "fill" },
+    { "label": "Portfolio URL", "type": "url", "concept": "links.portfolio", "expected": "https://saiteja.dev", "outcome": "fill" },
+    { "label": "Years of Experience", "type": "number", "concept": "experience.years_of_experience", "expected": "2", "outcome": "fill" },
+    { "label": "City", "type": "text", "concept": "address.city", "expected": "Hyderabad", "outcome": "fill" },
+    { "label": "Postal Code", "type": "text", "concept": "address.postal_code", "expected": "500081", "outcome": "fill" },
+    { "label": "Professional Summary", "type": "textarea", "concept": "freeform.self_introduction", "expected": null, "outcome": "model" }
+  ]
+}

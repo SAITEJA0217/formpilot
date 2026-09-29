@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>SurveyMonkey structure (reproduction)</title>
+<style>
+  body{font:14px/1.5 "Helvetica Neue",system-ui,sans-serif;background:#f7f7f7;padding:24px;color:#333}
+  .survey{max-width:700px;margin:0 auto;background:#fff;border-radius:4px;padding:26px;border-top:5px solid #00bf6f}
+  .question-body{padding:16px 0;border-bottom:1px solid #eee}
+  .question-title-container{font-weight:600;margin-bottom:10px}
+  .required-asterisk{color:#d0021b;margin-left:3px}
+  input[type="text"],textarea,select{width:100%;padding:6px 8px;border:1px solid #ccc;border-radius:3px;font:inherit}
+  .answer-option{display:flex;gap:8px;align-items:center;padding:4px 0}
+  table.matrix-table{width:100%;border-collapse:collapse;margin-top:6px}
+  table.matrix-table th,table.matrix-table td{padding:7px 6px;text-align:center;border-bottom:1px solid #eee;font-weight:400}
+  table.matrix-table th:first-child,table.matrix-table td:first-child{text-align:left;font-weight:600}
+  ol[data-ranking]{padding-left:22px}
+  ol[data-ranking] li{padding:7px 10px;margin:5px 0;background:#f2f2f2;border-radius:3px;cursor:grab}
+  #next-button{font:inherit;padding:9px 22px;border:0;border-radius:3px;background:#00bf6f;color:#fff;cursor:pointer;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="survey">
+  <h1>Candidate Experience Survey</h1>
+  <p style="color:#777">Reproduction of SurveyMonkey's published question markup, for adapter development.
+  Not a live SurveyMonkey page.</p>
+
+  <div class="question-body" data-testid="question-1">
+    <div class="question-title-container" data-testid="question-title">Full Name<span class="required-asterisk">*</span></div>
+    <input type="text" name="q1" aria-label="Full Name" />
+  </div>
+
+  <div class="question-body" data-testid="question-2">
+    <div class="question-title-container" data-testid="question-title">Email Address<span class="required-asterisk">*</span></div>
+    <input type="text" name="q2" aria-label="Email Address" />
+  </div>
+
+  <div class="question-body" data-testid="question-3">
+    <div class="question-title-container" data-testid="question-title">Years of Experience</div>
+    <div class="answer-option"><input type="radio" id="q3a" name="q3" value="0-2 years" /><label for="q3a">0-2 years</label></div>
+    <div class="answer-option"><input type="radio" id="q3b" name="q3" value="3-5 years" /><label for="q3b">3-5 years</label></div>
+    <div class="answer-option"><input type="radio" id="q3c" name="q3" value="5+ years" /><label for="q3c">5+ years</label></div>
+  </div>
+
+  <div class="question-body" data-testid="question-4">
+    <div class="question-title-container" data-testid="question-title">Technical Skills</div>
+    <div class="answer-option"><input type="checkbox" id="q4a" name="q4" value="React" /><label for="q4a">React</label></div>
+    <div class="answer-option"><input type="checkbox" id="q4b" name="q4" value="TypeScript" /><label for="q4b">TypeScript</label></div>
+    <div class="answer-option"><input type="checkbox" id="q4c" name="q4" value="Python" /><label for="q4c">Python</label></div>
+  </div>
+
+  <div class="question-body" data-testid="question-5">
+    <div class="question-title-container" data-testid="question-title">Highest Qualification</div>
+    <select name="q5" aria-label="Highest Qualification">
+      <option value="">Select one</option>
+      <option>High School</option>
+      <option>Bachelor's Degree</option>
+      <option>Master's Degree</option>
+      <option>PhD</option>
+    </select>
+  </div>
+
+  <div class="question-body" data-testid="question-6">
+    <div class="question-title-container" data-testid="question-title">Rate your confidence</div>
+    <table class="matrix-table" role="grid" data-testid="matrix-table">
+      <thead><tr><th></th><th>Beginner</th><th>Intermediate</th><th>Expert</th></tr></thead>
+      <tbody>
+        <tr>
+          <th data-testid="row-label">Frontend</th>
+          <td><input type="radio" name="q6_frontend" value="Beginner" aria-label="Frontend Beginner" /></td>
+          <td><input type="radio" name="q6_frontend" value="Intermediate" aria-label="Frontend Intermediate" /></td>
+          <td><input type="radio" name="q6_frontend" value="Expert" aria-label="Frontend Expert" /></td>
+        </tr>
+        <tr>
+          <th data-testid="row-label">Backend</th>
+          <td><input type="radio" name="q6_backend" value="Beginner" aria-label="Backend Beginner" /></td>
+          <td><input type="radio" name="q6_backend" value="Intermediate" aria-label="Backend Intermediate" /></td>
+          <td><input type="radio" name="q6_backend" value="Expert" aria-label="Backend Expert" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="question-body" data-testid="question-7">
+    <div class="question-title-container" data-testid="question-title">Rank these in order of preference</div>
+    <div data-testid="ranking-question">
+      <ol data-ranking>
+        <li draggable="true">Remote work</li>
+        <li draggable="true">Team culture</li>
+        <li draggable="true">Compensation</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="question-body" data-testid="question-8">
+    <div class="question-title-container" data-testid="question-title">Anything else we should know?</div>
+    <textarea name="q8" rows="4" aria-label="Anything else we should know?"></textarea>
+  </div>
+
+  <button type="button" id="next-button" data-testid="next-button">Next</button>
+</div>
+</body>
+</html>

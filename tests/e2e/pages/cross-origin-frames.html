@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cross-origin frame isolation</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 16px;color:#111}
+  iframe{width:100%;height:260px;border:1px solid #ddd;border-radius:8px;margin:12px 0}
+  input{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+  label{display:block;margin:14px 0 4px;font-weight:600}
+  .note{background:#fffbe6;border-left:4px solid #d4a017;padding:.75rem;font-size:.9rem}
+</style>
+</head>
+<body>
+<p class="note">
+  Local end-to-end fixture. Both frames below are served by the same test server, but the
+  second is addressed as <code>localhost</code> while this page is <code>127.0.0.1</code>.
+  The browser treats those as different origins, so the second frame is genuinely subject to
+  the same-origin policy — which is the point. A frame pointing at a real external site would
+  only prove that a blocked network request fails.
+</p>
+
+<label for="host-name">Full Name (host page)</label>
+<input id="host-name" name="fullName" autocomplete="name" />
+
+<h2>Same-origin frame</h2>
+<iframe id="same" title="Same-origin application form"></iframe>
+
+<h2>Cross-origin frame</h2>
+<iframe id="foreign" title="Cross-origin embedded form"></iframe>
+
+<script>
+  // Built at runtime so the port is whatever the harness chose.
+  const port = location.port;
+  document.getElementById('same').src = `http://127.0.0.1:${port}/test-forms/basic-html.html`;
+  document.getElementById('foreign').src = `http://localhost:${port}/test-forms/basic-html.html`;
+</script>
+</body>
+</html>

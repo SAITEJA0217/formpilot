@@ -1,0 +1,140 @@
+{
+  "environment": {
+    "runtime": "jsdom",
+    "repeats": 5,
+    "warmupRuns": 2
+  },
+  "sizes": [
+    {
+      "fields": 10,
+      "detectedFields": 10,
+      "detectMs": {
+        "mean": 36.31,
+        "stdev": 6.29
+      },
+      "normalizeMs": {
+        "mean": 39.64,
+        "stdev": 8.26
+      },
+      "suggestMs": {
+        "mean": 26.59,
+        "stdev": 4.85
+      },
+      "totalMs": {
+        "mean": 66.22,
+        "stdev": 12.85
+      },
+      "perFieldMs": 6.622
+    },
+    {
+      "fields": 25,
+      "detectedFields": 25,
+      "detectMs": {
+        "mean": 49.03,
+        "stdev": 13.42
+      },
+      "normalizeMs": {
+        "mean": 57.12,
+        "stdev": 19.2
+      },
+      "suggestMs": {
+        "mean": 51.31,
+        "stdev": 13.69
+      },
+      "totalMs": {
+        "mean": 108.43,
+        "stdev": 32.33
+      },
+      "perFieldMs": 4.337
+    },
+    {
+      "fields": 50,
+      "detectedFields": 50,
+      "detectMs": {
+        "mean": 96.14,
+        "stdev": 10.64
+      },
+      "normalizeMs": {
+        "mean": 117.55,
+        "stdev": 19.83
+      },
+      "suggestMs": {
+        "mean": 108.25,
+        "stdev": 9.63
+      },
+      "totalMs": {
+        "mean": 225.8,
+        "stdev": 26.77
+      },
+      "perFieldMs": 4.516
+    },
+    {
+      "fields": 100,
+      "detectedFields": 100,
+      "detectMs": {
+        "mean": 244.79,
+        "stdev": 20.16
+      },
+      "normalizeMs": {
+        "mean": 257.23,
+        "stdev": 30.39
+      },
+      "suggestMs": {
+        "mean": 232.83,
+        "stdev": 37.82
+      },
+      "totalMs": {
+        "mean": 490.06,
+        "stdev": 67.57
+      },
+      "perFieldMs": 4.901
+    },
+    {
+      "fields": 250,
+      "detectedFields": 250,
+      "detectMs": {
+        "mean": 586.55,
+        "stdev": 110.07
+      },
+      "normalizeMs": {
+        "mean": 621.28,
+        "stdev": 57.91
+      },
+      "suggestMs": {
+        "mean": 525.85,
+        "stdev": 76.76
+      },
+      "totalMs": {
+        "mean": 1147.14,
+        "stdev": 69.68
+      },
+      "perFieldMs": 4.589
+    },
+    {
+      "fields": 500,
+      "detectedFields": 500,
+      "detectMs": {
+        "mean": 1416.03,
+        "stdev": 132.83
+      },
+      "normalizeMs": {
+        "mean": 1660.28,
+        "stdev": 96.48
+      },
+      "suggestMs": {
+        "mean": 1017.55,
+        "stdev": 110.01
+      },
+      "totalMs": {
+        "mean": 2677.83,
+        "stdev": 126.24
+      },
+      "perFieldMs": 5.356
+    }
+  ],
+  "scaling": {
+    "sizeRatio": 50,
+    "timeRatio": 40.44,
+    "perFieldRatio": 0.81
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "page": "dynamic-form.html",
+  "variant": "initial",
+  "category": "Dynamic",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "Before any interaction, only the two always-present fields exist.",
+  "fields": [
+    {
+      "label": "Full Name",
+      "type": "text",
+      "concept": "person.full_name",
+      "expected": "Saiteja Reddy Kotha",
+      "outcome": "fill"
+    },
+    {
+      "label": "Employment Status",
+      "type": "select_one",
+      "concept": null,
+      "expected": null,
+      "outcome": "review"
+    }
+  ]
+}

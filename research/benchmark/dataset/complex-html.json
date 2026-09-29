@@ -1,0 +1,126 @@
+{
+  "page": "complex-html.html",
+  "category": "Generic HTML",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "Fieldsets, a table layout, native select, radio and checkbox groups, a file input and an essay question.",
+  "fields": [
+    {
+      "label": "First Name",
+      "type": "text",
+      "concept": "person.first_name",
+      "expected": "Saiteja",
+      "outcome": "fill"
+    },
+    {
+      "label": "Last Name",
+      "type": "text",
+      "concept": "person.last_name",
+      "expected": "Kotha",
+      "outcome": "fill"
+    },
+    {
+      "label": "Email",
+      "type": "email",
+      "concept": "person.email",
+      "expected": "saiteja@example.com",
+      "outcome": "fill"
+    },
+    {
+      "label": "Gender",
+      "type": "radio_group",
+      "concept": "person.gender",
+      "expected": "Male",
+      "outcome": "fill"
+    },
+    {
+      "label": "Highest Qualification",
+      "type": "select_one",
+      "concept": "education.degree",
+      "expected": "Bachelor's Degree",
+      "outcome": "fill"
+    },
+    {
+      "label": "Specialization",
+      "type": "text",
+      "concept": "education.field_of_study",
+      "expected": "Computer Science and Engineering",
+      "outcome": "fill"
+    },
+    {
+      "label": "College Name",
+      "type": "text",
+      "concept": "education.institution",
+      "expected": "Vasavi College of Engineering",
+      "outcome": "fill"
+    },
+    {
+      "label": "Year of Passing",
+      "type": "text",
+      "concept": "education.graduation_year",
+      "expected": "2023",
+      "outcome": "fill"
+    },
+    {
+      "label": "CGPA",
+      "type": "text",
+      "concept": "education.gpa",
+      "expected": "8.74",
+      "outcome": "fill"
+    },
+    {
+      "label": "Current Company",
+      "type": "text",
+      "concept": "experience.company",
+      "expected": "Nexturn Solutions",
+      "outcome": "fill"
+    },
+    {
+      "label": "Job Title",
+      "type": "text",
+      "concept": "experience.job_title",
+      "expected": "Software Engineer",
+      "outcome": "fill"
+    },
+    {
+      "label": "Skills",
+      "type": "checkbox_group",
+      "concept": "skills.technical",
+      "expected": [
+        "TypeScript",
+        "React",
+        "Node.js",
+        "Python"
+      ],
+      "outcome": "fill"
+    },
+    {
+      "label": "LinkedIn Profile",
+      "type": "url",
+      "concept": "links.linkedin",
+      "expected": "https://linkedin.com/in/saiteja",
+      "outcome": "fill"
+    },
+    {
+      "label": "GitHub Profile",
+      "type": "url",
+      "concept": "links.github",
+      "expected": "https://github.com/saiteja0217",
+      "outcome": "fill"
+    },
+    {
+      "label": "Why do you want to join our team?",
+      "type": "textarea",
+      "concept": "freeform.motivation",
+      "expected": null,
+      "outcome": "model"
+    },
+    {
+      "label": "Upload Resume",
+      "type": "file",
+      "concept": "documents.resume",
+      "expected": null,
+      "outcome": "document"
+    }
+  ]
+}

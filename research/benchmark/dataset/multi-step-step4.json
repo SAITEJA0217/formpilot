@@ -1,0 +1,13 @@
+{
+  "page": "multi-step.html",
+  "variant": "step-4-documents",
+  "category": "Multi-step",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "The documents step: both file inputs must be handed to the user, never uploaded automatically.",
+  "mutations": [{ "click": "#next" }, { "click": "#next" }, { "click": "#next" }],
+  "fields": [
+    { "label": "Upload Resume", "type": "file", "concept": "documents.resume", "expected": null, "outcome": "document" },
+    { "label": "Upload Cover Letter", "type": "file", "concept": "documents.cover_letter", "expected": null, "outcome": "document" }
+  ]
+}

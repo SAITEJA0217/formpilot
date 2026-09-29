@@ -1,0 +1,93 @@
+{
+  "page": "ambiguous-labels.html",
+  "category": "Ambiguous labels",
+  "platform": "generic-html",
+  "url": "https://jobs.benchmark.local/apply",
+  "notes": "Adversarial by design. Ground truth marks a field 'manual' whenever a careful human could not justify a single answer, so a confident fill there counts as an error.",
+  "fields": [
+    {
+      "label": "Name",
+      "type": "text",
+      "concept": "person.full_name",
+      "expected": "Saiteja Reddy Kotha",
+      "outcome": "fill"
+    },
+    {
+      "label": "Contact",
+      "type": "text",
+      "concept": null,
+      "expected": null,
+      "outcome": "review"
+    },
+    {
+      "label": "Email",
+      "type": "text",
+      "concept": "person.email",
+      "expected": "saiteja@example.com",
+      "outcome": "fill"
+    },
+    {
+      "label": "Company Email",
+      "type": "text",
+      "concept": null,
+      "expected": null,
+      "outcome": "manual"
+    },
+    {
+      "label": "Organisation",
+      "type": "text",
+      "concept": "experience.company",
+      "expected": "Nexturn Solutions",
+      "outcome": "fill"
+    },
+    {
+      "label": "Reference Name",
+      "type": "text",
+      "concept": null,
+      "expected": null,
+      "outcome": "manual"
+    },
+    {
+      "label": "Enter your mobile number",
+      "type": "text",
+      "concept": "person.phone",
+      "expected": "+91 98765 43210",
+      "outcome": "fill"
+    },
+    {
+      "label": "yyyy-mm-dd",
+      "type": "text",
+      "concept": null,
+      "expected": null,
+      "outcome": "review"
+    },
+    {
+      "label": "Cgpa or percentage",
+      "type": "text",
+      "concept": "education.gpa",
+      "expected": "8.74",
+      "outcome": "fill"
+    },
+    {
+      "label": "Grad yr",
+      "type": "text",
+      "concept": "education.graduation_year",
+      "expected": "2023",
+      "outcome": "fill"
+    },
+    {
+      "label": "Other",
+      "type": "text",
+      "concept": null,
+      "expected": null,
+      "outcome": "manual"
+    },
+    {
+      "label": "Anything else we should know?",
+      "type": "textarea",
+      "concept": "freeform.other",
+      "expected": null,
+      "outcome": "model"
+    }
+  ]
+}

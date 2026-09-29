@@ -1,0 +1,106 @@
+# FormPilot CI.
+#
+# The `safety` job is separate from `test` on purpose. Its suites encode invariants rather
+# than behaviour — a one-time code must never be typed into a page, a legal agreement must
+# never be ticked, a form must never be submitted — and a regression in any of them is a
+# security defect, not a failing feature. Keeping it its own required job means the failure
+# is legible in the checks list instead of being one line inside a 400-test run.
+#
+# `safety` deliberately does not depend on `test`: if both break, both should report.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  safety:
+    name: Safety invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # tests/safety/invariants.test.ts asserts against the engine and our own source, not
+      # the built bundle, so no build step is needed here.
+      - name: Adversarial safety and behavioural invariants
+        run: npx vitest run tests/safety
+      # The frozen safety corpus is scored through the whole pipeline rather than against the
+      # policy in isolation, and exits non-zero on any violation. It catches a pipeline that
+      # ignores a correct policy verdict, which a policy-level assertion cannot.
+      - name: Safety regression corpus
+        run: npm run study:safety-corpus
+
+  test:
+    name: Unit and integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # The extension is its own npm workspace with its own lockfile, and `typecheck:extension`
+      # runs `tsc` inside it. Without this install there is no `extension/node_modules`, so TS
+      # resolves `react` from the ROOT tree — which carries react but no `@types/react` — and the
+      # job fails with "Could not find a declaration file for module 'react'".
+      - run: npm --prefix extension ci
+      - name: Typecheck (root and extension)
+        run: |
+          npm run typecheck
+          npm run typecheck:extension
+      - run: npx vitest run
+      - name: Research benchmark
+        run: npm run bench
+      - name: Fail if the benchmark recorded a safety violation
+        # The benchmark scores autofill over the whole corpus and counts any field it filled
+        # that policy forbids. That number must be zero; a non-zero count means the pipeline
+        # as a whole leaked something even though the unit-level policy tests passed.
+        run: |
+          violations=$(node -e "
+            const r = require('./research/benchmark/results/latest.json');
+            process.stdout.write(String(r.safety?.violations?.length ?? 'missing'));
+          ")
+          echo "benchmark safety violations: $violations"
+          test "$violations" = "0"
+
+  e2e:
+    name: End-to-end in Chromium
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # `build:extension` runs `tsc && vite build` inside `extension/`, so it needs that
+      # workspace's own dependencies. `frontend` is installed too: the framework test apps and
+      # the Next.js route the E2E suite drives are served from there.
+      - run: npm --prefix extension ci
+      - run: npm --prefix frontend ci
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Build the extension and the framework test apps
+        run: |
+          npm run build:extension
+          node tests/e2e/apps/build.mjs
+      - run: npx playwright test
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: tests/e2e/.artifacts/
+          retention-days: 7

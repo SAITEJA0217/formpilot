@@ -1,23 +1,40 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Default rule: Deny all
+
+    // Default: deny everything. Every allowance below is explicit.
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Users Collection
-    // A user can only read and write their own profile document
+    // A user's own profile document.
     match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Learned corrections. Written server-side by the Admin SDK (which bypasses these
+      // rules); the client rule exists so the dashboard can show a user what has been
+      // learned about them and let them delete it. Scoped strictly to the owner.
+      match /corrections/{correctionId} {
+        allow read, delete: if request.auth != null && request.auth.uid == userId;
+        allow create, update: if false;
+      }
+
+      // Document *metadata* only (name, kind, type). FormPilot never stores document
+      // bytes: the user picks the file at fill time through a native file picker.
+      match /documents/{documentId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
-    
-    // Forms Collection (For future history feature)
-    // A user can only read and write their own saved forms
+
+    // Per-user API request budget. Maintained exclusively by the Admin SDK; no client
+    // may read or change its own quota.
+    match /rateLimits/{userId} {
+      allow read, write: if false;
+    }
+
+    // Saved forms (future history feature).
     match /forms/{formId} {
-      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
   }

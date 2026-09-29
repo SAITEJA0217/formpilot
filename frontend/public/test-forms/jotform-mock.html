@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Jotform structure (reproduction)</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;background:#f3f3fe;padding:24px;color:#2c3345}
+  .jotform-form{max-width:680px;margin:0 auto;background:#fff;border-radius:6px;padding:28px}
+  ul{list-style:none;padding:0;margin:0}
+  li.form-line{padding:12px 0}
+  label.form-label{display:block;font-weight:600;margin-bottom:6px}
+  .form-required{color:#e12;margin-left:3px}
+  .form-textbox,.form-textarea,.form-dropdown{width:100%;padding:7px 9px;border:1px solid #cad0d9;border-radius:4px;font:inherit}
+  .form-sub-label{display:block;font-size:12px;color:#6a7280;margin-top:3px}
+  .form-radio-item,.form-checkbox-item{display:flex;gap:7px;align-items:center;padding:3px 0}
+  .form-address-table td{padding:3px 4px 8px;vertical-align:top}
+  .form-address-table{width:100%;border-collapse:collapse}
+  .form-pagebreak{margin-top:18px;display:flex;gap:8px}
+  .form-pagebreak-next,.form-submit-button{font:inherit;padding:8px 16px;border:0;border-radius:4px;background:#0a1551;color:#fff;cursor:pointer}
+</style>
+</head>
+<body>
+<form class="jotform-form" id="form-1">
+  <h1>Internship Application</h1>
+  <p style="color:#6a7280">Reproduction of Jotform's documented <code>form-line</code> markup, for adapter
+  development. Not a live Jotform page.</p>
+
+  <ul class="form-section page-section" data-page="1">
+    <li class="form-line" data-type="control_fullname" id="id_1">
+      <label class="form-label" for="first_1">Name<span class="form-required">*</span></label>
+      <span><input type="text" id="first_1" name="q1_name[first]" class="form-textbox" />
+        <span class="form-sub-label">First Name</span></span>
+      <span><input type="text" id="last_1" name="q1_name[last]" class="form-textbox" />
+        <span class="form-sub-label">Last Name</span></span>
+    </li>
+
+    <li class="form-line" data-type="control_email" id="id_2">
+      <label class="form-label" for="input_2">E-mail<span class="form-required">*</span></label>
+      <input type="email" id="input_2" name="q2_email" class="form-textbox" />
+    </li>
+
+    <li class="form-line" data-type="control_phone" id="id_3">
+      <label class="form-label" for="input_3_full">Phone Number</label>
+      <input type="tel" id="input_3_full" name="q3_phoneNumber[full]" class="form-textbox" />
+    </li>
+
+    <li class="form-line" data-type="control_address" id="id_4">
+      <label class="form-label" for="input_4_addr_line1">Address</label>
+      <table class="form-address-table">
+        <tr><td colspan="2">
+          <input type="text" id="input_4_addr_line1" name="q4_address[addr_line1]" class="form-textbox" />
+          <span class="form-sub-label">Street Address</span></td></tr>
+        <tr>
+          <td><input type="text" id="input_4_city" name="q4_address[city]" class="form-textbox" />
+            <span class="form-sub-label">City</span></td>
+          <td><input type="text" id="input_4_state" name="q4_address[state]" class="form-textbox" />
+            <span class="form-sub-label">State / Province</span></td>
+        </tr>
+        <tr>
+          <td><input type="text" id="input_4_postal" name="q4_address[postal]" class="form-textbox" />
+            <span class="form-sub-label">Postal / Zip Code</span></td>
+          <td><input type="text" id="input_4_country" name="q4_address[country]" class="form-textbox" />
+            <span class="form-sub-label">Country</span></td>
+        </tr>
+      </table>
+    </li>
+
+    <li class="form-line" data-type="control_dropdown" id="id_5">
+      <label class="form-label" for="input_5">Highest Qualification<span class="form-required">*</span></label>
+      <select id="input_5" name="q5_highestQualification" class="form-dropdown">
+        <option value="">Please Select</option>
+        <option>High School</option>
+        <option>Diploma</option>
+        <option>Bachelor's Degree</option>
+        <option>Master's Degree</option>
+        <option>PhD</option>
+      </select>
+    </li>
+
+    <li class="form-line" data-type="control_radio" id="id_6">
+      <label class="form-label">Years of Experience</label>
+      <div class="form-radio-item"><input type="radio" id="input_6_0" name="q6_years" value="0-2 years" /><label for="input_6_0">0-2 years</label></div>
+      <div class="form-radio-item"><input type="radio" id="input_6_1" name="q6_years" value="3-5 years" /><label for="input_6_1">3-5 years</label></div>
+      <div class="form-radio-item"><input type="radio" id="input_6_2" name="q6_years" value="5+ years" /><label for="input_6_2">5+ years</label></div>
+    </li>
+
+    <li class="form-line" data-type="control_checkbox" id="id_7">
+      <label class="form-label">Technical Skills</label>
+      <div class="form-checkbox-item"><input type="checkbox" id="input_7_0" name="q7_skills[]" value="React" /><label for="input_7_0">React</label></div>
+      <div class="form-checkbox-item"><input type="checkbox" id="input_7_1" name="q7_skills[]" value="TypeScript" /><label for="input_7_1">TypeScript</label></div>
+      <div class="form-checkbox-item"><input type="checkbox" id="input_7_2" name="q7_skills[]" value="Python" /><label for="input_7_2">Python</label></div>
+    </li>
+
+    <li class="form-line" data-type="control_datetime" id="id_8">
+      <label class="form-label" for="input_8">Date of Birth</label>
+      <input type="date" id="input_8" name="q8_dateOfBirth" class="form-textbox" />
+    </li>
+
+    <li class="form-line" data-type="control_fileupload" id="id_9">
+      <label class="form-label" for="input_9">Upload Resume</label>
+      <input type="file" id="input_9" name="q9_uploadResume" class="form-upload" accept=".pdf,.doc,.docx" />
+    </li>
+
+    <li class="form-line" data-type="control_textarea" id="id_10">
+      <label class="form-label" for="input_10">Why do you want to join our team?</label>
+      <textarea id="input_10" name="q10_why" class="form-textarea" rows="4"></textarea>
+    </li>
+
+    <li class="form-line" data-type="control_button" id="id_11">
+      <div class="form-pagebreak">
+        <button type="button" class="form-pagebreak-next">Next</button>
+        <button type="submit" class="form-submit-button">Submit</button>
+      </div>
+    </li>
+  </ul>
+</form>
+</body>
+</html>

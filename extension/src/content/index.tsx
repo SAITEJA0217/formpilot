@@ -1,328 +1,423 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import type { FormQuestion, QuestionType, AIAnswer } from '../../../shared/types';
-import ReviewPanel from './ReviewPanel';
-import '../style.css';
-function extractGoogleFormQuestions(): FormQuestion[] {
-  const questions: FormQuestion[] = [];
+/**
+ * Universal content script — the in-page half of the engine.
+ *
+ * Injected on demand (`chrome.scripting.executeScript` under `activeTab`) rather
+ * than declared for a list of sites, so FormPilot has no standing access to any
+ * page until the user opens it on that page.
+ *
+ * Responsibilities: detect and normalize the form, ask the service worker for
+ * suggestions, render the review panel in a shadow root, fill accepted values, and
+ * keep all of that up to date as the page mutates.
+ */
+import { createRoot, type Root } from 'react-dom/client';
+import type { UnifiedForm } from '../../../shared/types/form';
+import type { FieldSuggestion, FillReport } from '../../../shared/types/suggestion';
+import type { FormSummary, SuggestionsResult } from '../../../shared/messaging/messages';
+import {
+  applySession,
+  attachFile,
+  createSession,
+  fillFields,
+  normalizeForm,
+  noteStep,
+  observeForm,
+  recordDecision,
+  recordOutcomes,
+  sessionMatchesForm,
+  type DetectionResult,
+  type FormAdapter,
+  type FormSessionState,
+} from '../core';
+import ReviewPanel from './ui/ReviewPanel';
+import { PANEL_STYLES } from './ui/panelStyles';
 
-  // Google Forms structure: div[role="listitem"] represents a question block
-  const questionBlocks = document.querySelectorAll('div[role="listitem"]');
+/** Guard against a second injection into the same page. */
+const GUARD = '__formPilotEngineLoaded';
+type GuardedWindow = Window & { [GUARD]?: boolean };
 
-  questionBlocks.forEach((block, index) => {
-    // Heading div usually contains the question text
-    const titleElement = block.querySelector('div[role="heading"]');
-    if (!titleElement) return;
+const HOST_ID = 'formpilot-root';
 
-    const fullText = titleElement.textContent || '';
-    const required = fullText.includes('*');
-    const questionText = fullText.replace('*', '').trim();
-
-    let type: QuestionType = 'unsupported';
-    const options: string[] = [];
-
-    // Detect Input Types
-    const hasTextInput = block.querySelector('input[type="text"], input[type="email"], input[type="number"], input[type="tel"], input[type="url"]') || 
-                         (block.querySelector('input') && !block.querySelector('input[type="radio"], input[type="checkbox"], input[type="file"], input[type="date"], input[type="time"]'));
-    if (hasTextInput) {
-      type = 'short_answer';
-    } else if (block.querySelector('textarea')) {
-      type = 'paragraph';
-    } else if (block.querySelector('input[type="date"]')) {
-      type = 'date';
-    } else if (block.querySelector('input[type="time"]')) {
-      type = 'time';
-    } else if (block.querySelector('div[role="grid"]')) {
-      // It's a grid! We need to extract the columns first
-      const grid = block.querySelector('div[role="grid"]');
-      const columnHeaders = grid?.querySelectorAll('div[role="columnheader"]') || [];
-      const columns = Array.from(columnHeaders).map(h => h.textContent || '').filter(Boolean);
-
-      const rows = grid?.querySelectorAll('div[role="row"]') || [];
-
-      // Skip the first row (headers), process the rest
-      let isCheckboxGrid = !!grid?.querySelector('div[role="checkbox"]');
-      let type: QuestionType = isCheckboxGrid ? 'checkbox' : 'radio';
-
-      rows.forEach((row, rIndex) => {
-        if (rIndex === 0) return; // Skip header row
-        const rowHeader = row.querySelector('div[role="rowheader"]');
-        if (rowHeader && rowHeader.textContent) {
-          const rowQuestionText = `${questionText}: ${rowHeader.textContent.trim()}`;
-          questions.push({
-            id: `q_${index}_r${rIndex}`,
-            question: rowQuestionText,
-            type,
-            required,
-            options: columns
-          });
-        }
-      });
-      return; // Skip normal pushing since we pushed flattened rows
-    } else if (block.querySelector('div[role="radiogroup"]')) {
-      // Linear Scale or normal Radio
-      const isLinearScale = block.querySelectorAll('div[role="radio"]').length > 0 && !!block.querySelector('div[role="presentation"]');
-      type = isLinearScale ? 'linear_scale' : 'radio';
-
-      // Extract options
-      const labels = block.querySelectorAll('div[role="radio"]');
-      labels.forEach(l => {
-        const text = l.getAttribute('data-value') || l.getAttribute('aria-label') || '';
-        if (text) options.push(text);
-      });
-    } else if (block.querySelector('div[role="listbox"]')) {
-      type = 'dropdown';
-      // Dropdown options are often hidden until clicked, but we can try to extract aria-labels or values if present
-      const listOptions = block.querySelectorAll('div[role="option"]');
-      listOptions.forEach(o => {
-        const val = o.getAttribute('data-value');
-        if (val && val !== 'Choose') options.push(val);
-      });
-    } else if (block.querySelectorAll('div[role="checkbox"]').length > 0) {
-      type = 'checkbox';
-      const checkboxes = block.querySelectorAll('div[role="checkbox"]');
-      checkboxes.forEach(c => {
-        const val = c.getAttribute('aria-label') || c.getAttribute('data-value') || '';
-        if (val) options.push(val);
-      });
-    }
-
-    if (type !== 'unsupported') {
-      questions.push({
-        id: `q_${index}`,
-        question: questionText,
-        type,
-        required,
-        ...(options.length > 0 ? { options } : {})
-      });
-    }
-  });
-
-
-  return questions;
+interface EngineState {
+  form: UnifiedForm | null;
+  elements: DetectionResult['elements'];
+  adapter: FormAdapter | null;
+  suggestions: FieldSuggestion[];
+  summary: FormSummary | null;
+  session: FormSessionState | null;
+  report: FillReport | null;
+  error: string | null;
+  busy: boolean;
+  stopObserving: (() => void) | null;
 }
 
-// Communication with popup or background
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-  if (request.action === 'EXTRACT_QUESTIONS') {
-    const questions = extractGoogleFormQuestions();
-    sendResponse({ questions });
-  } else if (request.action === 'SHOW_REVIEW_PANEL') {
-    injectReviewPanel(request.answers);
+const state: EngineState = {
+  form: null,
+  elements: new Map(),
+  adapter: null,
+  suggestions: [],
+  summary: null,
+  session: null,
+  report: null,
+  error: null,
+  busy: false,
+  stopObserving: null,
+};
+
+let panelRoot: Root | null = null;
+let shadow: ShadowRoot | null = null;
+
+// ─── Panel plumbing ───────────────────────────────────────────────────────────
+
+function ensureShadowHost(): ShadowRoot {
+  if (shadow) return shadow;
+  let host = document.getElementById(HOST_ID);
+  if (!host) {
+    host = document.createElement('div');
+    host.id = HOST_ID;
+    // Marked so the detector never treats our own UI as page content.
+    host.setAttribute('data-formpilot-ignore', 'true');
+    document.documentElement.appendChild(host);
   }
-  return true; // Keep channel open
+  shadow = host.shadowRoot ?? host.attachShadow({ mode: 'open' });
+  if (!shadow.querySelector('style')) {
+    const style = document.createElement('style');
+    style.textContent = PANEL_STYLES;
+    shadow.appendChild(style);
+    const mount = document.createElement('div');
+    mount.id = 'formpilot-mount';
+    shadow.appendChild(mount);
+  }
+  return shadow;
+}
+
+function closePanel(): void {
+  state.stopObserving?.();
+  state.stopObserving = null;
+  panelRoot?.unmount();
+  panelRoot = null;
+  shadow = null;
+  document.getElementById(HOST_ID)?.remove();
+}
+
+function renderPanel(): void {
+  if (!state.summary) return;
+  const root = ensureShadowHost();
+  const mount = root.querySelector('#formpilot-mount');
+  if (!mount) return;
+  if (!panelRoot) panelRoot = createRoot(mount);
+
+  panelRoot.render(
+    <ReviewPanel
+      summary={state.summary}
+      suggestions={state.suggestions}
+      busy={state.busy}
+      report={state.report}
+      error={state.error}
+      onClose={closePanel}
+      onRescan={() => {
+        void rescan({ silent: false });
+      }}
+      onFill={(accepted) => {
+        void applyFill(accepted);
+      }}
+      onEdit={(fieldId, value, previous) => {
+        handleEdit(fieldId, value, previous);
+      }}
+      onAttach={(fieldId) => {
+        void promptForFile(fieldId);
+      }}
+    />,
+  );
+}
+
+// ─── Engine ───────────────────────────────────────────────────────────────────
+
+function send<T>(message: unknown): Promise<T> {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.runtime.sendMessage(message, (response: T & { error?: string }) => {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          reject(new Error(lastError.message ?? 'Extension messaging failed.'));
+          return;
+        }
+        if (response && typeof response === 'object' && 'error' in response && response.error) {
+          reject(new Error(String(response.error)));
+          return;
+        }
+        resolve(response);
+      });
+    } catch (error) {
+      reject(error instanceof Error ? error : new Error('Extension messaging failed.'));
+    }
+  });
+}
+
+/** Detect the form and ask the service worker to turn it into suggestions. */
+async function scan(): Promise<FormSummary> {
+  const normalized = normalizeForm({ href: window.location.href });
+  state.form = normalized.form;
+  state.elements = normalized.elements;
+  state.adapter = normalized.adapter;
+
+  if (!state.session || !sessionMatchesForm(state.session, normalized.form)) {
+    state.session = createSession(normalized.form);
+  } else {
+    state.session = noteStep(state.session, normalized.form);
+  }
+
+  let result: SuggestionsResult;
+  try {
+    result = await send<SuggestionsResult>({ type: 'BUILD_SUGGESTIONS', form: normalized.form });
+    state.error = result.aiError ?? null;
+  } catch (error) {
+    // Detection still succeeded — report the fields, explain the missing answers.
+    state.error = error instanceof Error ? error.message : 'Could not reach FormPilot.';
+    const fallback: FieldSuggestion[] = normalized.form.fields.map((field) => ({
+      fieldId: field.id,
+      label: field.label,
+      fieldType: field.type,
+      value: null,
+      confidence: 0,
+      band: 'low',
+      status: field.sensitivity === 'blocked' ? 'blocked' : 'manual',
+      provenance: { origin: 'none', signals: [], explanation: 'No suggestions available.', usedAI: false },
+      reason: state.error ?? undefined,
+    }));
+    result = {
+      suggestions: fallback,
+      summary: {
+        formId: normalized.form.id,
+        platform: normalized.form.platform,
+        title: normalized.form.title,
+        url: normalized.form.url,
+        fieldsDetected: fallback.length,
+        ready: 0,
+        needsReview: 0,
+        manual: fallback.filter((s) => s.status === 'manual').length,
+        blocked: fallback.filter((s) => s.status === 'blocked').length,
+        noData: 0,
+        isMultiStep: normalized.form.metadata.isMultiStep,
+        currentStep: normalized.form.metadata.currentStep,
+        totalSteps: normalized.form.metadata.totalSteps,
+        warnings: normalized.form.metadata.warnings,
+      },
+      aiCalls: 0,
+    };
+  }
+
+  state.suggestions = state.session
+    ? applySession(state.session, normalized.form, result.suggestions)
+    : result.suggestions;
+  state.summary = result.summary;
+  return result.summary;
+}
+
+/**
+ * Re-detect after the page changed. Suggestions the user already accepted or edited
+ * survive, because the session keys them by field identity rather than position.
+ */
+async function rescan(options: { silent: boolean }): Promise<void> {
+  try {
+    await scan();
+    if (!options.silent) state.report = null;
+  } catch (error) {
+    state.error = error instanceof Error ? error.message : 'Re-scan failed.';
+  }
+  renderPanel();
+}
+
+function startObserving(): void {
+  if (state.stopObserving) return;
+  state.stopObserving = observeForm({
+    debounceMs: 300,
+    onChange: (summary) => {
+      // Only re-scan when the structure actually changed, not on every keystroke.
+      if (summary.addedControls === 0 && summary.removedControls === 0 && summary.attributeChanges === 0) return;
+      void rescan({ silent: true });
+    },
+  });
+}
+
+async function applyFill(accepted: FieldSuggestion[]): Promise<void> {
+  if (!state.form) return;
+  state.busy = true;
+  state.error = null;
+  renderPanel();
+
+  const entries = accepted
+    .map((suggestion) => {
+      const field = state.form?.fields.find((f) => f.id === suggestion.fieldId);
+      const handle = state.elements.get(suggestion.fieldId);
+      if (!field || !handle) return null;
+      return {
+        target: { field, element: handle.element, root: handle.root, members: handle.members },
+        value: suggestion.value,
+      };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+  const report = await fillFields(entries, {
+    platformHandler: state.adapter?.fillField,
+    interFieldDelayMs: 40,
+  });
+
+  state.report = report;
+  state.busy = false;
+  if (state.session && state.form) {
+    state.session = recordOutcomes(state.session, state.form, report.outcomes);
+    for (const suggestion of accepted) {
+      state.session = recordDecision(state.session, state.form, suggestion, {
+        accepted: true,
+        edited: suggestion.editedByUser === true,
+      });
+    }
+  }
+  renderPanel();
+}
+
+function handleEdit(fieldId: string, value: string, previous: string | null): void {
+  const suggestion = state.suggestions.find((s) => s.fieldId === fieldId);
+  if (!suggestion || !state.form) return;
+
+  state.suggestions = state.suggestions.map((s) =>
+    s.fieldId === fieldId
+      ? {
+          ...s,
+          value,
+          editedByUser: true,
+          confidence: 1,
+          band: 'high',
+          status: 'ready',
+          provenance: { ...s.provenance, origin: 'user', explanation: 'You entered this value.' },
+        }
+      : s,
+  );
+  state.session = state.session
+    ? recordDecision(state.session, state.form, { ...suggestion, value }, {
+        accepted: true,
+        edited: true,
+        previousValue: previous,
+      })
+    : state.session;
+
+  // Correction learning is opt-in server-side; a failure here must not block the UI.
+  void send({
+    type: 'SEND_CORRECTION',
+    payload: {
+      originalQuestion: suggestion.label ?? '',
+      originalAnswer: previous,
+      userCorrection: value,
+      sourceDetail: suggestion.provenance.profilePath,
+      conceptId: suggestion.provenance.conceptId,
+    },
+  }).catch(() => {
+    // Silent: the user's edit already applies locally.
+  });
+  renderPanel();
+}
+
+/**
+ * Open a native file picker and attach the chosen file. The user picks the file
+ * themselves — FormPilot stores no document bytes and never selects one for them.
+ */
+function promptForFile(fieldId: string): void {
+  const field = state.form?.fields.find((f) => f.id === fieldId);
+  const handle = state.elements.get(fieldId);
+  if (!field || !handle) return;
+
+  const picker = document.createElement('input');
+  picker.type = 'file';
+  picker.setAttribute('data-formpilot-ignore', 'true');
+  picker.style.display = 'none';
+  if (field.accept) picker.accept = field.accept;
+
+  picker.addEventListener('change', () => {
+    const file = picker.files?.[0];
+    if (file) {
+      const outcome = attachFile(
+        { field, element: handle.element, root: handle.root, members: handle.members },
+        file,
+      );
+      state.report = {
+        attempted: 1,
+        filled: outcome.filled ? 1 : 0,
+        failed: outcome.filled ? 0 : 1,
+        skipped: 0,
+        outcomes: [outcome],
+      };
+      state.error = outcome.error ?? null;
+      renderPanel();
+    }
+    picker.remove();
+  });
+
+  document.documentElement.appendChild(picker);
+  picker.click();
+}
+
+// ─── Message router ───────────────────────────────────────────────────────────
+
+chrome.runtime.onMessage.addListener((request: { action?: string; suggestions?: FieldSuggestion[] }, _sender, sendResponse) => {
+  const action = request?.action;
+
+  if (action === 'PING_CONTENT') {
+    sendResponse({ ok: true });
+    return false;
+  }
+
+  if (action === 'SCAN_PAGE') {
+    scan()
+      .then((summary) => sendResponse({ ok: true, summary }))
+      .catch((error: unknown) =>
+        sendResponse({ ok: false, error: error instanceof Error ? error.message : 'Scan failed.' }),
+      );
+    return true;
+  }
+
+  if (action === 'GET_SUMMARY') {
+    sendResponse(state.summary ? { ok: true, summary: state.summary } : { ok: false, error: 'Not scanned yet.' });
+    return false;
+  }
+
+  if (action === 'SHOW_REVIEW_PANEL') {
+    if (request.suggestions) state.suggestions = request.suggestions;
+    const show = async (): Promise<void> => {
+      if (!state.summary) await scan();
+      renderPanel();
+      startObserving();
+    };
+    show()
+      .then(() => sendResponse({ ok: true }))
+      .catch((error: unknown) =>
+        sendResponse({ ok: false, error: error instanceof Error ? error.message : 'Could not open the panel.' }),
+      );
+    return true;
+  }
+
+  if (action === 'APPLY_SUGGESTIONS') {
+    // Declared in the message contract and used by callers that already have a reviewed
+    // set (and by the adversarial safety tests, which deliberately try to push a tampered
+    // suggestion past the UI — the interaction engine re-checks policy either way).
+    const list = request.suggestions ?? [];
+    applyFill(list)
+      .then(() => sendResponse({ ok: true, report: state.report }))
+      .catch((error: unknown) =>
+        sendResponse({ ok: false, error: error instanceof Error ? error.message : 'Fill failed.' }),
+      );
+    return true;
+  }
+
+  if (action === 'CLOSE_PANEL') {
+    closePanel();
+    sendResponse({ ok: true });
+    return false;
+  }
+
+  return false;
 });
 
-let rootNode: ReturnType<typeof createRoot> | null = null;
-
-function injectReviewPanel(answers: AIAnswer[]) {
-  let container = document.getElementById('formpilot-review-root');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'formpilot-review-root';
-    document.body.appendChild(container);
-  }
-
-  if (!rootNode) {
-    rootNode = createRoot(container);
-  }
-
-  function setNativeInputValue(element: HTMLInputElement | HTMLTextAreaElement, value: string) {
-    const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')?.set;
-    const prototype = Object.getPrototypeOf(element);
-    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
-
-    if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
-      prototypeValueSetter.call(element, value);
-    } else if (valueSetter) {
-      valueSetter.call(element, value);
-    } else {
-      element.value = value;
-    }
-
-    element.dispatchEvent(new Event('input', { bubbles: true }));
-    element.dispatchEvent(new Event('change', { bubbles: true }));
-    element.dispatchEvent(new Event('blur', { bubbles: true }));
-  }
-
-  const handleFill = (finalAnswers: AIAnswer[]) => {
-
-
-    const questionBlocks = document.querySelectorAll('div[role="listitem"]');
-    let filledCount = 0;
-    let totalCount = 0;
-
-    questionBlocks.forEach((block) => {
-      const titleElement = block.querySelector('div[role="heading"]');
-      if (!titleElement) return;
-      const questionText = (titleElement.textContent || '').replace('*', '').trim();
-      const normQ = questionText.toLowerCase().trim();
-
-      // Handle Grid questions
-      const grid = block.querySelector('div[role="grid"]');
-      if (grid) {
-        const rows = grid.querySelectorAll('div[role="row"]');
-        rows.forEach((row, rIndex) => {
-          if (rIndex === 0) return;
-          const rowHeader = row.querySelector('div[role="rowheader"]');
-          if (rowHeader && rowHeader.textContent) {
-            totalCount++;
-            const rowQuestionText = `${questionText}: ${rowHeader.textContent.trim()}`;
-            const normRowQ = rowQuestionText.toLowerCase().trim();
-            const answerObj = finalAnswers.find(a =>
-              a.question === rowQuestionText ||
-              a.question.toLowerCase().trim() === normRowQ
-            );
-
-            if (answerObj && answerObj.answer) {
-              const targetAns = answerObj.answer.toLowerCase().trim();
-              const options = row.querySelectorAll('div[role="radio"], div[role="checkbox"]');
-              let rowFilled = false;
-
-              options.forEach(opt => {
-                const val = (opt.getAttribute('data-value') || opt.getAttribute('aria-label') || '').toLowerCase().trim();
-                const isChecked = opt.getAttribute('aria-checked') === 'true';
-                if ((targetAns.includes(val) || val.includes(targetAns)) && !isChecked) {
-                  (opt as HTMLElement).click();
-                  rowFilled = true;
-                } else if (isChecked) {
-                  rowFilled = true;
-                }
-              });
-              if (rowFilled) filledCount++;
-            }
-          }
-        });
-        return;
-      }
-
-      // Non-grid question matching using robust normalized strings
-      totalCount++;
-      const answerObj = finalAnswers.find(a => {
-        const aNorm = a.question.toLowerCase().trim();
-        return aNorm === normQ || aNorm.includes(normQ) || normQ.includes(aNorm);
-      });
-
-      if (!answerObj || !answerObj.answer) return;
-      const answerText = answerObj.answer;
-
-      // 1. Date Inputs
-      const dateInput = block.querySelector('input[type="date"]') as HTMLInputElement;
-      if (dateInput) {
-        let formattedDate = answerText;
-        const dMatch = answerText.trim().match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-        if (dMatch) {
-          let p1 = parseInt(dMatch[1], 10);
-          let p2 = parseInt(dMatch[2], 10);
-          let year = dMatch[3];
-          let day = p1 > 12 ? p1 : (p2 > 12 ? p2 : p1); // default to DD/MM/YYYY if ambiguous
-          let month = p1 > 12 ? p2 : (p2 > 12 ? p1 : p2);
-          formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-        } else {
-          const parsed = new Date(answerText);
-          if (!isNaN(parsed.getTime())) {
-            formattedDate = parsed.toISOString().split('T')[0];
-          }
-        }
-
-        try {
-          setNativeInputValue(dateInput, formattedDate);
-        } catch (e) {
-          console.warn("Could not set date format:", formattedDate);
-        }
-        filledCount++;
-        return;
-      }
-
-      // 2. Time Inputs
-      const timeInput = block.querySelector('input[type="time"]') as HTMLInputElement;
-      if (timeInput) {
-        setNativeInputValue(timeInput, answerText);
-        filledCount++;
-        return;
-      }
-
-      // 3. Text Inputs (Text, Email, Number, Tel, Url, or generic)
-      const textInput = block.querySelector('input[type="text"], input[type="email"], input[type="number"], input[type="tel"], input[type="url"], input:not([type="radio"]):not([type="checkbox"]):not([type="date"]):not([type="time"]):not([type="hidden"])') as HTMLInputElement;
-      if (textInput) {
-        setNativeInputValue(textInput, answerText);
-        filledCount++;
-        return;
-      }
-
-      // 4. Textareas
-      const textarea = block.querySelector('textarea') as HTMLTextAreaElement;
-      if (textarea) {
-        setNativeInputValue(textarea, answerText);
-        filledCount++;
-        return;
-      }
-
-      // 5. Radio Buttons, Checkboxes, Linear Scale
-      const options = block.querySelectorAll('div[role="radio"], div[role="checkbox"]');
-      if (options.length > 0) {
-        const normAns = answerText.toLowerCase().trim();
-        let optionFilled = false;
-
-        options.forEach(opt => {
-          const val = (opt.getAttribute('data-value') || opt.getAttribute('aria-label') || '').toLowerCase().trim();
-          const isChecked = opt.getAttribute('aria-checked') === 'true';
-
-          if ((normAns.includes(val) || val.includes(normAns)) && !isChecked) {
-            (opt as HTMLElement).click();
-            optionFilled = true;
-          } else if (isChecked) {
-            optionFilled = true;
-          }
-        });
-        if (optionFilled) filledCount++;
-        return;
-      }
-      // 6. Dropdowns
-      const listbox = block.querySelector('div[role="listbox"]');
-      if (listbox) {
-        (listbox as HTMLElement).click();
-        setTimeout(() => {
-          const listOptions = document.querySelectorAll('div[role="option"]');
-          const normAns = answerText.toLowerCase().trim();
-          listOptions.forEach(o => {
-            const val = (o.getAttribute('data-value') || o.textContent || '').toLowerCase().trim();
-            if (val === normAns || normAns.includes(val)) {
-              (o as HTMLElement).click();
-              filledCount++;
-            }
-          });
-        }, 150);
-      }
-    });
-    toastMessage(`Form autofilled (${filledCount} of ${totalCount} fields filled)!`);
-  };
-  function toastMessage(msg: string) {
-    const t = document.createElement('div');
-    t.innerText = msg;
-    t.style.position = 'fixed';
-    t.style.bottom = '20px';
-    t.style.right = '20px';
-    t.style.background = '#4CAF50';
-    t.style.color = 'white';
-    t.style.padding = '12px 24px';
-    t.style.borderRadius = '8px';
-    t.style.zIndex = '999999';
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
-  }
-  const handleClose = () => {
-    if (rootNode) {
-      rootNode.unmount();
-      rootNode = null;
-    }
-    if (container) {
-      container.remove();
-    }
-  };
-  rootNode.render(
-    <React.StrictMode>
-      <ReviewPanel answers={answers} onFill={handleFill} onClose={handleClose} />
-    </React.StrictMode>
-  );
+// Announce readiness so a popup that injected us can proceed without polling.
+if (!(window as GuardedWindow)[GUARD]) {
+  (window as GuardedWindow)[GUARD] = true;
 }

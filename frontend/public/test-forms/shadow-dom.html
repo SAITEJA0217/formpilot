@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test 7 — Shadow DOM form</title>
+<style>body{font:14px/1.5 system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;color:#111}</style>
+</head>
+<body>
+<h1>Test 7 — Shadow DOM form</h1>
+<p>Fields live inside an <strong>open</strong> shadow root, plus one nested a second level deep.
+   A closed shadow root is included to confirm it is correctly reported as unreachable.</p>
+
+<label for="outside">Full Name (light DOM)</label>
+<input id="outside" name="fullName" autocomplete="name" style="width:100%;padding:8px" />
+
+<fp-contact-card></fp-contact-card>
+<fp-closed-card></fp-closed-card>
+
+<script>
+  class ContactCard extends HTMLElement {
+    connectedCallback() {
+      const root = this.attachShadow({ mode: 'open' });
+      root.innerHTML = `
+        <style>
+          :host{display:block;border:1px solid #ddd;border-radius:8px;padding:12px 14px;margin:16px 0}
+          label{display:block;margin:10px 0 4px;font-weight:600}
+          input{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+        </style>
+        <strong>Contact (open shadow root)</strong>
+        <label for="s-email">Email Address</label>
+        <input id="s-email" name="email" type="email" autocomplete="email" />
+        <label for="s-phone">Phone Number</label>
+        <input id="s-phone" name="phone" type="tel" autocomplete="tel" />
+        <fp-nested-links></fp-nested-links>`;
+    }
+  }
+  class NestedLinks extends HTMLElement {
+    connectedCallback() {
+      const root = this.attachShadow({ mode: 'open' });
+      root.innerHTML = `
+        <style>
+          label{display:block;margin:10px 0 4px;font-weight:600}
+          input{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font:inherit}
+        </style>
+        <label for="n-linkedin">LinkedIn Profile</label>
+        <input id="n-linkedin" name="linkedin" type="url" />`;
+    }
+  }
+  class ClosedCard extends HTMLElement {
+    connectedCallback() {
+      const root = this.attachShadow({ mode: 'closed' });
+      root.innerHTML = `<label>Hidden field</label><input name="unreachable" />`;
+    }
+  }
+  // Guarded so re-loading the page into an existing realm does not throw.
+  if (!customElements.get('fp-contact-card')) customElements.define('fp-contact-card', ContactCard);
+  if (!customElements.get('fp-nested-links')) customElements.define('fp-nested-links', NestedLinks);
+  if (!customElements.get('fp-closed-card')) customElements.define('fp-closed-card', ClosedCard);
+</script>
+</body>
+</html>
