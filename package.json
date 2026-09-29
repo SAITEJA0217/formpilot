@@ -22,6 +22,7 @@
     "bench": "vite-node research/benchmark/run.ts",
     "study:matching": "vite-node research/matching/run.ts",
     "study:performance": "vite-node research/performance/run.ts",
+    "study:routing": "vite-node research/routing/run.ts",
     "test:e2e": "playwright test",
     "build:apps": "node tests/e2e/apps/build.mjs"
   },

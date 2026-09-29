@@ -41,6 +41,20 @@ export interface AiCallRecord {
   modes: string[];
   /** Whether the request used the v2 `fields` shape or the legacy `questions` shape. */
   shape: 'v2' | 'legacy' | 'unknown';
+  /**
+   * Top-level keys of the `profile` object as it actually arrived.
+   *
+   * Recorded rather than the values, so a spec can assert data minimisation end to end —
+   * that `documents` and the user's alternate personas never reached the endpoint — without
+   * the test fixture holding a copy of anything sensitive.
+   */
+  profileKeys: string[];
+  /** Keys of `profile.basicProfile` as it actually arrived. */
+  basicProfileKeys: string[];
+  /** Whether a page URL was included in the form context. */
+  sentPageUrl: boolean;
+  /** Field labels as they arrived. These are the form's questions, never the user's answers. */
+  fieldLabels: string[];
 }
 
 export interface TestServer {
@@ -155,7 +169,12 @@ export async function startTestServer(port = 3000): Promise<TestServer> {
       // ── Stub AI endpoint ────────────────────────────────────────────────────
       if (pathname === '/api/ai/generate' && req.method === 'POST') {
         const raw = await readBody(req);
-        let parsed: { fields?: AiField[]; questions?: unknown[] } = {};
+        let parsed: {
+          fields?: AiField[];
+          questions?: unknown[];
+          profile?: Record<string, unknown>;
+          formContext?: { url?: string };
+        } = {};
         try {
           parsed = JSON.parse(raw);
         } catch {
@@ -163,11 +182,18 @@ export async function startTestServer(port = 3000): Promise<TestServer> {
           return;
         }
         const fields = parsed.fields ?? [];
+        const profile = parsed.profile ?? {};
+        const basic = profile.basicProfile;
         aiCalls.push({
           at: Date.now(),
           fieldIds: fields.map((f) => f.fieldId),
           modes: fields.map((f) => f.mode ?? 'unknown'),
           shape: parsed.fields ? 'v2' : parsed.questions ? 'legacy' : 'unknown',
+          profileKeys: Object.keys(profile).sort(),
+          basicProfileKeys:
+            basic && typeof basic === 'object' ? Object.keys(basic as object).sort() : [],
+          sentPageUrl: typeof parsed.formContext?.url === 'string' && parsed.formContext.url.length > 0,
+          fieldLabels: fields.map((f) => f.label ?? ''),
         });
 
         const answers = fields.map((field) => {

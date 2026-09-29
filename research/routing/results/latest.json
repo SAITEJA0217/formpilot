@@ -1,0 +1,307 @@
+{
+  "caveat": "Model calls are counted, not executed. No provider is reachable from the build environment, so this file contains no measurement of generated answer quality.",
+  "corpus": {
+    "pages": 13,
+    "fields": 109
+  },
+  "modeA": {
+    "fields": 109,
+    "resolvedLocally": 76,
+    "routedToModel": 0,
+    "handedToUser": 21,
+    "blocked": 10,
+    "documents": 2,
+    "noData": 0,
+    "modelCalls": 0,
+    "byStatus": {
+      "ready": 55,
+      "manual": 21,
+      "needs_review": 21,
+      "needs_document": 2,
+      "blocked": 10
+    }
+  },
+  "modeB": {
+    "fields": 109,
+    "resolvedLocally": 76,
+    "routedToModel": 12,
+    "handedToUser": 9,
+    "blocked": 10,
+    "documents": 2,
+    "noData": 0,
+    "modelCalls": 9,
+    "byStatus": {
+      "ready": 55,
+      "needs_review": 33,
+      "manual": 9,
+      "needs_document": 2,
+      "blocked": 10
+    }
+  },
+  "delta": {
+    "fieldsRoutedToModel": 12,
+    "userBurdenReduced": 12
+  },
+  "modelDemandByType": {
+    "text": 2,
+    "textarea": 8,
+    "select_one": 1,
+    "rating": 1
+  },
+  "modelDemandByMode": {
+    "assist": 4,
+    "generate": 8
+  },
+  "pages": [
+    {
+      "page": "ambiguous-labels.html",
+      "category": "Ambiguous labels",
+      "fields": 12,
+      "modeA": {
+        "resolvedLocally": 6,
+        "handedToUser": 6
+      },
+      "modeB": {
+        "resolvedLocally": 6,
+        "routedToModel": 3,
+        "handedToUser": 3
+      },
+      "modelFieldTypes": [
+        "text",
+        "text",
+        "textarea"
+      ],
+      "modelFieldLabels": [
+        "Contact",
+        "yyyy-mm-dd",
+        "Anything else we should know?"
+      ]
+    },
+    {
+      "page": "aria-widgets.html",
+      "category": "ARIA widgets",
+      "fields": 7,
+      "modeA": {
+        "resolvedLocally": 6,
+        "handedToUser": 1
+      },
+      "modeB": {
+        "resolvedLocally": 6,
+        "routedToModel": 1,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [
+        "textarea"
+      ],
+      "modelFieldLabels": [
+        "Tell us about yourself"
+      ]
+    },
+    {
+      "page": "basic-html.html",
+      "category": "Generic HTML",
+      "fields": 9,
+      "modeA": {
+        "resolvedLocally": 8,
+        "handedToUser": 1
+      },
+      "modeB": {
+        "resolvedLocally": 8,
+        "routedToModel": 1,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [
+        "textarea"
+      ],
+      "modelFieldLabels": [
+        "Professional Summary"
+      ]
+    },
+    {
+      "page": "complex-html.html",
+      "category": "Generic HTML",
+      "fields": 16,
+      "modeA": {
+        "resolvedLocally": 14,
+        "handedToUser": 1
+      },
+      "modeB": {
+        "resolvedLocally": 14,
+        "routedToModel": 1,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [
+        "textarea"
+      ],
+      "modelFieldLabels": [
+        "Why do you want to join our team?"
+      ]
+    },
+    {
+      "page": "dynamic-form.html",
+      "category": "Dynamic",
+      "fields": 2,
+      "modeA": {
+        "resolvedLocally": 1,
+        "handedToUser": 1
+      },
+      "modeB": {
+        "resolvedLocally": 1,
+        "routedToModel": 1,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [
+        "select_one"
+      ],
+      "modelFieldLabels": [
+        "Employment Status"
+      ]
+    },
+    {
+      "page": "google-forms-mock.html",
+      "category": "Google Forms",
+      "fields": 12,
+      "modeA": {
+        "resolvedLocally": 7,
+        "handedToUser": 5
+      },
+      "modeB": {
+        "resolvedLocally": 7,
+        "routedToModel": 1,
+        "handedToUser": 4
+      },
+      "modelFieldTypes": [
+        "textarea"
+      ],
+      "modelFieldLabels": [
+        "Why do you want to join our team?"
+      ]
+    },
+    {
+      "page": "jotform-mock.html",
+      "category": "Jotform (experimental)",
+      "fields": 15,
+      "modeA": {
+        "resolvedLocally": 13,
+        "handedToUser": 1
+      },
+      "modeB": {
+        "resolvedLocally": 13,
+        "routedToModel": 1,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [
+        "textarea"
+      ],
+      "modelFieldLabels": [
+        "Why do you want to join our team?"
+      ]
+    },
+    {
+      "page": "microsoft-forms-mock.html",
+      "category": "Microsoft Forms (experimental)",
+      "fields": 10,
+      "modeA": {
+        "resolvedLocally": 8,
+        "handedToUser": 2
+      },
+      "modeB": {
+        "resolvedLocally": 8,
+        "routedToModel": 2,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [
+        "textarea",
+        "rating"
+      ],
+      "modelFieldLabels": [
+        "Why do you want to join our team?",
+        "Rate your React proficiency"
+      ]
+    },
+    {
+      "page": "multi-step.html",
+      "category": "Multi-step",
+      "fields": 3,
+      "modeA": {
+        "resolvedLocally": 3,
+        "handedToUser": 0
+      },
+      "modeB": {
+        "resolvedLocally": 3,
+        "routedToModel": 0,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [],
+      "modelFieldLabels": []
+    },
+    {
+      "page": "sensitive-fields.html",
+      "category": "Safety",
+      "fields": 10,
+      "modeA": {
+        "resolvedLocally": 0,
+        "handedToUser": 0
+      },
+      "modeB": {
+        "resolvedLocally": 0,
+        "routedToModel": 0,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [],
+      "modelFieldLabels": []
+    },
+    {
+      "page": "shadow-dom.html",
+      "category": "Shadow DOM",
+      "fields": 4,
+      "modeA": {
+        "resolvedLocally": 4,
+        "handedToUser": 0
+      },
+      "modeB": {
+        "resolvedLocally": 4,
+        "routedToModel": 0,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [],
+      "modelFieldLabels": []
+    },
+    {
+      "page": "surveymonkey-mock.html",
+      "category": "SurveyMonkey (experimental)",
+      "fields": 8,
+      "modeA": {
+        "resolvedLocally": 5,
+        "handedToUser": 3
+      },
+      "modeB": {
+        "resolvedLocally": 5,
+        "routedToModel": 1,
+        "handedToUser": 2
+      },
+      "modelFieldTypes": [
+        "textarea"
+      ],
+      "modelFieldLabels": [
+        "Anything else we should know?"
+      ]
+    },
+    {
+      "page": "typeform-mock.html",
+      "category": "Typeform (experimental)",
+      "fields": 1,
+      "modeA": {
+        "resolvedLocally": 1,
+        "handedToUser": 0
+      },
+      "modeB": {
+        "resolvedLocally": 1,
+        "routedToModel": 0,
+        "handedToUser": 0
+      },
+      "modelFieldTypes": [],
+      "modelFieldLabels": []
+    }
+  ]
+}
