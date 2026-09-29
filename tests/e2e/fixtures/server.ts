@@ -20,6 +20,8 @@ const ROOT = path.resolve(import.meta.dirname, '../../..');
 const MOUNTS: { prefix: string; dir: string }[] = [
   { prefix: '/test-forms', dir: path.join(ROOT, 'frontend/public/test-forms') },
   { prefix: '/pages', dir: path.join(ROOT, 'tests/e2e/pages') },
+  // Built by tests/e2e/apps/build.mjs; real React, Vue and Angular bundles.
+  { prefix: '/apps', dir: path.join(ROOT, 'tests/e2e/apps/dist') },
 ];
 
 const MIME: Record<string, string> = {

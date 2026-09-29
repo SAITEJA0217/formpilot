@@ -37,11 +37,14 @@ export interface EngineDriver {
   /**
    * Open a served page as the form under test.
    *
+   * A path is resolved against the local test server; an absolute `http://` URL is opened
+   * as given, which is how the Next.js dev server on port 3100 is reached.
+   *
    * A unique nonce is appended to the URL because tab resolution matches on URL: without it,
    * two tests opening the same fixture produce two tabs with identical URLs and every
    * operation lands on whichever was opened first.
    */
-  openForm(relativePath: string): Promise<Page>;
+  openForm(pathOrUrl: string): Promise<Page>;
   /** Inject the engine and scan, exactly as the popup does. */
   scan(page: Page): Promise<FormSummary>;
   /** Open the in-page review panel. */
@@ -157,21 +160,43 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
     await bridge.close();
 
     const openedPages: Page[] = [];
+    /** The nonce stamped into each opened page's URL, which is how its tab is found. */
+    const pageNonces = new Map<Page, string>();
     let nonce = 0;
 
+    /**
+     * Resolve the tab id for a page by focusing it and asking for the active tab.
+     *
+     * Matching on `tab.url` is the obvious approach and it does not work. Without the
+     * `tabs` permission — which FormPilot deliberately does not request — `chrome.tabs`
+     * only reveals a tab's URL for origins covered by `host_permissions`. The Next.js dev
+     * server on port 3100 is not one of them, so every tab came back with an empty URL and
+     * nothing matched. Focusing the page and reading the active tab needs no URL at all,
+     * and it is what the popup itself does under `activeTab`, so the harness resolves tabs
+     * the same way the product does.
+     *
+     * The nonce is still stamped into each URL and verified here whenever Chrome is willing
+     * to tell us the URL, which keeps the original guarantee: an operation can never
+     * silently land on the wrong tab.
+     */
     const tabIdFor = async (page: Page): Promise<number> => {
-      const url = page.url();
-      const matches = await privileged.evaluate(async (target) => {
-        const tabs = await chrome.tabs.query({});
-        return tabs.filter((t) => t.url === target).map((t) => t.id ?? -1);
-      }, url);
-      if (matches.length === 0) throw new Error(`could not resolve a tab id for ${url}`);
-      if (matches.length > 1) {
-        // Two tabs with one URL means the nonce failed and every operation would silently
-        // target the wrong tab. Fail loudly rather than produce a misleading result.
-        throw new Error(`${matches.length} tabs share the URL ${url}; tab resolution is ambiguous`);
+      const token = pageNonces.get(page);
+      if (!token) throw new Error(`page ${page.url()} was not opened through driver.openForm`);
+      await page.bringToFront();
+      const active = await privileged.evaluate(async () => {
+        const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        return tab ? { id: tab.id ?? -1, url: tab.url ?? '' } : null;
+      });
+      if (!active || active.id < 0) {
+        throw new Error(`no active tab after focusing ${page.url()}`);
       }
-      return matches[0];
+      // `url` is empty for an origin the manifest does not cover; only check it when given.
+      if (active.url && !new RegExp(`[?&]fp=${token}(?:&|$)`).test(active.url)) {
+        throw new Error(
+          `active tab is ${active.url}, which does not carry fp=${token}; refusing to act on the wrong tab`,
+        );
+      }
+      return active.id;
     };
 
     const ensureEngine = async (page: Page): Promise<number> => {
@@ -199,15 +224,19 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
       extensionId,
       privileged,
 
-      async openForm(relativePath: string): Promise<Page> {
+      async openForm(pathOrUrl: string): Promise<Page> {
         const page = await context.newPage();
         const errors: string[] = [];
         page.on('pageerror', (error) => errors.push(error.message));
         nonce += 1;
-        const separator = relativePath.includes('?') ? '&' : '?';
-        await page.goto(`${server.origin}${relativePath}${separator}fp=${nonce}`, { waitUntil: 'load' });
+        // `e2e` prefixed so `fp=1` cannot be confused with `fp=10` by a prefix match.
+        const token = `e2e${nonce}`;
+        pageNonces.set(page, token);
+        const base = pathOrUrl.startsWith('http') ? pathOrUrl : `${server.origin}${pathOrUrl}`;
+        const separator = base.includes('?') ? '&' : '?';
+        await page.goto(`${base}${separator}fp=${token}`, { waitUntil: 'load' });
         if (errors.length > 0) {
-          throw new Error(`page errors on ${relativePath}: ${errors.join('; ')}`);
+          throw new Error(`page errors on ${pathOrUrl}: ${errors.join('; ')}`);
         }
         openedPages.push(page);
         return page;
@@ -216,7 +245,9 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
       async closeOpenedPages(): Promise<void> {
         while (openedPages.length > 0) {
           const page = openedPages.pop();
-          if (page && !page.isClosed()) await page.close();
+          if (!page) continue;
+          pageNonces.delete(page);
+          if (!page.isClosed()) await page.close();
         }
       },
 
