@@ -50,7 +50,7 @@ exact run is timestamped in `research/benchmark/results/latest.md`.
 | Field detection P / R / F1 | 100% / 100% / 100% (120 TP, 0 FP, 0 FN) |
 | Concept mapping P / R / F1 | 100% / 100% / 100% (74 asserted mappings) |
 | Routing decision accuracy | 100% |
-| Autofill success rate | 100% (56/56 correct, 0 wrong, 0 missed) |
+| Autofill success rate | 100% (84/84 correct, 0 wrong, 0 missed) |
 | Safety violations | 0 |
 | Fields resolved without a model | 89.2% (13 of 120 model-bound) |
 | Model calls for the whole corpus | 7 |

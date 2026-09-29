@@ -25,8 +25,8 @@ npm --prefix extension install
 npm --prefix frontend install
 
 npm run typecheck:all     # root (shared + tests + research), extension, frontend
-npm test                  # 536 assertions across 29 files
-npm run test:safety       # 121 of those, safety invariants only — its own CI job
+npm test                  # 732 assertions across 37 files
+npm run test:safety       # 232 of those, safety invariants only — its own CI job
 npm run build:extension   # dist/ + dist/injected/universal.js
 npm run lint              # frontend eslint
 
@@ -78,7 +78,7 @@ timestamp and the timing lines.
 
 | Command | Output |
 |---|---|
-| `npm test` | pass/fail per file; 536 assertions currently pass |
+| `npm test` | pass/fail per file; 732 assertions currently pass |
 | `npm run test:safety` | 121 assertions; a failure here is a security regression, not a failing feature |
 | `npm run bench` | console summary, `results/latest.json` (full per-field records), `results/latest.md` (report with every breakdown table) |
 | `npm run study:matching` | console report plus `research/matching/results/{latest.json,latest.md}`; per-concept confusion counts, sweep rows, ablation rows |

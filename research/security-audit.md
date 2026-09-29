@@ -5,7 +5,7 @@ code and running the suite, not from the documentation.
 
 | | |
 | --- | --- |
-| **Procedure** | `npm run test:safety` (121 assertions), `npx playwright test` (42 specs), source scan |
+| **Procedure** | `npm run test:safety` (232 assertions), `npm run study:safety-corpus` (196 cases), `npx playwright test` (83 specs), source scan |
 | **Date** | 2026-09-29 |
 | **Software version** | FormPilot 2.0.0, commit `6e01e8e` |
 | **Result** | 121/121 safety assertions pass; 0 violations in the benchmark; **4 missed refusals on the held-out set** |

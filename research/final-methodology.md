@@ -111,8 +111,8 @@ Full definitions for the benchmark's own metrics are in `evaluation-metrics.md`.
 ```bash
 npm install && npm --prefix extension install && npm --prefix frontend install
 npm run typecheck:all
-npm test                      # 536 assertions, 29 files
-npm run test:safety           # 121 of those, its own CI job
+npm test                      # 732 assertions, 37 files
+npm run test:safety           # 232 of those, its own CI job
 npm run bench                 # synthetic corpus, regression guard
 npm run study:matching        # regression suite, post-hoc — read its README first
 npm run study:routing         # routing decisions, hybrid vs always-ask
@@ -120,7 +120,7 @@ npm run study:performance     # jsdom scaling curve
 npm run heldout:fetch         # re-fetch the third-party corpus
 npm run study:heldout         # the held-out evaluation
 npm run build:extension && npm run build:apps
-npx playwright test           # 42 specs, Chromium 141
+npx playwright test           # 83 specs, Chromium 141
 ./research/platform-probe/probe.sh   # whether the five platforms are reachable
 ```
 

@@ -6,7 +6,7 @@ from so it can be checked rather than believed.
 
 | | |
 | --- | --- |
-| **Procedure** | source audit; `npm test` (536 assertions); `npx playwright test ai-routing` (8 specs) |
+| **Procedure** | source audit; `npm test` (732 assertions); `npx playwright test ai-routing` (9 specs) |
 | **Date** | re-verified 2026-09-29 |
 | **Software version** | FormPilot 2.0.0, commit `6e01e8e` |
 | **Result** | all controls verified; the minimisation claim is asserted against what the endpoint actually receives |

@@ -2,7 +2,8 @@
 
 # FormPilot
 
-**Universal semantic web-form understanding and human-in-the-loop autofill.**
+**A platform-independent architecture for semantic web-form understanding and automated,
+human-reviewed form assistance.**
 
 Fill your profile once. FormPilot reads the form in front of you, works out what each field
 means, proposes answers grounded in your profile, shows you where every answer came from — and
@@ -17,8 +18,15 @@ fills only what you approve.
 A Manifest V3 browser extension plus a Next.js dashboard. The extension detects the form on the
 current page, normalizes it into one platform-independent schema, maps each field onto a canonical
 profile concept, and presents the result for review. A language model is used only where
-deterministic matching genuinely cannot decide — in the current benchmark, **89.4% of fields are
+deterministic matching genuinely cannot decide — in the current benchmark, **89.2% of fields are
 resolved with no model call at all**.
+
+**The claim, in full, and it is the only one made here:** *FormPilot provides a platform-independent
+architecture for semantic web-form understanding and automated, human-reviewed form assistance,
+evaluated across the tested form environments.* The last clause is the load-bearing one — "the tested
+form environments" are the ones listed in `research/compatibility-matrix.md`, not the web. This
+README previously said "universal", which was not supported by anything measured here and has been
+removed.
 
 It is an assistant, not an agent. It never submits a form, never accepts an agreement, and never
 fills a password, one-time code, payment detail or government identifier.
@@ -32,23 +40,25 @@ covers it.
 |---|---|
 | Generic HTML form detection and autofill | **Implemented, verified** |
 | ARIA-widget forms (no native inputs, contenteditable, custom listbox) | **Implemented, verified** |
-| Google Forms (all v1 question types, incl. grid flattening) | **Implemented, verified** — 15-test regression suite |
+| Google Forms, every question type | **Implemented, verified** — 36 integration tests plus 12 Chromium specs, against local reproductions |
 | Open Shadow DOM, including nesting | **Implemented, verified** |
 | Same-origin iframes | **Implemented, verified** with synthetic frames; the fixture page is manual only |
-| Dynamic / conditional fields (MutationObserver) | **Implemented, verified** |
-| Multi-step forms with session continuity | **Implemented, verified** |
+| Dynamic / conditional fields (MutationObserver) | **Implemented, verified** in Chromium |
+| Multi-step forms with session continuity | **Implemented, verified** in Chromium — six steps, with identity, value, confidence, provenance and user edits each asserted |
 | Deterministic semantic matching with provenance | **Implemented, verified** |
 | Confidence bands and human review | **Implemented, verified** |
-| Safety refusals (credentials, payment, identity, consent) | **Implemented, verified** — the benchmark fails the run on any violation |
+| Safety refusals (credentials, payment, identity, consent, signatures) | **Implemented, verified** — a 196-case corpus gates CI, and the benchmark fails the run on any violation |
 | File fields via a native picker | **Implemented**, mechanism unit-tested; browser hand-off is manual only |
 | Correction learning | **Implemented**, unit-tested |
-| AI routing + long-form generation | **Implemented**; generated-answer quality is **not measured** |
-| React / Next.js forms | **Partially verified** — the native-setter mechanism is unit-tested; the pages are manual only |
-| Vue / Angular / vanilla JS | **Expected to work, untested** — no fixture |
-| Microsoft Forms, Typeform, Jotform, SurveyMonkey | **Recognised, not supported** — generic fallback, no adapter, no measurement |
+| AI routing + long-form generation | **Implemented**; the routing decisions are measured, generated-answer quality is **not** |
+| React (controlled and uncontrolled), Next.js App Router, Vue, Angular | **Implemented, verified** in Chromium against real framework builds |
+| Custom widgets built from divs — select, checkbox, radio group | **Implemented, verified** in Chromium |
+| Svelte, Solid, Ember, others | **Untested** — no fixture |
+| Microsoft Forms, Typeform, Jotform, SurveyMonkey | **Experimental** — adapter, fixture, ground truth, unit, integration and Chromium tests each exist, but the live products are unreachable from this environment, so none has run against the real thing |
 | Visual / screenshot fallback for unlabelled fields | **Not implemented** |
-| Playwright end-to-end suite | **Not implemented** |
-| Real-world site evaluation | **Not done** — see [research/limitations.md](./research/limitations.md) |
+| Playwright end-to-end suite | **Implemented** — 83 specs in real Chromium with the built extension loaded |
+| Live hosted platform evaluation | **Not done** — all five platforms denied at CONNECT; see [research/platform-evaluation.md](./research/platform-evaluation.md) |
+| Human study | **Not done** — instruments in [research/human-study/](./research/human-study/), all marked NOT YET COLLECTED |
 
 ## Architecture
 
@@ -253,32 +263,45 @@ Local test pages live at `/test-forms` on the dashboard and double as the benchm
 npm run bench            # → research/benchmark/results/{latest.json,latest.md}
 ```
 
-Latest run: 12 page states, 85 labelled fields, no model called.
+Latest run: 17 page states, 120 labelled fields, no model called.
 
 | Metric | Value |
 |---|---|
 | Field detection P / R / F1 | 100% / 100% / 100% |
 | Concept mapping P / R / F1 | 100% / 100% / 100% |
 | Routing decision accuracy | 100% |
-| Autofill success rate | 100% (56/56) |
+| Autofill success rate | 100% (84/84) |
 | Safety violations | 0 |
-| Fields resolved without a model | 89.4% |
-| Automation rate / review burden | 55.3% / 32.9% |
+| Fields resolved without a model | 89.2% |
+| Automation rate / review burden | 51.7% / 40.0% |
 
 **These are regression numbers, not a generality claim.** The corpus is synthetic, small, and
-written by the same author as the engine. Six of those metrics were *not* perfect on the first run;
-each gap was a real defect, and all nine are listed with root causes in
-[research/experiment-design.md](./research/experiment-design.md). Read
+written by the same author as the engine, so every 100% above means "nothing broke", not "works in
+general". Six of those metrics were *not* perfect on the first run; each gap was a real defect, and
+all nine are listed with root causes in
+[research/experiment-design.md](./research/experiment-design.md).
+
+**The numbers to cite instead** are the held-out ones, measured on third-party form markup with ground
+truth from the HTML spec rather than from this project: **93.6% accuracy [87.3%, 96.9%], 0.9%
+incorrect-fill rate, 45 of 45 credential and payment controls refused**
+([research/held-out-evaluation-v2.md](./research/held-out-evaluation-v2.md)). They are lower than the
+table above, and they are the real ones. Read
 [research/limitations.md](./research/limitations.md) before citing any of this.
 
 ## Known limitations
 
 The short version; the full list is in [research/limitations.md](./research/limitations.md).
 
-* No real-world site evaluation, and no human study. Acceptance, correction and override rates are
-  not reported because they need participants.
-* Generated-answer quality is unmeasured.
-* Four platforms are recognised but unsupported; Vue/Angular/vanilla are untested.
+* No live hosted platform was reachable from the build environment, so no adapter for Google Forms,
+  Microsoft Forms, Typeform, Jotform or SurveyMonkey has ever run against the real product. All four
+  of the latter stay **Experimental**.
+* No human study. Acceptance, correction and override rates are not reported because they need
+  participants; `research/human-study/` holds the instruments, all marked NOT YET COLLECTED.
+* Generated-answer quality is unmeasured — no model provider is reachable here, so model calls are
+  counted, never executed.
+* React, Next.js, Vue and Angular are tested in real Chromium. Svelte, Solid and Ember are not.
+* The review panel is a fixed 400px column and can sit on top of a centred form's own buttons in a
+  narrow window (`research/limitations.md` §5b).
 * Cross-origin iframes, closed shadow roots and CAPTCHAs are out of reach by browser design.
 * Step and section detection are heuristics — there is no standard markup for either.
 * Tests run under jsdom: no layout, no real event ordering. The extension has not been driven in a
