@@ -25,6 +25,8 @@
     "study:performance": "vite-node research/performance/run.ts",
     "study:routing": "vite-node research/routing/run.ts",
     "study:heldout": "vite-node research/heldout/evaluate.ts",
+    "study:heldout-v2": "vite-node research/heldout-v2/evaluate.ts",
+    "heldout-v2:fetch": "node research/heldout-v2/fetch.mjs",
     "heldout:fetch": "node research/heldout/fetch.mjs",
     "test:e2e": "playwright test",
     "build:apps": "node tests/e2e/apps/build.mjs"
