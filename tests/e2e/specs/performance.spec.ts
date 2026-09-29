@@ -20,10 +20,15 @@ import type { Page } from '@playwright/test';
 /**
  * Sizes spanning a short form to an unreasonable one.
  *
- * 250 is the top of the range a real page plausibly reaches; 10 is a contact form. The set is
- * fixed so successive runs are comparable.
+ * 10 is a contact form and 250 is the top of the range a real page plausibly reaches. 500 is past
+ * that on purpose: `research/performance/` measures the same seven sizes in jsdom, and a
+ * synthetic-only number at the largest size is the easiest kind to be wrong about — jsdom has no
+ * layout, so it cannot show work that only appears when 500 controls are laid out, painted and
+ * observed. Measuring it here too is what makes the synthetic curve's top end checkable.
+ *
+ * The set is fixed so successive runs are comparable.
  */
-const SIZES = [10, 25, 50, 100, 250] as const;
+const SIZES = [10, 25, 50, 100, 250, 500] as const;
 /** Repeats per size. Enough to see spread without making the suite slow. */
 const REPEATS = 3;
 
