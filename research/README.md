@@ -8,7 +8,8 @@ than as a product demo.
 
 | Document | Contents |
 | --- | --- |
-| [PHASE2_AUDIT.md](./PHASE2_AUDIT.md) | **start here** — what was implemented vs what was validated, and what changed |
+| [PHASE2_FINAL_REPORT.md](./PHASE2_FINAL_REPORT.md) | **start here** — the narrative: what was found, what is true, what is not |
+| [PHASE2_AUDIT.md](./PHASE2_AUDIT.md) | what was implemented vs what was validated, and what changed |
 | [FINAL_VALIDATION_REPORT.md](./FINAL_VALIDATION_REPORT.md) | every claim, its status, and the command that proves it |
 | [architecture.md](./architecture.md) | the system, layer by layer, and why it is split that way |
 | [methodology.md](./methodology.md) | how a field is understood: signals, scoring, routing |
