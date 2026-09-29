@@ -20,7 +20,7 @@ import {
   type ProfileLike,
 } from '../../../shared/matching';
 import { authorizedFetch, readJson, STORAGE_KEYS } from './api';
-import { redactProfileForAI } from '../../../shared/privacy/redact';
+import { minimiseUrlForAI, redactProfileForAI } from '../../../shared/privacy/redact';
 
 export interface ExtensionSettings {
   allowAI: boolean;
@@ -134,7 +134,10 @@ export async function buildSuggestionsForForm(form: UnifiedForm): Promise<Sugges
               formContext: {
                 title: form.title,
                 platform: form.platform,
-                url: form.url,
+                // Origin and path only: the query and fragment of a careers URL routinely carry
+                // the applicant's own email, session token or application id, none of which helps
+                // ground an answer. See `minimiseUrlForAI`.
+                url: minimiseUrlForAI(form.url),
                 sections: form.sections.map((section) => ({ id: section.id, title: section.title })),
               },
             }),

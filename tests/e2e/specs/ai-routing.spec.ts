@@ -87,6 +87,39 @@ test.describe('the AI path', () => {
     }
   });
 
+  /**
+   * The page URL is sent, but only the part a grounded answer needs.
+   *
+   * A generated answer has to know who is asking, and the hostname carries that. The query and
+   * fragment do not: on a real careers URL they carry the applicant's prefilled email, a session
+   * token, or an application id, and none of that helps write an answer while all of it lands in the
+   * backend's and the provider's request logs.
+   *
+   * This is asserted on the wire rather than at the function, because `openForm` stamps every page
+   * with a `?fp=e2eN` nonce — so every page in this suite genuinely has a query string to strip, and
+   * a regression that sent `form.url` straight through would show up here immediately.
+   */
+  test('sends the page URL stripped of its query and fragment', async ({ driver, server }) => {
+    const page = await driver.openForm('/test-forms/complex-html.html');
+    await openPanel(driver, page);
+
+    expect(server.aiCalls.length).toBe(1);
+    const { pageUrl } = server.aiCalls[0];
+
+    // The host survives: that is the grounding the URL is sent for.
+    expect(pageUrl).toContain('/test-forms/complex-html.html');
+    expect(pageUrl).toMatch(/^http:\/\/[^/?#]+\/test-forms\/complex-html\.html$/);
+
+    // The nonce the harness appended is a query parameter, and it is gone.
+    expect(pageUrl, 'no query string may survive').not.toContain('?');
+    expect(pageUrl, 'no fragment may survive').not.toContain('#');
+    expect(pageUrl).not.toContain('fp=');
+
+    // And the URL the page is actually on does carry it, so this is a real strip rather than a
+    // fixture that happened to have no query.
+    expect(page.url()).toContain('fp=');
+  });
+
   test('merges the answer into the panel, marked as generated', async ({ driver, server }) => {
     const page = await driver.openForm('/test-forms/complex-html.html');
     await driver.scan(page);

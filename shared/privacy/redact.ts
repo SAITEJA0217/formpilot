@@ -112,3 +112,44 @@ export function redactProfileForAI<T extends Record<string, unknown>>(
     report: { removed, removedFromBasicProfile, keptForValueLookup },
   };
 }
+
+/**
+ * The page URL, reduced to the part that grounds an answer.
+ *
+ * The URL is sent because a generated answer needs to know who is asking: "why do you want to join
+ * us?" cannot be written without the company, and the hostname supplies it. That is the whole of the
+ * grounding requirement, and it is the *rest* of the URL that carries the risk.
+ *
+ * A careers URL routinely looks like
+ * `https://jobs.example.com/apply/senior-engineer?email=you@example.com&token=8f3ac1&utm_source=li`,
+ * or `…#step=3&candidateId=99201`. Those query and fragment parts are where an applicant's own
+ * identifiers live — an email, a session token, an application id — and none of them helps a model
+ * write a better answer. Sending them put identifying data in the request logs of the backend and of
+ * the model provider for no benefit at all, which is the definition of data that should not have
+ * left the device.
+ *
+ * So: origin and path are kept, query and fragment are dropped. Credentials in the authority
+ * (`https://user:pass@host/`) are dropped too — those are credentials by definition.
+ *
+ * The path is kept deliberately, and it is the one judgement call here. A path is usually the job
+ * (`/careers/senior-engineer`) and that is real grounding; it can also carry an opaque application
+ * id, which this does not remove, because there is no way to tell an id from a job title without
+ * guessing and a wrong guess silently destroys the grounding the URL is sent for. The honest
+ * position is that this reduces exposure rather than eliminating it, and `allowAI: false` remains
+ * the control that sends nothing at all.
+ *
+ * Returns `null` for anything unparseable, and for non-http(s) schemes — a `file:`, `data:` or
+ * extension URL says nothing about a company and can name the user's own filesystem.
+ */
+export function minimiseUrlForAI(url: string | null | undefined): string | null {
+  if (!url) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+  // `origin` excludes any username/password in the authority, so credentials cannot survive.
+  return `${parsed.origin}${parsed.pathname}`;
+}

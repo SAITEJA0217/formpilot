@@ -53,6 +53,13 @@ export interface AiCallRecord {
   basicProfileKeys: string[];
   /** Whether a page URL was included in the form context. */
   sentPageUrl: boolean;
+  /**
+   * The page URL exactly as it arrived, so a spec can assert what was stripped from it.
+   *
+   * Recorded in full rather than as a flag: the point is that the query and fragment are *gone*,
+   * and only the arrived value can show that. Safe to hold here — these are localhost fixture URLs.
+   */
+  pageUrl: string | null;
   /** Field labels as they arrived. These are the form's questions, never the user's answers. */
   fieldLabels: string[];
 }
@@ -234,6 +241,7 @@ export async function startTestServer(port = 3000): Promise<TestServer> {
           basicProfileKeys:
             basic && typeof basic === 'object' ? Object.keys(basic as object).sort() : [],
           sentPageUrl: typeof parsed.formContext?.url === 'string' && parsed.formContext.url.length > 0,
+          pageUrl: typeof parsed.formContext?.url === 'string' ? parsed.formContext.url : null,
           fieldLabels: fields.map((f) => f.label ?? ''),
         });
 

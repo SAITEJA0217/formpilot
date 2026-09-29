@@ -104,12 +104,38 @@ The payload carries:
 - **Form context** — the page title, the detected platform, **the page URL**, and the section
   titles.
 
-**The page URL is sent.** It is used to ground the answer — "why do you want to join?" needs to
-know which company is asking. It also means the backend, and by extension the model provider's
-request logs, can see which form you were filling. There is no setting that sends the fields
-without the URL. If that matters to you, `allowAI: false` is the control, and with it off the
-local rule engine still resolves the large majority of fields — 89.2% on the current benchmark
-corpus (`research/benchmark/results/latest.md`).
+**The page URL is sent, minimised to origin and path.** This was examined rather than accepted,
+and the examination changed the code.
+
+*What depends on it.* A generated answer has to know who is asking: "why do you want to join us?"
+cannot be written without the company. The **hostname** supplies that, and the **path** is usually
+the role (`/careers/senior-backend-engineer`), which is real grounding too. That is the whole of the
+requirement. Removing the URL outright would leave the model writing about an unnamed employer, so
+blanket removal was rejected.
+
+*What the rest of it carries.* Everything after the path is where the applicant's own identifiers
+live. A real careers URL looks like
+`https://jobs.example.com/apply/senior-engineer?email=you@example.com&token=8f3ac1&utm_source=li`, or
+carries `#candidateId=99201&step=3`. A prefilled email, a session token, an application id, ad-click
+identifiers — none of which helps write a better answer, and all of which would land in the backend's
+and the model provider's request logs. Data that leaves the device for no benefit is the clearest
+case there is for removing it.
+
+*What was changed.* `minimiseUrlForAI` in `shared/privacy/redact.ts` keeps origin and path and drops
+the query, the fragment, and any credentials in the authority (`https://user:pass@host/`). A
+non-`http(s)` URL — `file:`, `data:`, `chrome-extension:` — is dropped entirely, since it names the
+user's own filesystem or the extension rather than a company. `tests/unit/url-minimisation.test.ts`
+covers all of it, and `tests/e2e/specs/ai-routing.spec.ts` asserts it **on the wire** rather than at
+the function: the E2E harness stamps every page with a `?fp=e2eN` nonce, so every page in that suite
+has a query string that must be gone by the time the request arrives.
+
+*What this does not fix, stated plainly.* The path is kept, and a path can itself carry an opaque
+application id alongside the job title. Stripping path segments that "look like ids" would be
+guesswork, and a wrong guess silently destroys the grounding the URL is sent for — so this reduces
+exposure rather than eliminating it. The backend, and by extension the provider's logs, can still see
+which company's form you were filling. `allowAI: false` remains the only control that sends nothing
+at all, and with it off the local rule engine still resolves the large majority of fields — 89.2% on
+the current benchmark corpus (`research/benchmark/results/latest.md`).
 
 **Field values are never sent.** The request describes the form, not what is in it.
 
@@ -224,7 +250,10 @@ All in the options page (`extension/src/options/Options.tsx`), backed by handler
 
 ## Remaining risks, stated plainly
 
-1. **The page URL goes to the AI path.** Documented above. Mitigated only by `allowAI: false`.
+1. **The page URL's origin and path go to the AI path.** Examined and minimised rather than removed;
+   see the determination above. The query, fragment and any authority credentials are stripped. What
+   remains — which company's form you were filling — is what grounding requires, and is mitigated only
+   by `allowAI: false`.
    Sending a form's questions without saying which form they came from would produce worse
    answers, so this is a real trade-off rather than an oversight — but it is a trade-off the
    user cannot currently tune.
