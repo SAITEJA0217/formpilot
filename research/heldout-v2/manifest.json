@@ -1,0 +1,722 @@
+{
+  "//": "Held-out v2. Third-party HTML discovered by GitHub code search, disjoint from v1.",
+  "//disjointFromV1": "Every file present in research/heldout/manifest.json was excluded before fetching. v1 and v2 share no source file, so v2 is a fresh measurement rather than a re-run.",
+  "//whyV2": "v1 exposed four payment-field safety misses. Fixing them made v1 a training set for that fix, so an independent post-fix number needs a corpus sampled after the fix was frozen. This is it.",
+  "//procedure": "One query per WHATWG autocomplete token, `language:HTML`, results taken in the order GitHub returned them. Tokens chosen to be mostly ones v1 did not use, plus cc-* and one-time-code so the safety fix is measured on markup it has never seen.",
+  "//groundTruth": "Each file's own `autocomplete` attribute, per the WHATWG HTML specification. Withheld from every method at evaluation time.",
+  "//date": "2026-09-29",
+  "//searchTool": "mcp__github__search_code (GitHub code search REST)",
+  "//integrity": "fetch.mjs records the SHA-256 of every file's fetched bytes, so a later run can prove it read the same content.",
+  "excludedAsV1Overlap": [
+    "KenSaflok/DentalCo_Collection_worked/demo.html",
+    "umutcanbolat/Autofillr/docs/index.html"
+  ],
+  "queries": {
+    "address-line1": 12,
+    "address-level1": 11,
+    "cc-number": 22,
+    "one-time-code": 18,
+    "tel": 17,
+    "address-line2": 10,
+    "cc-csc": 12,
+    "additional-name": 16
+  },
+  "files": [
+    {
+      "repo": "grisuno/LazyOwn",
+      "path": "templates/fajeform.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 0
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v20/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 1
+    },
+    {
+      "repo": "alpinerentals/alpinerentals.github.io",
+      "path": "cart.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 2
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v4/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 3
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v5/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 4
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v9/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 5
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v19/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 6
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v11/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 7
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v12/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 8
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v21/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 9
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v18/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 10
+    },
+    {
+      "repo": "dwp/apply-for-pip-prototype",
+      "path": "app/views/v11/hospice-address.html",
+      "discoveredBy": "autocomplete=\"address-line1\"",
+      "rank": 11
+    },
+    {
+      "repo": "dninomiya/form-guide",
+      "path": "fields/address/html.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 0
+    },
+    {
+      "repo": "code4romania/redirectioneaza",
+      "path": "backend/templates/v2/components/input/county.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 1
+    },
+    {
+      "repo": "Dan-Q/freedeedpoll",
+      "path": "views/start.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 2
+    },
+    {
+      "repo": "paypal-examples/fastlane-sample-application",
+      "path": "server/shared/views/checkout.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 3
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "textarea_select.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 4
+    },
+    {
+      "repo": "ferronmol/shipsWorld_apis-app",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 5
+    },
+    {
+      "repo": "oeil/deplacement-covid-19",
+      "path": "generate.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 6
+    },
+    {
+      "repo": "Luiz0tavi0/agenda_js_vanilla",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 7
+    },
+    {
+      "repo": "Blueprinter/stripe-js.v3-using-elements",
+      "path": "HTML/H_Stripe.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 8
+    },
+    {
+      "repo": "vinyll/attestation-covid",
+      "path": "generate.html",
+      "discoveredBy": "autocomplete=\"address-level1\"",
+      "rank": 9
+    },
+    {
+      "repo": "jondavidjohn/payform",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 0
+    },
+    {
+      "repo": "wangjohn/creditly",
+      "path": "src/gray_theme.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 1
+    },
+    {
+      "repo": "wangjohn/creditly",
+      "path": "src/blue_theme.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 2
+    },
+    {
+      "repo": "wangjohn/creditly",
+      "path": "example.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 3
+    },
+    {
+      "repo": "wangjohn/creditly",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 4
+    },
+    {
+      "repo": "mjhea0/node-stripe-charge",
+      "path": "src/server/views/charge.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 5
+    },
+    {
+      "repo": "goodpont/binking",
+      "path": "demo.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 6
+    },
+    {
+      "repo": "justrach/kuri",
+      "path": "bench/fixtures/form.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 7
+    },
+    {
+      "repo": "gretchenfitze/billing-form",
+      "path": "public/index.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 8
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "basic_cc.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 9
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "layout_cc.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 10
+    },
+    {
+      "repo": "rsolomakhin/rsolomakhin.github.io",
+      "path": "autofill/cc_only.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 11
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "basic_cc_2.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 12
+    },
+    {
+      "repo": "lovekeshpal/the-real-world-javascript",
+      "path": "36/index.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 13
+    },
+    {
+      "repo": "triple-underscore/triple-underscore.github.io",
+      "path": "HTML-forms-intro-ja.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 14
+    },
+    {
+      "repo": "han3420/01",
+      "path": "payment.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 15
+    },
+    {
+      "repo": "roshana01/digikala-template",
+      "path": "asset/pages/main.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 16
+    },
+    {
+      "repo": "IntuitDeveloper/SampleApp-Payments-Nodejs",
+      "path": "public/index.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 17
+    },
+    {
+      "repo": "luke-chang/autofill-demo",
+      "path": "basic_cc_2.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 18
+    },
+    {
+      "repo": "greenido/Product-Site-101",
+      "path": "form-cc-example-m.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 19
+    },
+    {
+      "repo": "greenido/Product-Site-101",
+      "path": "form-cc-example-m3.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 20
+    },
+    {
+      "repo": "Mastercard/digital-first-card-autofill",
+      "path": "web/card.html",
+      "discoveredBy": "autocomplete=\"cc-number\"",
+      "rank": 21
+    },
+    {
+      "repo": "eduard256/Strix",
+      "path": "www/xiaomi.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 0
+    },
+    {
+      "repo": "intelligentwolf/WolfStack",
+      "path": "web/login.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 1
+    },
+    {
+      "repo": "macgaver/zfsnas-chezmoi",
+      "path": "static/login.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 2
+    },
+    {
+      "repo": "ankitpathak62/Login-Page-Animation",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 3
+    },
+    {
+      "repo": "gauravkrs/Blinkit",
+      "path": "otp.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 4
+    },
+    {
+      "repo": "andreaswilli/react-verification-input",
+      "path": "docs/index.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 5
+    },
+    {
+      "repo": "brahmandeepak/7supremacy-masai",
+      "path": "otp.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 6
+    },
+    {
+      "repo": "visorcraft/Tailshell",
+      "path": "nginx/login.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 7
+    },
+    {
+      "repo": "miyucy/miyucy.github.io",
+      "path": "otp.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 8
+    },
+    {
+      "repo": "bkbilly/Routario",
+      "path": "web/login.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 9
+    },
+    {
+      "repo": "margetrp-hub/image-agent-studio",
+      "path": "login.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 10
+    },
+    {
+      "repo": "Variant-Fund/right-here-now",
+      "path": "signin.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 11
+    },
+    {
+      "repo": "muhammadsaadlmk/Creative-Login-Form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 12
+    },
+    {
+      "repo": "shreyypatell/HealthEase",
+      "path": "otp.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 13
+    },
+    {
+      "repo": "SagarBiswas-MultiHAT/Multi-FA-Auth",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 14
+    },
+    {
+      "repo": "The12Forest/StandUpTracker",
+      "path": "public/login.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 15
+    },
+    {
+      "repo": "superAman07/Vykal365",
+      "path": "otp.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 16
+    },
+    {
+      "repo": "lamtran-poc/lamtran-poc.github.io",
+      "path": "otp.html",
+      "discoveredBy": "autocomplete=\"one-time-code\"",
+      "rank": 17
+    },
+    {
+      "repo": "tanveerbedi/Formify",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 1
+    },
+    {
+      "repo": "krig6/odin-sign-up-form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 2
+    },
+    {
+      "repo": "prodbylcsh/The-Odin-Project-Sign-Up-Form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 3
+    },
+    {
+      "repo": "Rudra9461/RUDYARD_WATCHES_WEBSITE",
+      "path": "form.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 4
+    },
+    {
+      "repo": "briancama/birthday-app",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 5
+    },
+    {
+      "repo": "rodripereztsf/tradingsinfronteras-shop",
+      "path": "cart.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 6
+    },
+    {
+      "repo": "irm1005-itec1005-fall-2023/assignment-01-NoorChoudhry",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 7
+    },
+    {
+      "repo": "AbelStack/food-ordering-app",
+      "path": "cart.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 8
+    },
+    {
+      "repo": "chrisnajman/css-form-styling",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 9
+    },
+    {
+      "repo": "ef10res/finalprojectwdd330",
+      "path": "join.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 10
+    },
+    {
+      "repo": "lalalalala1357/community-shop",
+      "path": "wish.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 11
+    },
+    {
+      "repo": "coderprinc/NexusBristol",
+      "path": "vip.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 12
+    },
+    {
+      "repo": "SdSarthak/Feedback-Fusion",
+      "path": "Reg.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 13
+    },
+    {
+      "repo": "SyedArmanAli2003/ResQNet",
+      "path": "auth.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 14
+    },
+    {
+      "repo": "defra-design/Defra-Form-Tool-Proto",
+      "path": "docs.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 15
+    },
+    {
+      "repo": "kvjoshi19/accessibleform",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"tel\"",
+      "rank": 16
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v3/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 0
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v8/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 1
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v16/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 2
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v15/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 3
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v10/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 4
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v22/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 5
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v13/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 6
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v17/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 7
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v14/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 8
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v23/apply/address.html",
+      "discoveredBy": "autocomplete=\"address-line2\"",
+      "rank": 9
+    },
+    {
+      "repo": "chromium/badssl.com",
+      "path": "common/input/credit-card/index.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 0
+    },
+    {
+      "repo": "duckduckgo/privacy-test-pages",
+      "path": "adClickFlow/pay/pay.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 1
+    },
+    {
+      "repo": "rsolomakhin/rsolomakhin.github.io",
+      "path": "pr/spc-cc/index.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 2
+    },
+    {
+      "repo": "duckduckgo/privacy-test-pages",
+      "path": "adClickFlow/pay/subscribe.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 3
+    },
+    {
+      "repo": "google-developer-training/pwa-ecommerce-demo",
+      "path": "project/app/index.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 4
+    },
+    {
+      "repo": "clear-code/firefox-support-common",
+      "path": "testcases/creditcard.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 5
+    },
+    {
+      "repo": "google-developer-training/pwa-ecommerce-demo",
+      "path": "solution/app/index.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 6
+    },
+    {
+      "repo": "duckduckgo/privacy-test-pages",
+      "path": "autofill/credit-card-various-inputs.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 7
+    },
+    {
+      "repo": "rsolomakhin/rsolomakhin.github.io",
+      "path": "autofill/cc_js_focus.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 8
+    },
+    {
+      "repo": "sergiolopes/shopping-desafios",
+      "path": "pagar-estacionamento.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 9
+    },
+    {
+      "repo": "greenido/Product-Site-101",
+      "path": "form-cc-example.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 10
+    },
+    {
+      "repo": "greenido/Product-Site-101",
+      "path": "form-cc-example-m2.html",
+      "discoveredBy": "autocomplete=\"cc-csc\"",
+      "rank": 11
+    },
+    {
+      "repo": "w3c/wcag",
+      "path": "techniques/aria/ARIA2.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 0
+    },
+    {
+      "repo": "civiform/civiform",
+      "path": "server/app/views/questiontypes/NameQuestionFragment.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 1
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "autocomplete-us-separate-fields.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 2
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v15/apply/name.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 3
+    },
+    {
+      "repo": "Denzel543/OnPage---Portfolio",
+      "path": "warn.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 4
+    },
+    {
+      "repo": "devongarde/ssc",
+      "path": "recipe/toast/living/jan13/formex.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 5
+    },
+    {
+      "repo": "CamiloVacaA/App-de-ventas--5CDs",
+      "path": "login/3.1-busquedaProductos.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 6
+    },
+    {
+      "repo": "waic/wcag22",
+      "path": "techniques/aria/ARIA2.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 7
+    },
+    {
+      "repo": "irm1005-itec1005-fall-2023/assignment-04-corinnamacintyre",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 8
+    },
+    {
+      "repo": "nhsbsa/apply-healthy-start-vouchers",
+      "path": "app/views/v15/apply/childs-first-name.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 9
+    },
+    {
+      "repo": "MatheusDDChs/HTML-CSS",
+      "path": "exercicios/ex025/form011.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 10
+    },
+    {
+      "repo": "spw3bt3ch/bmi-calculator",
+      "path": "templates/index.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 11
+    },
+    {
+      "repo": "kwabenaaseda/ExpenseTracker",
+      "path": "login.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 12
+    },
+    {
+      "repo": "kwabenaaseda/ExpenseTracker",
+      "path": "signup.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 13
+    },
+    {
+      "repo": "Elebrimir/Client_Jocs",
+      "path": "web/login.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 14
+    },
+    {
+      "repo": "Koralsus/Banketa",
+      "path": "register.html",
+      "discoveredBy": "autocomplete=\"additional-name\"",
+      "rank": 15
+    }
+  ]
+}
