@@ -23,6 +23,18 @@ const FAKE_FIREBASE_ENV = {
   NEXT_PUBLIC_FIREBASE_APP_ID: '1:000000000000:web:e2e0000000000000000000',
 };
 
+/**
+ * Prefix the Next dev server serves everything under, so the test server can reverse-proxy the
+ * whole app from `127.0.0.1:3000` — the origin the extension manifest already trusts.
+ *
+ * Without this the Next app is on its own port, and `chrome.scripting.executeScript` cannot
+ * reach it: that needs `activeTab`, which only a real toolbar click grants and no automation
+ * API can simulate, or a `host_permissions` match, which FormPilot deliberately does not
+ * declare for arbitrary origins. Adding a test-only origin to the shipped manifest to make a
+ * test pass would defeat the point of the permission reduction, so the proxy does it instead.
+ */
+export const NEXT_BASE_PATH = '/next';
+
 export default defineConfig({
   testDir: './tests/e2e/specs',
   outputDir: './tests/e2e/.artifacts',
@@ -37,11 +49,11 @@ export default defineConfig({
   webServer: {
     command: 'npx next dev -p 3100',
     cwd: 'frontend',
-    url: 'http://127.0.0.1:3100/test-forms',
+    url: `http://127.0.0.1:3100${NEXT_BASE_PATH}/test-forms`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
     stdout: 'ignore',
     stderr: 'pipe',
-    env: FAKE_FIREBASE_ENV,
+    env: { ...FAKE_FIREBASE_ENV, FORMPILOT_E2E_BASE_PATH: NEXT_BASE_PATH },
   },
 });

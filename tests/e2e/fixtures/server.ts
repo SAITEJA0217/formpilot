@@ -132,6 +132,47 @@ function generateForm(count: number): string {
   );
 }
 
+/** Where the Next.js dev server listens, and the prefix it serves everything under. */
+const NEXT_ORIGIN = 'http://127.0.0.1:3100';
+const NEXT_BASE_PATH = '/next';
+
+/**
+ * Forward a request to the Next dev server and stream the response back unchanged.
+ *
+ * Deliberately transparent: status, headers and body are passed through so hydration, HMR
+ * polling and asset requests behave as they would against Next directly. The only thing that
+ * changes is the origin the browser sees, which is the whole point.
+ */
+async function proxyToNext(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
+  const target = `${NEXT_ORIGIN}${url.pathname}${url.search}`;
+  const headers: Record<string, string> = {};
+  for (const [key, value] of Object.entries(req.headers)) {
+    // Hop-by-hop and host headers must not be forwarded verbatim.
+    if (key === 'host' || key === 'connection' || key === 'content-length') continue;
+    if (typeof value === 'string') headers[key] = value;
+  }
+  const body = req.method === 'GET' || req.method === 'HEAD' ? undefined : await readBody(req);
+
+  try {
+    const upstream = await fetch(target, { method: req.method, headers, body, redirect: 'manual' });
+    const out: Record<string, string> = {};
+    upstream.headers.forEach((value, key) => {
+      if (key === 'content-encoding' || key === 'transfer-encoding' || key === 'content-length') return;
+      out[key] = value;
+    });
+    res.writeHead(upstream.status, out);
+    res.end(Buffer.from(await upstream.arrayBuffer()));
+  } catch (error) {
+    // A clear message beats a socket hang-up when the dev server is not up yet.
+    send(
+      res,
+      502,
+      `next dev unreachable at ${target}: ${error instanceof Error ? error.message : String(error)}`,
+      'text/plain; charset=utf-8',
+    );
+  }
+}
+
 async function serveStatic(pathname: string, res: ServerResponse): Promise<boolean> {
   for (const mount of MOUNTS) {
     if (!pathname.startsWith(`${mount.prefix}/`)) continue;
@@ -227,6 +268,14 @@ export async function startTestServer(port = 3000): Promise<TestServer> {
       // ── Instrumentation the specs read ──────────────────────────────────────
       if (pathname === '/__ai-calls') {
         send(res, 200, JSON.stringify(aiCalls), MIME['.json']);
+        return;
+      }
+
+      // ── Reverse proxy to the Next.js dev server ─────────────────────────────
+      // Everything under /next is the real `next dev` server, served from this origin so the
+      // extension can inject into it. See NEXT_BASE_PATH in playwright.config.ts for why.
+      if (pathname === NEXT_BASE_PATH || pathname.startsWith(`${NEXT_BASE_PATH}/`)) {
+        await proxyToNext(req, res, url);
         return;
       }
 

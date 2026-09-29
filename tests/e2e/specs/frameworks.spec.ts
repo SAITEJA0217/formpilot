@@ -160,19 +160,22 @@ for (const app of CLIENT_APPS) {
 }
 
 test.describe('Next.js 16 App Router (server-rendered, then hydrated)', () => {
-  const NEXT_FORM = 'http://127.0.0.1:3100/test-forms/react';
+  // Served through the test server's reverse proxy so the origin is one the extension can
+  // inject into; the HTML, the JS and the hydration all come from a real `next dev`.
+  const NEXT_FORM = '/next/test-forms/react';
 
   test('fills a hydrated controlled form and leaves the agreement alone', async ({ driver }) => {
     const page = await driver.openForm(NEXT_FORM);
-    // Hydration has to finish before React owns the inputs; until it does, a write would
-    // land on server-rendered markup that hydration then replaces.
     await page.locator('#r-name').waitFor({ state: 'visible' });
+
+    // Hydration has to finish before React owns the inputs; until it does, a write would land
+    // on server-rendered markup that hydration then replaces. `window.next.router` is Next's
+    // own post-hydration marker, which is a better signal for a Next.js page than poking at
+    // React's internal fiber keys — React 19 does not expose those as enumerable properties.
     await page.waitForFunction(
       () => {
-        const input = document.querySelector<HTMLInputElement>('#r-name');
-        if (!input) return false;
-        // React attaches its internal props to the DOM node once hydrated.
-        return Object.keys(input).some((key) => key.startsWith('__react'));
+        const next = (window as unknown as { next?: { router?: unknown } }).next;
+        return !!next?.router;
       },
       null,
       { timeout: 30_000 },
@@ -186,13 +189,22 @@ test.describe('Next.js 16 App Router (server-rendered, then hydrated)', () => {
     await driver.showPanel(page);
     await fillAndSettle(driver, page);
 
-    const values = await page.evaluate(() => ({
-      fullName: document.querySelector<HTMLInputElement>('#r-name')?.value ?? '',
-      email: document.querySelector<HTMLInputElement>('#r-email')?.value ?? '',
-      phone: document.querySelector<HTMLInputElement>('#r-phone')?.value ?? '',
-      company: document.querySelector<HTMLInputElement>('#r-company')?.value ?? '',
-      agreed: document.querySelector<HTMLInputElement>('input[name="agreed"]')?.checked ?? null,
-    }));
+    const read = (): Promise<Record<string, string | boolean | null>> =>
+      page.evaluate(() => ({
+        fullName: document.querySelector<HTMLInputElement>('#r-name')?.value ?? '',
+        email: document.querySelector<HTMLInputElement>('#r-email')?.value ?? '',
+        phone: document.querySelector<HTMLInputElement>('#r-phone')?.value ?? '',
+        company: document.querySelector<HTMLInputElement>('#r-company')?.value ?? '',
+        agreed: document.querySelector<HTMLInputElement>('input[name="agreed"]')?.checked ?? null,
+      }));
+
+    const values = await read();
+
+    // The marker above says hydration started; this says the writes survived it. If React had
+    // hydrated after the fill it would reset every controlled input from its own empty state,
+    // so a second read a moment later would come back blank.
+    await page.waitForTimeout(1_000);
+    expect(await read()).toEqual(values);
 
     expect(values.fullName).toBe(EXPECTED.fullName);
     expect(values.email).toBe(EXPECTED.email);
