@@ -16,6 +16,7 @@ import type { FieldOption, FieldType, UnifiedField } from '../../../../shared/ty
 import { collapse, visibleText } from '../dom/text';
 import { buildSelector } from '../detect/selector';
 import type { FormAdapter } from './types';
+import { descendantSelector } from '../dom/selectors';
 
 /** Microsoft's automation hooks, which are part of their accessibility contract. */
 const QUESTION = '[data-automation-id="questionItem"]';
@@ -49,7 +50,7 @@ export const microsoftFormsAdapter: FormAdapter = {
   matches(ctx) {
     // A URL match alone is not enough: without the expected markup the generic engine is
     // the better handler, so require a question container to actually be present.
-    return !!ctx.document.querySelector(`${QUESTION} ${TITLE}`);
+    return !!ctx.document.querySelector(descendantSelector(QUESTION, TITLE));
   },
 
   questionContainers(root) {

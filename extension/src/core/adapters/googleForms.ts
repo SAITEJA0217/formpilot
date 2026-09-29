@@ -15,6 +15,7 @@ import type { FieldOption, UnifiedField } from '../../../../shared/types/form';
 import { collapse, visibleText } from '../dom/text';
 import { buildSelector } from '../detect/selector';
 import type { FormAdapter } from './types';
+import { descendantSelector } from '../dom/selectors';
 
 const LISTITEM = 'div[role="listitem"]';
 const HEADING = 'div[role="heading"]';
@@ -42,7 +43,7 @@ export const googleFormsAdapter: FormAdapter = {
 
   matches(ctx) {
     if (ctx.platform === 'google-forms') return true;
-    return !!ctx.document.querySelector(`${LISTITEM} ${HEADING}`);
+    return !!ctx.document.querySelector(descendantSelector(LISTITEM, HEADING));
   },
 
   /**

@@ -39,3 +39,9 @@ if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) {
     },
   );
 }
+
+// This file is a side-effect-only content script: it registers listeners and exports no
+// values. The empty export marks it as a module anyway, so a test can `await import()` it
+// to re-register those listeners against a fresh stub. Without it TypeScript treats the
+// file as a global script and rejects the import with TS2306.
+export {};

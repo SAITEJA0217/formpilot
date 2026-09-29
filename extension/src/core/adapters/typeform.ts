@@ -20,6 +20,7 @@ import type { FieldOption, FieldType, UnifiedField } from '../../../../shared/ty
 import { collapse, isHidden, visibleText } from '../dom/text';
 import { buildSelector } from '../detect/selector';
 import type { FormAdapter } from './types';
+import { descendantSelector } from '../dom/selectors';
 
 const BLOCK = '[data-qa="block-container"], [data-qa^="block-"]';
 const HEADER = '[data-qa="question-header"], [data-qa="question-title"]';
@@ -56,7 +57,10 @@ export const typeformAdapter: FormAdapter = {
     'form.typeform.com is unreachable from the build environment.',
 
   matches(ctx) {
-    return !!ctx.document.querySelector(`${BLOCK} ${HEADER}`) || !!ctx.document.querySelector('[data-qa="form-renderer"]');
+    return (
+      !!ctx.document.querySelector(descendantSelector(BLOCK, HEADER)) ||
+      !!ctx.document.querySelector('[data-qa="form-renderer"]')
+    );
   },
 
   /**

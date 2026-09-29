@@ -19,6 +19,7 @@
 import type { FieldType, UnifiedField } from '../../../../shared/types/form';
 import { collapse, isHidden, visibleText } from '../dom/text';
 import type { FormAdapter } from './types';
+import { refineSelector } from '../dom/selectors';
 
 const LINE = 'li.form-line, div.form-line';
 const LABEL = 'label.form-label, .form-label-top, .form-label-left';
@@ -69,7 +70,10 @@ export const jotformAdapter: FormAdapter = {
     'reproduction. jotform.com is unreachable from the build environment.',
 
   matches(ctx) {
-    return !!ctx.document.querySelector(`${LINE}[data-type]`) || !!ctx.document.querySelector('.jotform-form');
+    return (
+      !!ctx.document.querySelector(refineSelector(LINE, '[data-type]')) ||
+      !!ctx.document.querySelector('.jotform-form')
+    );
   },
 
   /**

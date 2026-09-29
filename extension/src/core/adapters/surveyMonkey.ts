@@ -20,6 +20,7 @@ import type { FieldOption, FieldType, UnifiedField } from '../../../../shared/ty
 import { collapse, isHidden, visibleText } from '../dom/text';
 import { buildSelector } from '../detect/selector';
 import type { FormAdapter } from './types';
+import { descendantSelector } from '../dom/selectors';
 
 const QUESTION = '[data-testid^="question"], .question-body, .survey-page-question';
 const TITLE = '[data-testid="question-title"], .question-title-container, .qtitle, legend';
@@ -61,7 +62,7 @@ export const surveyMonkeyAdapter: FormAdapter = {
     'questions are detected but intentionally not filled.',
 
   matches(ctx) {
-    return !!ctx.document.querySelector(`${QUESTION} ${TITLE}`);
+    return !!ctx.document.querySelector(descendantSelector(QUESTION, TITLE));
   },
 
   /**
