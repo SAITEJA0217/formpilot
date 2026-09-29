@@ -257,7 +257,7 @@ something again; a provider key and a grounding-faithfulness harness; a human st
 
 ## 17. Honest accounting of this phase
 
-- 15 commits, all local. **The push was refused with HTTP 403** — see section 18.
+- Every commit local; none pushed. **The push was refused with HTTP 403** — see section 18.
 - 10 product defects found and fixed, 2 of them severe, plus 4 harness bugs.
 - 1 new mechanism (context-dependent aliases) that came from the data, not from a design document.
 - 1 finding documented rather than fixed, deliberately.
@@ -286,9 +286,12 @@ Confirmed absent from the remote: `git ls-remote origin 'refs/heads/claude/*'` r
 Read access works (the clone and `git ls-remote` succeed through the container's git proxy); only
 write is refused.
 
-**All 15 commits are intact on the local branch `claude/exciting-faraday-2jfepm`, on top of
-`a799f7c`.** Nothing was squashed, rebased, force-pushed or discarded. The push was attempted
-again after the final commit, with the same result.
+**Every commit of this phase is intact on the local branch `claude/exciting-faraday-2jfepm`, on
+top of `a799f7c`.** Nothing was squashed, rebased, force-pushed or discarded. The push was
+retried after later commits, with the same result each time.
+
+No count is quoted here on purpose: any commit that states one is itself a commit, so the number
+was wrong the moment it was written. `git rev-list --count a799f7c..HEAD` gives the current figure.
 
 To recover, either:
 
@@ -300,7 +303,7 @@ this), or reconnect GitHub from claude.ai settings. Then, from this session:
 git push -u origin claude/exciting-faraday-2jfepm
 ```
 
-**B. Fetch the bundle.** A verified git bundle of all 15 commits was sent to you. From your own
+**B. Fetch the bundle.** A verified git bundle of the whole branch was sent to you. From your own
 clone at `a799f7c`:
 
 ```bash
