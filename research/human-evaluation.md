@@ -82,6 +82,36 @@ the data — the same discipline the held-out evaluation applies to the matching
   the accept-rate column and is a failure. The submitted-form error rate is the measure that catches
   it, which is why it is a primary outcome rather than an afterthought.
 
+## The instruments now exist, in `research/human-study/`
+
+This document records that nothing was measured. `research/human-study/` records what measuring it
+would take, as seven files that have never been used on anybody:
+
+| File | What it is |
+| --- | --- |
+| `README.md` | what must be true before any of it runs |
+| `protocol.md` | design, sample size, procedure, ethics, what would invalidate a run |
+| `tasks.md` | the forms, the supplied synthetic profile, and the ground truth |
+| `consent.md` | information sheet and consent form, for IRB review |
+| `questionnaire.md` | pre-task, per-task and post-task instruments |
+| `data-schema.md` | exactly what is recorded, and what must never be |
+| `analysis-plan.md` | a pre-registration: measures, tests and stopping rules fixed in advance |
+
+They are instruments, not results. Every one of them carries a **NOT YET COLLECTED** banner, and
+`data-schema.md` §5 forbids committing participant data to this repository at all — including a single
+anonymised row, because a repository with one real record in it is a repository that needs protecting.
+
+Two things in there are worth naming here, because they are the parts that keep a future study honest
+rather than flattering:
+
+- **The silent-error rate** (`data-schema.md` §3): fields where the tool offered a wrong value,
+  pre-accepted it, and the participant did not intervene — a wrong answer neither party decided on. It
+  is the one measure that can show assistance being *worse*, and `analysis-plan.md` §3 designates it
+  before anyone knows what it would say.
+- **The underpowered admission** (`analysis-plan.md` §5): n = 24 is sized for completion time and is
+  explicitly *not* enough to say anything precise about rare errors. The plan says so in advance, so
+  that a wide interval is reported as a wide interval rather than as "no difference".
+
 ## Claim discipline
 
 Nothing anywhere in this repository may be described as a human-evaluation result, an acceptance
