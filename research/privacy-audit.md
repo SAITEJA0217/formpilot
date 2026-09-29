@@ -4,7 +4,13 @@ An audit of what FormPilot stores, what leaves the device, and what a third part
 Written by reading the code, not the documentation. Every claim below names the file it comes
 from so it can be checked rather than believed.
 
-Audited at commit state: the working tree described by `research/FINAL_VALIDATION_REPORT.md`.
+| | |
+| --- | --- |
+| **Procedure** | source audit; `npm test` (536 assertions); `npx playwright test ai-routing` (8 specs) |
+| **Date** | re-verified 2026-09-29 |
+| **Software version** | FormPilot 2.0.0, commit `6e01e8e` |
+| **Result** | all controls verified; the minimisation claim is asserted against what the endpoint actually receives |
+
 Re-run the audit after any change to `extension/src/background/`, `shared/privacy/`, or
 `frontend/src/app/api/ai/`.
 
@@ -148,9 +154,32 @@ When any field in the batch is an `assist` request the contact and address field
 to see the value it might return. An unrecognised mode is treated as value-returning, so a
 future mode cannot silently lose fields it needs and answer wrongly.
 
-`tests/unit/redact.test.ts` pins all of this, including that the function does not mutate the
-caller's profile (the extension still needs the full one for local matching) and that an
-alternate persona's email address does not survive anywhere in the payload.
+### Proof, not assertion
+
+Two layers of test, because a unit test of the redaction function would pass even if the extension
+never called it.
+
+**Unit** — `tests/unit/redact.test.ts`, 9 assertions: the always-removed keys are gone in every mode;
+prose batches lose contact and identity fields; what a grounded answer is built from survives; an
+`assist` batch keeps the values it may return; an unrecognised mode errs toward over-sending rather
+than answering wrongly; the caller's profile is not mutated; and an alternate persona's email address
+does not survive anywhere in the payload.
+
+**End-to-end** — `tests/e2e/specs/ai-routing.spec.ts`, in Chromium against the real pipeline. The
+stub endpoint records the keys of the profile object *as it arrives* and the specs assert on those.
+On a prose-only batch from `basic-html.html` the endpoint receives exactly:
+
+```
+basicProfileKeys: ["email", "fullName"]
+profileKeys:      ["basicProfile", "education", "experience", "languages", "projects", "skills"]
+```
+
+`phone`, `dateOfBirth`, `gender` and `basicProfile.address` are absent, as are `documents`,
+`address`, `socialLinks`, `preferences`, `profiles`, `activeProfileId` and `userId`. The stub records
+key *names*, never values, so the test fixture holds no copy of anything sensitive.
+
+A further spec asserts that with `allowAI: false` the endpoint receives **no request at all** —
+checked against the network, not against a flag.
 
 **This is minimisation, not anonymisation.** What remains — your name, email, education and
 employment history — is still personal data going to a third-party model provider. The complete

@@ -23,11 +23,18 @@ point of this file.
 | --- | --- |
 | `npm test` | 536 assertions, 29 files, jsdom |
 | `npm run test:safety` | 121 of those, safety invariants only, its own CI job |
-| `npx playwright test` | Chromium 141.0.7390.37, the built extension loaded, real MV3 service worker |
-| `npm run bench` | 17 page states, 120 labelled fields, synthetic corpus |
-| `npm run study:matching` | 69 labelled matching cases |
-| `npm run study:routing` | 13 pages, 109 fields, routing decisions |
+| `npx playwright test` | 42 specs, Chromium 141.0.7390.37, the built extension loaded, real MV3 service worker |
+| `npm run bench` | 17 page states, 120 labelled fields, **synthetic, self-authored** |
+| `npm run study:matching` | 69 cases, **post-hoc regression suite** — read `matching/README.md` first |
+| `npm run study:heldout` | **307 controls from 55 third-party files, ground truth from the HTML spec** |
+| `npm run study:routing` | 13 pages, 109 fields, routing decisions; hybrid vs always-ask |
 | `npm run study:performance` | 10–500 fields, jsdom scaling curve |
+| `./research/platform-probe/probe.sh` | whether the five hosted platforms are reachable |
+
+The only row above that supports a claim about behaviour on pages nobody here wrote is
+`study:heldout`. It reports **82.1% accuracy, 73.1% macro F1** — see `held-out-evaluation.md`. Every
+100% in this document comes from a corpus this project authored and means "no regression", not
+"works in general".
 
 **Two constraints bound every row below, and neither is a code problem.**
 
@@ -70,7 +77,7 @@ point of this file.
 | Platform | Recognised | Dedicated adapter | Detection | Mapping | Autofill | Status | Why not Verified |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Generic HTML | yes | `generic-html@1` | 100% | 100% | 100% | **Verified** | — |
-| Google Forms | URL + DOM | `google-forms@2` | 100% | 100% | 7/7 | **Partial** | 15-test regression suite covering every v1 question type including grid flattening — but against a local mock. `docs.google.com` is blocked. |
+| Google Forms | URL + DOM | `google-forms@2` | 100% | 100% | 7/7 | **Partial** | 15 integration tests over every v1 question type incl. grid flattening, plus 4 Chromium specs (adapter selection, ARIA-only questions, full pipeline to a verified write, submit control and consent never activated) — all against a local reproduction. `docs.google.com` unreachable; see `platform-evaluation.md`. |
 | Microsoft Forms | URL + `data-automation-id` | `microsoft-forms@1-experimental` | 100% | 100% | 100% | **Experimental** | `forms.office.com` blocked. Built against the documented automation-id contract. |
 | Typeform | URL + `data-qa` | `typeform@1-experimental` | 100% | 100% | 100% | **Experimental** | `form.typeform.com` blocked. One question per screen; only the visible block is scored. |
 | Jotform | URL + `form-line` markup | `jotform@1-experimental` | 100% | 100% | 100% | **Experimental** | `jotform.com` blocked. Composite controls (address, full name, date) resolve sub-labels. |
@@ -114,7 +121,7 @@ score — model-bound, blocked, or handed to the user by design.
 
 | Browser | Status | Note |
 | --- | --- | --- |
-| Chromium 141 | **Verified** | 36 end-to-end specs, real extension, real service worker |
+| Chromium 141 | **Verified** | 42 end-to-end specs, real extension, real service worker |
 | Chrome (stable) | **Untested** | Same engine as the Chromium tested; not separately run |
 | Edge | **Untested** | Chromium-based; MV3 should apply |
 | Firefox | **Untested** | Its MV3 differs in ways nothing here has exercised |
@@ -137,13 +144,38 @@ These are refusals, not gaps. Each is asserted by a test rather than left to con
 | Reading a cross-origin frame | **Unsupported** | same-origin policy, not bypassed |
 | Standing access to any site | **Unsupported** | `activeTab` only; no broad `host_permissions` |
 
+## Independently measured accuracy
+
+The held-out evaluation is the one place this repository measures behaviour on pages nobody here
+wrote. 307 controls from 55 third-party files, ground truth from their own `autocomplete` attributes:
+
+| Measure | Value |
+| --- | --- |
+| Accuracy | **82.1%** |
+| Macro precision | 80.4% |
+| Macro recall | 69.3% |
+| Macro F1 | **73.1%** |
+| Real credential/payment controls correctly refused | 29 of 33 |
+
+By concept: contact fields 93–99% F1; address composition and job title 56–73%; `links.portfolio`
+and `person.middle_name` 0% on 3 records each. Non-Latin labels 50.1% macro F1 against 72.1% for
+Latin ones — the English-only scope boundary with a number attached.
+
+Against baselines on the same set: exact-label 41.3 F1, exact+metadata 68.9, substring 71.8,
+token-similarity 72.9, FormPilot 73.1. **FormPilot's margin over plain substring matching is 1.3 F1
+points.** Its distinguishable advantage is calibration rather than accuracy: it turns eight confident
+errors into eight abstentions.
+
 ## What this matrix cannot tell you
 
-1. Whether any of the five hosted platforms works against its live product.
-2. Whether a generated long-form answer is any good.
-3. Whether a real person would accept, edit or reject the suggestions.
-4. How the engine behaves on a page nobody has written a fixture for.
+1. Whether any of the five hosted platforms works against its live product. None is reachable; the
+   probe output is in `platform-evaluation.md`.
+2. Whether a generated long-form answer is any good. No model provider is reachable.
+3. Whether a real person would accept, edit or reject the suggestions. No human study exists; see
+   `human-evaluation.md`.
+4. How much of a real form falls *outside* the ontology. A field FormPilot models no concept for
+   cannot appear in the held-out evaluation either, so coverage is unmeasured.
 
-The corpus behind the Verified rows is synthetic and was authored by the same agent that wrote
-the engine. 100% on it means the engine does what its author expected. That is the floor, not
-the ceiling.
+Every 100% in this document comes from a synthetic corpus authored by the same agent that wrote the
+engine. It means the engine does what its author expected. The independently measured figure is
+**82.1%**.

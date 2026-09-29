@@ -2,13 +2,26 @@
 
 Ordered by how much they should temper a reader's confidence.
 
+## 0. The number to hold against everything else
+
+Independent evaluation against 307 form controls written by 55 unrelated authors, ground truth from
+their own `autocomplete` attributes: **82.1% accuracy, 73.1% macro F1**. Every 100% elsewhere in this
+repository comes from a corpus this project wrote and means "no regression".
+
+FormPilot's margin over a plain substring baseline on that set is **1.3 F1 points**. The elaborate
+multi-signal matcher buys far less raw accuracy on third-party labels than the synthetic corpus
+implies. What it does buy is calibration — it converts confident errors into abstentions — which a
+single accuracy figure cannot see. See `held-out-evaluation.md` and `baseline-comparison.md`.
+
 ## 1. No real-world evaluation
 
 Every number in this repository comes from synthetic corpora written by the same agent as the
 engine: 17 page states and 120 labelled fields for the benchmark, 69 cases for the matching study.
 **No live website has been evaluated, and none can be from this environment** — its network policy
 denies `docs.google.com`, `forms.office.com`, `form.typeform.com`, `www.jotform.com` and
-`www.surveymonkey.com` at CONNECT. The corpora therefore measure whether the engine still does
+`www.surveymonkey.com` at CONNECT, re-confirmed 2026-09-29 by
+`./research/platform-probe/probe.sh`. Third-party *markup* is reachable via
+`raw.githubusercontent.com`, which is how the held-out corpus exists; live *platforms* are not. The corpora therefore measure whether the engine still does
 what it was built to do. Cite them as a regression baseline.
 
 The matching study carries a second caveat of its own: it scored 65/69 on its first run, three
@@ -162,3 +175,30 @@ Every document in this directory, including this one, was written by the agent t
 That is a conflict of interest. The mitigation is that every claim names the command or file that
 substantiates it, so a reader can check rather than trust. It is not a substitute for independent
 review.
+
+## 12. Findings the independent evaluation added
+
+Four things only third-party data surfaced, all recorded rather than fixed because the configuration
+was frozen before the held-out run:
+
+1. **Four missed refusals on real payment markup.** A label beginning "CC " is not in the secret
+   phrase list, so `CC Name (Full name as given on the payment card)` maps to `person.full_name`.
+   Bounded — nothing is submitted and every suggestion is reviewable — but a user clicking through
+   would put their name in a cardholder field. Highest-priority fix; needs a fresh corpus to measure.
+2. **Non-Latin labels at 50.1 macro F1** against 72.1 for Latin ones. The English-only scope boundary,
+   previously asserted, now measured.
+3. **Address composition is the largest error cluster.** `address.full` 45% precision; the bare label
+   "Address" is misread three times in one split.
+4. **The control-type signal contributes −0.4 accuracy points** on third-party data. It helps on the
+   synthetic corpus and is load-bearing elsewhere, but this evaluation gives it no support.
+
+## 13. What the held-out evaluation still cannot see
+
+The *labels* are independent and the ground truth is spec-defined, but the **concept inventory is
+this project's**. A field whose meaning FormPilot models no concept for cannot appear in the
+evaluation, because it would carry no `autocomplete` token either. So 82.1% is accuracy *within the
+ontology's scope*, and nothing here measures how much of a real form falls outside it.
+
+The corpus also skews toward authors who bothered to write `autocomplete` attributes at all, who
+probably write better labels too. That likely flatters the result, in the opposite direction from the
+ground-truth noise described in `held-out-evaluation.md`. Neither is quantified.

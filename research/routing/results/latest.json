@@ -42,6 +42,27 @@
     "fieldsRoutedToModel": 12,
     "userBurdenReduced": 12
   },
+  "modeC": {
+    "fields": 109,
+    "routedToModel": 97,
+    "modelCalls": 12,
+    "payloadBytes": 42419,
+    "note": "Always-ask-the-model. Counted, not executed. Safety-refused and file fields excluded."
+  },
+  "hybridVsAlwaysAsk": {
+    "fieldsSentRatio": 0.124,
+    "callsRatio": 0.75,
+    "payloadRatio": 0.414,
+    "modeBPayloadBytes": 17575,
+    "modeCPayloadBytes": 42419,
+    "notMeasured": [
+      "accuracy",
+      "latency",
+      "monetary cost",
+      "long-form quality",
+      "correction rate"
+    ]
+  },
   "modelDemandByType": {
     "text": 2,
     "textarea": 8,

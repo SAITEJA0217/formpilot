@@ -17,8 +17,13 @@
 import { test, expect } from '../fixtures/extension';
 import type { Page } from '@playwright/test';
 
-/** Sizes chosen to span an ordinary form, a long one, and an unreasonable one. */
-const SIZES = [25, 100, 400] as const;
+/**
+ * Sizes spanning a short form to an unreasonable one.
+ *
+ * 250 is the top of the range a real page plausibly reaches; 10 is a contact form. The set is
+ * fixed so successive runs are comparable.
+ */
+const SIZES = [10, 25, 50, 100, 250] as const;
 /** Repeats per size. Enough to see spread without making the suite slow. */
 const REPEATS = 3;
 
@@ -27,6 +32,22 @@ interface Sample {
   scanMs: number[];
   panelMs: number[];
   detected: number;
+  /** JS heap growth across one scan-and-render cycle, in MiB. */
+  heapGrowthMiB: number[];
+}
+
+/**
+ * JS heap size, via Chromium's non-standard `performance.memory`.
+ *
+ * Coarse and quantised, and it says nothing about the extension's own service-worker heap — only
+ * the page's. Reported as an order-of-magnitude check for a leak, never as a precise figure.
+ * `null` when the API is unavailable.
+ */
+async function heapMiB(page: Page): Promise<number | null> {
+  return page.evaluate(() => {
+    const memory = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory;
+    return memory ? memory.usedJSHeapSize / (1024 * 1024) : null;
+  });
 }
 
 const median = (values: number[]): number => {
@@ -37,16 +58,17 @@ const median = (values: number[]): number => {
 
 test.describe('latency in Chromium', () => {
   // Three sizes × three repeats, each a fresh page load and a real injection.
-  test.setTimeout(240_000);
+  test.setTimeout(360_000);
 
   test('cost stays proportional to field count', async ({ driver, server }) => {
     const samples: Sample[] = [];
 
     for (const fields of SIZES) {
-      const sample: Sample = { fields, scanMs: [], panelMs: [], detected: 0 };
+      const sample: Sample = { fields, scanMs: [], panelMs: [], detected: 0, heapGrowthMiB: [] };
 
       for (let run = 0; run < REPEATS; run += 1) {
         const page: Page = await driver.openForm(`/__generated-form?fields=${fields}`);
+        const heapBefore = await heapMiB(page);
 
         const beforeScan = Date.now();
         const summary = await driver.scan(page);
@@ -55,6 +77,11 @@ test.describe('latency in Chromium', () => {
         const beforePanel = Date.now();
         await driver.showPanel(page);
         sample.panelMs.push(Date.now() - beforePanel);
+
+        const heapAfter = await heapMiB(page);
+        if (heapBefore !== null && heapAfter !== null) {
+          sample.heapGrowthMiB.push(heapAfter - heapBefore);
+        }
 
         sample.detected = summary.fieldsDetected;
         await page.close();
@@ -66,16 +93,21 @@ test.describe('latency in Chromium', () => {
 
     // eslint-disable-next-line no-console -- the measurement is the deliverable here.
     console.log(`\n  in-browser latency (Chromium, ${REPEATS} runs per size, median)`);
-    console.log('    fields    detected    scan+inject    panel render    per field');
+    console.log('    fields  detected   scan+inject   panel render   total prep   per field   heap growth');
     for (const sample of samples) {
       const scan = median(sample.scanMs);
       const panel = median(sample.panelMs);
+      const heap = sample.heapGrowthMiB.length > 0 ? `${median(sample.heapGrowthMiB).toFixed(1)} MiB` : 'n/a';
       console.log(
-        `    ${String(sample.fields).padStart(6)}    ${String(sample.detected).padStart(8)}    ` +
-          `${`${scan.toFixed(0)} ms`.padStart(11)}    ${`${panel.toFixed(0)} ms`.padStart(12)}    ` +
-          `${(scan / sample.fields).toFixed(2)} ms`,
+        `    ${String(sample.fields).padStart(6)}  ${String(sample.detected).padStart(8)}   ` +
+          `${`${scan.toFixed(0)} ms`.padStart(11)}   ${`${panel.toFixed(0)} ms`.padStart(12)}   ` +
+          `${`${(scan + panel).toFixed(0)} ms`.padStart(10)}   ${`${(scan / sample.fields).toFixed(2)} ms`.padStart(9)}   ` +
+          `${heap.padStart(11)}`,
       );
     }
+    console.log('    total prep = scan+inject plus panel render, which is what the user waits for.');
+    console.log('    heap growth is the page heap over one cycle, via a non-standard API: a leak');
+    console.log('    check, not a precise figure.');
     console.log('');
 
     // The assertion: per-field cost must not blow up as the form grows. A quadratic
@@ -96,11 +128,11 @@ test.describe('latency in Chromium', () => {
     void server;
   });
 
-  test('a 400-field form is still filled correctly, not just quickly', async ({ driver }) => {
+  test('a 250-field form is still filled correctly, not just quickly', async ({ driver }) => {
     // A performance test that stopped checking correctness would be easy to pass.
-    const page = await driver.openForm('/__generated-form?fields=400');
+    const page = await driver.openForm('/__generated-form?fields=250');
     const summary = await driver.scan(page);
-    expect(summary.fieldsDetected).toBe(400);
+    expect(summary.fieldsDetected).toBe(250);
     expect(summary.blocked).toBe(0);
 
     await driver.showPanel(page);

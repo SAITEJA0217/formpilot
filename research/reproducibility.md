@@ -31,10 +31,19 @@ npm run build:extension   # dist/ + dist/injected/universal.js
 npm run lint              # frontend eslint
 
 # Research studies. Each rewrites its own results/{latest.json,latest.md}.
-npm run bench             # 17 page states, 120 labelled fields
-npm run study:matching    # 69 matching cases: P/R/F1, threshold sweep, ablation
-npm run study:routing      # deterministic-only vs deterministic-plus-model
+npm run bench             # 17 page states, 120 labelled fields — synthetic, self-authored
+npm run study:matching    # 69 cases — post-hoc regression suite, read its README first
+npm run study:heldout     # 307 third-party controls — the one independent evaluation
+npm run study:routing     # deterministic-only, hybrid, and always-ask-the-model
 npm run study:performance # scaling from 10 to 500 fields
+
+# Whether the five hosted platforms are reachable. If they are, the four experimental
+# adapters can and should be promoted by testing them live.
+./research/platform-probe/probe.sh
+
+# Re-fetch the third-party corpus. Produces a NEW corpus, which would need a fresh
+# configuration freeze before it could be used as a held-out set again.
+npm run heldout:fetch
 
 # End-to-end, in a real browser. Needs the extension and the framework apps built first.
 npm run build:apps        # React 19, Vue 3, Angular 18 bundles for tests/e2e/apps/dist
@@ -75,6 +84,9 @@ timestamp and the timing lines.
 | `npm run study:matching` | console report plus `research/matching/results/{latest.json,latest.md}`; per-concept confusion counts, sweep rows, ablation rows |
 | `npm run study:routing` | console report plus `research/routing/results/`; per-mode totals, per-page rows, and every field the model would be asked about, by name |
 | `npm run study:performance` | console table plus `research/performance/results/`; mean ± sd per stage per size |
+| `npm run study:heldout` | console report plus `research/heldout/results/`; baselines, ablation, per-concept rows, declared strata, and every held-out error named |
+| `npm run heldout:fetch` | rewrites `research/heldout/corpus.json` from upstream; needs `raw.githubusercontent.com` |
+| `./research/platform-probe/probe.sh` | reachability of the five platforms plus two controls |
 | `npm run typecheck:all` | no output on success |
 | `npm run build:extension` | `extension/dist/` — MV3 bundle plus `dist/injected/universal.js` at a fixed path |
 | `npm run build:apps` | `tests/e2e/apps/dist/` — three framework bundles and their HTML shells |
@@ -156,3 +168,17 @@ permission and sync paths are exercised rather than bypassed.
 * **Any number about generated answer quality.** Needs a provider key. With one set, the AI path
   runs, but nothing in `research/` currently scores its output — that harness does not exist.
 * **Any number about human behaviour.** Needs participants.
+
+## The held-out evaluation reproduces exactly; re-fetching does not
+
+`research/heldout/corpus.json` is committed, so `npm run study:heldout` reproduces byte-identical
+results from any checkout. That is deliberate: the corpus is a frozen snapshot, and the evaluation's
+value depends on it not moving.
+
+`npm run heldout:fetch` re-fetches from the 138 upstream repositories. It will produce a *different*
+corpus whenever any of them changes or disappears, and the result would no longer be held out against
+the configuration frozen at `6e01e8e`. A re-fetched corpus needs a fresh freeze before it can carry a
+research claim.
+
+Fetching also needs `raw.githubusercontent.com`, which this environment reaches but a more
+restricted one may not.

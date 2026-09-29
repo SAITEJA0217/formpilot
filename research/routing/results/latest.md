@@ -34,6 +34,21 @@ FormPilot AI routing study — 13 pages, 109 fields
   requests per page that needs one       1.3 fields per call
   answer quality                         NOT MEASURED — see the header of this file
 
+── Mode C: always ask the model ──
+  routed to a model          97/109  (89.0%)
+  batched requests           12
+  request payload            41.4 KiB total
+  resolved without a model   0
+
+── Hybrid routing against always-ask ──
+  fields sent to a model     12 vs 97  (12.4% of always-ask)
+  batched requests           9 vs 12  (75.0%)
+  request payload            17.2 KiB vs 41.4 KiB  (41.4%)
+  accuracy of either         NOT MEASURED — no provider is reachable from this environment
+  latency, cost, long-form quality, correction rate  NOT MEASURED — same reason
+  Payload is the honest cost proxy available here: provider pricing is per token against a
+  price list this environment cannot see, so no currency figure is reported.
+
 ── What the model is asked about, by control type ──
   textarea         8
   text             2

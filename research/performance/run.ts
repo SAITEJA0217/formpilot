@@ -77,7 +77,7 @@ function generateForm(count: number): string {
 
 // ─── Measurement ──────────────────────────────────────────────────────────────
 
-const SIZES = [10, 25, 50, 100, 200, 350, 500];
+const SIZES = [10, 25, 50, 100, 250, 500];
 /** Enough repeats for a usable standard deviation without making the run slow. */
 const REPEATS = 5;
 /** Discarded, so JIT warm-up is not charged to the first size. */

@@ -8,9 +8,19 @@ than as a product demo.
 
 | Document | Contents |
 | --- | --- |
-| [PHASE2_FINAL_REPORT.md](./PHASE2_FINAL_REPORT.md) | **start here** — the narrative: what was found, what is true, what is not |
-| [PHASE2_AUDIT.md](./PHASE2_AUDIT.md) | what was implemented vs what was validated, and what changed |
-| [FINAL_VALIDATION_REPORT.md](./FINAL_VALIDATION_REPORT.md) | every claim, its status, and the command that proves it |
+| [FINAL_PHASE3_REPORT.md](./FINAL_PHASE3_REPORT.md) | **start here** — external validation, and the one independently measured result |
+| [held-out-evaluation.md](./held-out-evaluation.md) | the independent evaluation: 82.1% accuracy on third-party labels |
+| [baseline-comparison.md](./baseline-comparison.md) | five methods, one held-out set |
+| [ablation-study.md](./ablation-study.md) | what each component actually contributes |
+| [final-methodology.md](./final-methodology.md) | three corpora, three strengths of claim |
+| [final-results.md](./final-results.md) | every measured number, tiered by how much weight it carries |
+| [platform-evaluation.md](./platform-evaluation.md) | what was tested per platform, and the reachability probe |
+| [human-evaluation.md](./human-evaluation.md) | **no study was run** — and what would be needed |
+| [security-audit.md](./security-audit.md) | every refusal and how it is enforced |
+| [performance-study.md](./performance-study.md) | real-browser latency and jsdom scaling |
+| [PHASE2_FINAL_REPORT.md](./PHASE2_FINAL_REPORT.md) | the previous phase's narrative |
+| [PHASE2_AUDIT.md](./PHASE2_AUDIT.md) | what was implemented vs what was validated |
+| [FINAL_VALIDATION_REPORT.md](./FINAL_VALIDATION_REPORT.md) | every Phase 2 claim and the command that proves it |
 | [architecture.md](./architecture.md) | the system, layer by layer, and why it is split that way |
 | [methodology.md](./methodology.md) | how a field is understood: signals, scoring, routing |
 | [experiment-design.md](./experiment-design.md) | what is measured, against what, and what is not |
@@ -26,12 +36,25 @@ than as a product demo.
 Each writes a fresh `results/latest.json` and `latest.md` on every run. Nothing is carried over
 between runs and nothing is hand-edited.
 
-| Study | Command | Reports |
-| --- | --- | --- |
-| [benchmark](./benchmark/) | `npm run bench` | detection, mapping, routing, autofill, safety over 17 page states / 120 fields |
-| [matching](./matching/) | `npm run study:matching` | per-concept P/R/F1, threshold sweep 0.50–0.95, ablation against 4 baselines |
-| [routing](./routing/) | `npm run study:routing` | deterministic-only vs deterministic-plus-model, and what the model is asked about |
-| [performance](./performance/) | `npm run study:performance` | scaling from 10 to 500 fields |
+| Study | Command | Reports | Independent? |
+| --- | --- | --- | --- |
+| [heldout](./heldout/) | `npm run study:heldout` | 307 third-party controls: accuracy, P/R/F1, baselines, ablation, every error named | **yes** |
+| [benchmark](./benchmark/) | `npm run bench` | detection, mapping, routing, autofill, safety over 17 page states / 120 fields | no |
+| [matching](./matching/) | `npm run study:matching` | per-concept P/R/F1, threshold sweep, ablation | no — post-hoc |
+| [routing](./routing/) | `npm run study:routing` | deterministic-only, hybrid, and always-ask-the-model | no |
+| [performance](./performance/) | `npm run study:performance` | scaling from 10 to 500 fields | no |
+
+## The one independently measured result
+
+**82.1% accuracy, 73.1% macro F1**, on 307 form controls written by 55 unrelated authors, with ground
+truth from their own `autocomplete` attributes rather than from this project. That is the figure to
+quote. See [held-out-evaluation.md](./held-out-evaluation.md).
+
+Every 100% elsewhere in this directory comes from a corpus this project wrote and means "no
+regression", not "works in general".
+
+FormPilot's margin over a plain substring baseline on that set is **1.3 F1 points**. Its measurable
+advantage is calibration, not accuracy: it converts confident errors into abstentions.
 
 ## The three things to read before quoting any number
 

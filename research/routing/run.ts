@@ -36,9 +36,34 @@ const env = createDomEnvironment();
 
 const { normalizeForm } = await import('../../extension/src/core/normalize/formNormalizer');
 const { buildSuggestions } = await import('../../shared/matching/pipeline');
+const { redactProfileForAI } = await import('../../shared/privacy/redact');
 
 type SuggestionStatus = import('../../shared/types/suggestion').SuggestionStatus;
 type FieldType = import('../../shared/types/form').FieldType;
+type UnifiedField = import('../../shared/types/form').UnifiedField;
+
+/**
+ * Mode C — send every fillable field to the model.
+ *
+ * The strategy an implementation takes when it has no router: if a model can answer anything, ask
+ * it about everything. Counted rather than executed, like Mode B. A field the safety policy refuses
+ * and a file input are excluded even here, because sending those to a model would be a safety
+ * failure rather than a routing choice.
+ */
+function alwaysAiCandidates(fields: readonly UnifiedField[]): UnifiedField[] {
+  return fields.filter((field) => field.sensitivity !== 'blocked' && field.type !== 'file');
+}
+
+/**
+ * Bytes on the wire for one request carrying `count` fields.
+ *
+ * A cost proxy that is actually measurable here. Real provider cost is per token and depends on a
+ * price list this environment cannot see, so no currency figure is reported — only the payload the
+ * request would carry, which is what a token count is computed from.
+ */
+function payloadBytes(profile: unknown, fieldRecords: unknown[], formContext: unknown): number {
+  return Buffer.byteLength(JSON.stringify({ profile, fields: fieldRecords, formContext }), 'utf8');
+}
 
 // ─── Corpus ───────────────────────────────────────────────────────────────────
 
@@ -110,6 +135,9 @@ const modelDemandByType = new Map<FieldType, number>();
 const modelDemandByMode = new Map<string, number>();
 const modeA = emptyTotals();
 const modeB = emptyTotals();
+/** Mode C totals: the always-ask-the-model strategy. */
+const modeC = { fields: 0, routedToModel: 0, modelCalls: 0, payloadBytes: 0 };
+const modeBPayload = { bytes: 0 };
 const pageResults: PageResult[] = [];
 
 function tally(totals: ModeTotals, status: SuggestionStatus, routedToModel: boolean): void {
@@ -162,6 +190,42 @@ for (const page of PAGES) {
   for (const request of withAI.aiRequests) {
     modelDemandByType.set(request.type, (modelDemandByType.get(request.type) ?? 0) + 1);
     modelDemandByMode.set(request.mode, (modelDemandByMode.get(request.mode) ?? 0) + 1);
+  }
+
+  // Mode C: every fillable field, batched per page the same way Mode B batches.
+  const everything = alwaysAiCandidates(normalized.form.fields);
+  modeC.fields += normalized.form.fields.length;
+  modeC.routedToModel += everything.length;
+  if (everything.length > 0) modeC.modelCalls += 1;
+
+  const formContext = {
+    title: normalized.form.title,
+    platform: normalized.form.platform,
+    url: normalized.form.url,
+    sections: normalized.form.sections.map((section) => ({ id: section.id, title: section.title })),
+  };
+  // Mode C has no router, so it cannot know which requests are prose-only and must send the whole
+  // profile. Mode B's payload is measured after redaction, as the extension actually sends it.
+  if (everything.length > 0) {
+    modeC.payloadBytes += payloadBytes(
+      BENCHMARK_PROFILE,
+      everything.map((field) => ({
+        fieldId: field.id,
+        label: field.label,
+        type: field.type,
+        options: field.options,
+        required: field.required,
+        mode: 'assist',
+      })),
+      formContext,
+    );
+  }
+  if (withAI.aiRequests.length > 0) {
+    const { profile: minimised } = redactProfileForAI(
+      BENCHMARK_PROFILE as unknown as Record<string, unknown>,
+      withAI.aiRequests.map((request) => request.mode),
+    );
+    modeBPayload.bytes += payloadBytes(minimised, withAI.aiRequests, formContext);
   }
 
   const aCounts = { resolvedLocally: 0, handedToUser: 0 };
@@ -235,6 +299,26 @@ say(
 say('  answer quality                         NOT MEASURED — see the header of this file');
 say();
 
+say('── Mode C: always ask the model ──');
+say(`  routed to a model          ${modeC.routedToModel}/${modeC.fields}  (${share(modeC.routedToModel, modeC.fields)})`);
+say(`  batched requests           ${modeC.modelCalls}`);
+say(`  request payload            ${(modeC.payloadBytes / 1024).toFixed(1)} KiB total`);
+say(`  resolved without a model   0`);
+say();
+
+say('── Hybrid routing against always-ask ──');
+const callRatio = modeC.modelCalls === 0 ? 0 : modeB.modelCalls / modeC.modelCalls;
+const fieldRatio = modeC.routedToModel === 0 ? 0 : modeB.routedToModel / modeC.routedToModel;
+const byteRatio = modeC.payloadBytes === 0 ? 0 : modeBPayload.bytes / modeC.payloadBytes;
+say(`  fields sent to a model     ${modeB.routedToModel} vs ${modeC.routedToModel}  (${percent(fieldRatio)} of always-ask)`);
+say(`  batched requests           ${modeB.modelCalls} vs ${modeC.modelCalls}  (${percent(callRatio)})`);
+say(`  request payload            ${(modeBPayload.bytes / 1024).toFixed(1)} KiB vs ${(modeC.payloadBytes / 1024).toFixed(1)} KiB  (${percent(byteRatio)})`);
+say(`  accuracy of either         NOT MEASURED — no provider is reachable from this environment`);
+say(`  latency, cost, long-form quality, correction rate  NOT MEASURED — same reason`);
+say('  Payload is the honest cost proxy available here: provider pricing is per token against a');
+say('  price list this environment cannot see, so no currency figure is reported.');
+say();
+
 say('── What the model is asked about, by control type ──');
 for (const [type, count] of [...modelDemandByType].sort((a, b) => b[1] - a[1])) {
   say(`  ${String(type).padEnd(16)} ${count}`);
@@ -284,6 +368,18 @@ writeFileSync(
       modeA,
       modeB,
       delta: { fieldsRoutedToModel: coverageDelta, userBurdenReduced: userBurdenDelta },
+      modeC: {
+        ...modeC,
+        note: 'Always-ask-the-model. Counted, not executed. Safety-refused and file fields excluded.',
+      },
+      hybridVsAlwaysAsk: {
+        fieldsSentRatio: round(fieldRatio, 3),
+        callsRatio: round(callRatio, 3),
+        payloadRatio: round(byteRatio, 3),
+        modeBPayloadBytes: modeBPayload.bytes,
+        modeCPayloadBytes: modeC.payloadBytes,
+        notMeasured: ['accuracy', 'latency', 'monetary cost', 'long-form quality', 'correction rate'],
+      },
       modelDemandByType: Object.fromEntries(modelDemandByType),
       modelDemandByMode: Object.fromEntries(modelDemandByMode),
       pages: pageResults,

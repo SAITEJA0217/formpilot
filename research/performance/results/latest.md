@@ -12,22 +12,21 @@ FormPilot performance by form size
   detect is a component of normalize, not an extra stage: total = normalize + suggest.
 
   fields  detected     (detect)       normalize       suggest         total      per field
-      10        10      22.4±2.9      28.2±5.3      20.8±0.5      49.0±5.0  4.901 ms
-      25        25      47.7±7.0      56.9±7.6     59.9±14.2    116.8±21.6  4.670 ms
-      50        50     91.4±16.6      93.9±9.4    110.9±12.3    204.8±20.0  4.096 ms
-     100       100     172.3±5.7    201.0±28.0    215.8±10.2    416.9±25.9  4.169 ms
-     200       200    376.9±25.9     387.6±5.8    430.5±22.0    818.1±21.7  4.091 ms
-     350       350    798.9±50.9    836.2±50.6    771.6±67.0  1607.8±111.8  4.594 ms
-     500       500   1329.3±99.2   1411.4±89.3   1136.0±63.0  2547.4±145.0  5.095 ms
+      10        10      27.8±3.5      35.1±9.0      22.8±1.6      57.9±8.1  5.785 ms
+      25        25     58.4±15.4     75.9±13.0     65.6±20.3    141.5±31.7  5.659 ms
+      50        50      82.5±5.2      93.5±4.8     106.6±8.3     200.2±9.4  4.003 ms
+     100       100     172.8±6.9    197.9±26.9     207.0±9.2    404.8±33.8  4.048 ms
+     250       250    533.2±23.8    543.1±25.6    559.9±15.8   1103.0±25.9  4.412 ms
+     500       500   1304.4±34.8   1327.0±40.3   1130.2±42.7   2457.2±79.2  4.914 ms
 
 ── Scaling ──
-  50× the fields costs 52.0× the time
-  per-field cost 4.901 ms → 5.095 ms (1.04×)
+  50× the fields costs 42.5× the time
+  per-field cost 5.785 ms → 4.914 ms (0.85×)
   per-field cost is roughly flat: scaling is close to linear in field count
 
 ── Stage breakdown at 500 fields ──
-  normalize             1411.4 ms  (55% of pipeline)
-    of which detect     1329.3 ms  (94% of normalize)
-  suggest               1136.0 ms  (45% of pipeline)
+  normalize             1327.0 ms  (54% of pipeline)
+    of which detect     1304.4 ms  (98% of normalize)
+  suggest               1130.2 ms  (46% of pipeline)
 
 ```
