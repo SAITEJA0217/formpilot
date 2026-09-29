@@ -30,3 +30,7 @@ playwright-report/
 
 # Built by tests/e2e/apps/build.mjs; regenerate with npm run build:apps
 tests/e2e/apps/dist/
+
+# Git bundles written when a push is refused. They contain the history itself, so
+# committing one into that history would be circular.
+.recovery/
