@@ -23,7 +23,7 @@ jsdom integration tests, and the benchmark.
 
 ## Ground truth
 
-`research/benchmark/dataset/*.json`, one file per evaluated page state, 12 states and 85 labelled
+`research/benchmark/dataset/*.json`, one file per evaluated page state, 17 states and 120 labelled
 fields. Each field records the label a reader sees, the expected unified field type, the expected
 ontology concept (or null), the value that should be proposed given the benchmark profile (or
 null), and the expected disposition. The schema, including the `review` disposition for genuinely
@@ -52,7 +52,7 @@ These are properties of the corpus, and they bound what any number computed from
 2. **Synthetic markup.** Real pages carry framework-generated class soup, duplicated ids, hidden
    duplicate forms, tracking iframes, and markup that violates the spec. The fixtures are
    well-formed even where they are adversarial.
-3. **Scale.** 85 fields over 12 page states. Far too small for confidence intervals; per-slice
+3. **Scale.** 120 fields over 17 page states. Far too small for confidence intervals; per-slice
    cells contain single-digit counts.
 4. **The Google Forms fixture is a mock.** It reproduces the DOM structure and widget behaviour
    faithfully enough to exercise the adapter, but Google changes its production markup without
@@ -64,7 +64,7 @@ These are properties of the corpus, and they bound what any number computed from
    non-Latin scripts, or right-to-left text.
 7. **One language.** English labels only. The normalizer's abbreviation table is English, so
    non-English forms would fall back to weaker signals.
-8. **No model in the loop.** Nine of 85 fields are routed to a model and scored on the routing
+8. **No model in the loop.** Thirteen of 120 fields are routed to a model and scored on the routing
    decision alone. Nothing here measures generated-answer quality.
 
 ## Extending the corpus

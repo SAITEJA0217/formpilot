@@ -1,13 +1,18 @@
 # Reproducibility
 
-Everything below runs offline, needs no API key, and is deterministic.
+Everything below runs offline, needs no API key, and is deterministic. The end-to-end suite needs
+a Chromium binary; everything else needs only Node.
 
 ## Environment
 
 * Node 22 (verified on v22.22.2). Node 20+ should work; nothing uses a 22-only API.
 * npm 10+.
-* No API key required for tests or the benchmark. A key is needed only to exercise the live AI
-  path, which no reported number depends on.
+* Chromium for the end-to-end suite. `npx playwright install chromium` fetches one; if the
+  environment already provides a binary, set `executablePath` in `tests/e2e/fixtures/extension.ts`
+  (it defaults to `/opt/pw-browsers/chromium`, which is where this container keeps 141.0.7390.37).
+* No API key required for anything reported. A key would be needed to exercise a real model, and
+  **no reported number depends on one** — the AI path is exercised against a labelled deterministic
+  stub, and the routing study counts model calls without making them.
 
 ## From a clean checkout
 
@@ -20,11 +25,27 @@ npm --prefix extension install
 npm --prefix frontend install
 
 npm run typecheck:all     # root (shared + tests + research), extension, frontend
-npm test                  # 343 tests across 22 files
-npm run bench             # writes research/benchmark/results/{latest.json,latest.md}
+npm test                  # 536 assertions across 29 files
+npm run test:safety       # 121 of those, safety invariants only — its own CI job
 npm run build:extension   # dist/ + dist/injected/universal.js
 npm run lint              # frontend eslint
+
+# Research studies. Each rewrites its own results/{latest.json,latest.md}.
+npm run bench             # 17 page states, 120 labelled fields
+npm run study:matching    # 69 matching cases: P/R/F1, threshold sweep, ablation
+npm run study:routing      # deterministic-only vs deterministic-plus-model
+npm run study:performance # scaling from 10 to 500 fields
+
+# End-to-end, in a real browser. Needs the extension and the framework apps built first.
+npm run build:apps        # React 19, Vue 3, Angular 18 bundles for tests/e2e/apps/dist
+npx playwright test       # 38 specs in Chromium; starts its own Next dev server
 ```
+
+Order matters in two places: `npx playwright test` reads `extension/dist/`, so
+`npm run build:extension` must have run, and it serves `tests/e2e/apps/dist/`, so
+`npm run build:apps` must have run. Both are wired as explicit steps in
+`.github/workflows/ci.yml` rather than as implicit `pre` hooks, so a missing build fails loudly
+instead of silently testing a stale bundle.
 
 ## Determinism
 
@@ -48,10 +69,16 @@ timestamp and the timing lines.
 
 | Command | Output |
 |---|---|
-| `npm test` | pass/fail per file; 343 tests currently pass |
+| `npm test` | pass/fail per file; 536 assertions currently pass |
+| `npm run test:safety` | 121 assertions; a failure here is a security regression, not a failing feature |
 | `npm run bench` | console summary, `results/latest.json` (full per-field records), `results/latest.md` (report with every breakdown table) |
+| `npm run study:matching` | console report plus `research/matching/results/{latest.json,latest.md}`; per-concept confusion counts, sweep rows, ablation rows |
+| `npm run study:routing` | console report plus `research/routing/results/`; per-mode totals, per-page rows, and every field the model would be asked about, by name |
+| `npm run study:performance` | console table plus `research/performance/results/`; mean ± sd per stage per size |
 | `npm run typecheck:all` | no output on success |
 | `npm run build:extension` | `extension/dist/` — MV3 bundle plus `dist/injected/universal.js` at a fixed path |
+| `npm run build:apps` | `tests/e2e/apps/dist/` — three framework bundles and their HTML shells |
+| `npx playwright test` | 38 specs; prints in-browser latency; artifacts and screenshots land in `tests/e2e/.artifacts/` on failure |
 
 `results/latest.json` contains one record per evaluated field: page, category, label, field type,
 label source, expected and predicted concept, expected and predicted disposition, expected and
@@ -91,3 +118,41 @@ because the engine reads realm-bound globals that `createDomEnvironment` install
 * **Signal weights:** `SOURCE_FACTORS` and `SIGNAL_WEIGHTS` in `shared/matching/matcher.ts`, with
   the gates and bonuses beside them. An ablation is a matter of zeroing entries.
 * **Corpus:** add a page and a ground-truth file; see [test-dataset.md](./test-dataset.md).
+
+## Determinism of the end-to-end suite
+
+Less deterministic than the studies, and the reasons are worth knowing:
+
+* **Serial, one worker.** Each spec needs the test server on port 3000 — the origin the shipped
+  manifest trusts — so two specs cannot run concurrently without colliding. `fullyParallel: false`,
+  `workers: 1`.
+* **A fresh Chromium profile per worker**, under `tests/e2e/.artifacts/chrome-profile-w<n>`, which
+  is gitignored and rewritten on every run.
+* **Tab resolution is by focus, not by URL.** Without the `tabs` permission, which FormPilot
+  deliberately does not request, Chrome hides a tab's URL for origins outside
+  `host_permissions`. The harness focuses the page and reads the active tab, which is what the
+  popup itself does under `activeTab`. A unique nonce is still stamped into each URL and verified
+  whenever Chrome will reveal it.
+* **Latency figures vary between machines.** `performance.spec.ts` prints them and asserts only
+  the *shape* — that per-field cost does not blow up with size — because a wall-clock threshold is
+  a property of the runner, not of the engine.
+* **No retries.** `retries: 0`, so a flake is visible as a failure rather than hidden by a re-run.
+
+## Fixed inputs
+
+One profile, `research/benchmark/profile.ts`, is imported by the unit tests, the integration tests,
+every study and the end-to-end fixtures. A test and a benchmark run cannot disagree about the
+input because there is only one copy of it. All its values are synthetic.
+
+The end-to-end suite seeds that profile through the shipped dashboard bridge — the real
+`window.postMessage` handshake — rather than writing to `chrome.storage` directly, so the
+permission and sync paths are exercised rather than bypassed.
+
+## Things that will not reproduce, and why
+
+* **Any number about a live hosted platform.** The network policy here blocks all five. Running
+  this checkout on an unrestricted network would let the experimental adapters be validated
+  properly; that is the single highest-value thing an outside reproducer can do.
+* **Any number about generated answer quality.** Needs a provider key. With one set, the AI path
+  runs, but nothing in `research/` currently scores its output — that harness does not exist.
+* **Any number about human behaviour.** Needs participants.

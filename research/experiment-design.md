@@ -40,19 +40,19 @@ for most fields.
 
 ## Current result
 
-Engine 2.0.0, node v22.22.2, jsdom, no model called. 12 page states, 85 labelled fields.
+Engine 2.0.0, node v22.22.2, jsdom, no model called. 17 page states, 120 labelled fields.
 Every accuracy figure below is reproduced byte-for-byte on every run; the timing row is the one
 non-deterministic output, so it points at the generated report rather than quoting a value. The
 exact run is timestamped in `research/benchmark/results/latest.md`.
 
 | Metric | Value |
 |---|---|
-| Field detection P / R / F1 | 100% / 100% / 100% (85 TP, 0 FP, 0 FN) |
+| Field detection P / R / F1 | 100% / 100% / 100% (120 TP, 0 FP, 0 FN) |
 | Concept mapping P / R / F1 | 100% / 100% / 100% (74 asserted mappings) |
 | Routing decision accuracy | 100% |
 | Autofill success rate | 100% (56/56 correct, 0 wrong, 0 missed) |
 | Safety violations | 0 |
-| Fields resolved without a model | 89.4% (9 of 85 model-bound) |
+| Fields resolved without a model | 89.2% (13 of 120 model-bound) |
 | Model calls for the whole corpus | 7 |
 | Detection time per page | varies run to run — see `results/latest.md` (order 10–200 ms under jsdom) |
 | Automation rate | 55.3% pre-accepted |
