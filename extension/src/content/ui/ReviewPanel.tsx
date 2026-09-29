@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { FieldSuggestion, FillReport } from '../../../../shared/types/suggestion';
 import type { FormSummary } from '../../../../shared/messaging/messages';
 import { toPercent } from '../../../../shared/matching/confidence';
+import { isAffirmationControl } from '../../../../shared/safety/policy';
 import { IconClose, IconLogo, IconRefresh } from './icons';
 
 export interface ReviewPanelProps {
@@ -63,6 +64,11 @@ export default function ReviewPanel({
   const [openWhy, setOpenWhy] = useState<string | null>(null);
 
   // High-confidence suggestions start accepted; everything else is opt-in.
+  //
+  // A lone checkbox is the exception, whatever its confidence: ticking one asserts
+  // something in the user's name, and the phrase list that catches consent wording will
+  // always miss some phrasing. Requiring a click here is the part of that defence that does
+  // not depend on reading the label correctly.
   useEffect(() => {
     setDecisions((previous) => {
       const next: Record<string, Decision> = {};
@@ -73,7 +79,7 @@ export default function ReviewPanel({
           continue;
         }
         next[suggestion.fieldId] = {
-          accepted: suggestion.status === 'ready',
+          accepted: suggestion.status === 'ready' && !isAffirmationControl(suggestion.fieldType),
           value: suggestion.value,
           edited: false,
         };
