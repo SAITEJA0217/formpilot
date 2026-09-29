@@ -87,6 +87,16 @@ was executed and its result read; anything else says what it says.
 | ☑ | Limitations current | `limitations.md` gained three entries this pass |
 | ☑ | Final release report | `research/FINAL_RELEASE_REPORT.md` |
 
+## Publication
+
+| | Check | Result |
+| --- | --- | --- |
+| ☑ | Everything committed | 34 commits on `claude/exciting-faraday-2jfepm`, working tree clean |
+| ☐ | **Pushed to GitHub** | **failed, HTTP 403.** `git push -u origin claude/exciting-faraday-2jfepm` was attempted once and refused: *"Claude doesn't have GitHub access to SAITEJA0217/formpilot for your organization."* The Claude GitHub App is not installed on the repository, or its installation needs re-linking. Not retried, and no force-push attempted — a 403 is an authorisation decision, not a transient failure, and retrying it changes nothing. |
+
+The work is committed locally and complete. Pushing needs someone with access to the repository to
+install or re-link the Claude GitHub App; nothing in the commits depends on that.
+
 ## Not done, and not claimed
 
 | | | |
