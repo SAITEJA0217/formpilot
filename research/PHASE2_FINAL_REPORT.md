@@ -257,7 +257,7 @@ something again; a provider key and a grounding-faithfulness harness; a human st
 
 ## 17. Honest accounting of this phase
 
-- 13 commits, all local. **The push was refused with HTTP 403** — see section 18.
+- 15 commits, all local. **The push was refused with HTTP 403** — see section 18.
 - 10 product defects found and fixed, 2 of them severe, plus 4 harness bugs.
 - 1 new mechanism (context-dependent aliases) that came from the data, not from a design document.
 - 1 finding documented rather than fixed, deliberately.
@@ -286,8 +286,9 @@ Confirmed absent from the remote: `git ls-remote origin 'refs/heads/claude/*'` r
 Read access works (the clone and `git ls-remote` succeed through the container's git proxy); only
 write is refused.
 
-**All 13 commits are intact on the local branch `claude/exciting-faraday-2jfepm`, on top of
-`a799f7c`.** Nothing was squashed, rebased, force-pushed or discarded.
+**All 15 commits are intact on the local branch `claude/exciting-faraday-2jfepm`, on top of
+`a799f7c`.** Nothing was squashed, rebased, force-pushed or discarded. The push was attempted
+again after the final commit, with the same result.
 
 To recover, either:
 
@@ -299,7 +300,7 @@ this), or reconnect GitHub from claude.ai settings. Then, from this session:
 git push -u origin claude/exciting-faraday-2jfepm
 ```
 
-**B. Fetch the bundle.** A verified git bundle of all 13 commits was sent to you. From your own
+**B. Fetch the bundle.** A verified git bundle of all 15 commits was sent to you. From your own
 clone at `a799f7c`:
 
 ```bash
