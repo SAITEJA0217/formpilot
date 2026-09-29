@@ -1,0 +1,627 @@
+{
+  "dataset": {
+    "cases": 69,
+    "mustResolve": 56,
+    "mustReview": 3,
+    "mustDecline": 10,
+    "goldConcepts": 27,
+    "groups": [
+      {
+        "group": "canonical",
+        "correct": 8,
+        "total": 8
+      },
+      {
+        "group": "name variants",
+        "correct": 9,
+        "total": 9
+      },
+      {
+        "group": "email variants",
+        "correct": 4,
+        "total": 4
+      },
+      {
+        "group": "phone variants",
+        "correct": 4,
+        "total": 4
+      },
+      {
+        "group": "address parts",
+        "correct": 11,
+        "total": 11
+      },
+      {
+        "group": "education",
+        "correct": 10,
+        "total": 10
+      },
+      {
+        "group": "experience",
+        "correct": 7,
+        "total": 7
+      },
+      {
+        "group": "must decline",
+        "correct": 10,
+        "total": 10
+      },
+      {
+        "group": "skills",
+        "correct": 2,
+        "total": 2
+      },
+      {
+        "group": "company-ambiguity",
+        "correct": 4,
+        "total": 4
+      }
+    ]
+  },
+  "settings": {
+    "commitmentThreshold": 0.45,
+    "ambiguityMargin": 0.08,
+    "autoAcceptBand": 0.9
+  },
+  "headline": {
+    "correct": 56,
+    "wrong": 0,
+    "missedCoverage": 0,
+    "reviewedProperly": 3,
+    "overconfident": 0,
+    "correctlyDeclined": 10,
+    "overreach": 0,
+    "overallCorrect": 69,
+    "micro": {
+      "precision": 1,
+      "recall": 1,
+      "f1": 1
+    },
+    "macro": {
+      "precision": 1,
+      "recall": 1,
+      "f1": 1
+    },
+    "errors": []
+  },
+  "perConcept": [
+    {
+      "conceptId": "address.city",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.country",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.full",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.line1",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.line2",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.postal_code",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "address.state",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "education.degree",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "education.field_of_study",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "education.gpa",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "education.graduation_year",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "education.institution",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "education.university",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "experience.company",
+      "support": 6,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 6,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "experience.job_title",
+      "support": 3,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 3,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "experience.years_of_experience",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "links.github",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "links.linkedin",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "links.portfolio",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.date_of_birth",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.email",
+      "support": 5,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.first_name",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.full_name",
+      "support": 5,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.gender",
+      "support": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.last_name",
+      "support": 3,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 3,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "person.phone",
+      "support": 5,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 5,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    {
+      "conceptId": "skills.technical",
+      "support": 2,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "counts": {
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    }
+  ],
+  "thresholdSweep": [
+    {
+      "threshold": 0.5,
+      "resolved": 56,
+      "wrong": 0,
+      "missed": 0,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 1
+    },
+    {
+      "threshold": 0.55,
+      "resolved": 56,
+      "wrong": 0,
+      "missed": 0,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 1
+    },
+    {
+      "threshold": 0.6,
+      "resolved": 56,
+      "wrong": 0,
+      "missed": 0,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 1
+    },
+    {
+      "threshold": 0.65,
+      "resolved": 55,
+      "wrong": 0,
+      "missed": 1,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 0.982
+    },
+    {
+      "threshold": 0.7,
+      "resolved": 55,
+      "wrong": 0,
+      "missed": 1,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 0.982
+    },
+    {
+      "threshold": 0.75,
+      "resolved": 55,
+      "wrong": 0,
+      "missed": 1,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 0.982
+    },
+    {
+      "threshold": 0.8,
+      "resolved": 55,
+      "wrong": 0,
+      "missed": 1,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 0.982
+    },
+    {
+      "threshold": 0.85,
+      "resolved": 55,
+      "wrong": 0,
+      "missed": 1,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 0.982
+    },
+    {
+      "threshold": 0.9,
+      "resolved": 55,
+      "wrong": 0,
+      "missed": 1,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 0.982
+    },
+    {
+      "threshold": 0.95,
+      "resolved": 51,
+      "wrong": 0,
+      "missed": 5,
+      "overconfident": 0,
+      "overreach": 0,
+      "coverage": 0.911
+    }
+  ],
+  "ablation": [
+    {
+      "strategy": "FormPilot (full)",
+      "note": "multi-signal + threshold + ambiguity guard",
+      "resolved": 56,
+      "wrong": 0,
+      "declined": 11,
+      "missedCoverage": 0,
+      "reviewedProperly": 3,
+      "overconfident": 0,
+      "correctlyDeclined": 10,
+      "overreach": 0,
+      "macroF1": 1,
+      "macroPrecision": 1,
+      "macroRecall": 1
+    },
+    {
+      "strategy": "no ambiguity guard",
+      "note": "ablation: always commit to the top candidate",
+      "resolved": 56,
+      "wrong": 0,
+      "declined": 11,
+      "missedCoverage": 0,
+      "reviewedProperly": 3,
+      "overconfident": 0,
+      "correctlyDeclined": 10,
+      "overreach": 0,
+      "macroF1": 1,
+      "macroPrecision": 1,
+      "macroRecall": 1
+    },
+    {
+      "strategy": "no threshold",
+      "note": "ablation: no commitment floor and no guard",
+      "resolved": 56,
+      "wrong": 0,
+      "declined": 2,
+      "missedCoverage": 0,
+      "reviewedProperly": 3,
+      "overconfident": 0,
+      "correctlyDeclined": 2,
+      "overreach": 8,
+      "macroF1": 0.97,
+      "macroPrecision": 0.951,
+      "macroRecall": 1
+    },
+    {
+      "strategy": "exact alias",
+      "note": "baseline: normalized label == alias",
+      "resolved": 44,
+      "wrong": 0,
+      "declined": 23,
+      "missedCoverage": 12,
+      "reviewedProperly": 1,
+      "overconfident": 2,
+      "correctlyDeclined": 10,
+      "overreach": 0,
+      "macroF1": 0.785,
+      "macroPrecision": 0.837,
+      "macroRecall": 0.757
+    },
+    {
+      "strategy": "substring alias",
+      "note": "baseline: label contains an alias",
+      "resolved": 55,
+      "wrong": 0,
+      "declined": 10,
+      "missedCoverage": 1,
+      "reviewedProperly": 0,
+      "overconfident": 3,
+      "correctlyDeclined": 9,
+      "overreach": 1,
+      "macroF1": 0.986,
+      "macroPrecision": 0.984,
+      "macroRecall": 0.993
+    },
+    {
+      "strategy": "token-set F1",
+      "note": "baseline: token overlap, no weights or gates",
+      "resolved": 54,
+      "wrong": 0,
+      "declined": 6,
+      "missedCoverage": 2,
+      "reviewedProperly": 1,
+      "overconfident": 2,
+      "correctlyDeclined": 4,
+      "overreach": 6,
+      "macroF1": 0.955,
+      "macroPrecision": 0.938,
+      "macroRecall": 0.986
+    },
+    {
+      "strategy": "character dice",
+      "note": "baseline: character bigram similarity",
+      "resolved": 55,
+      "wrong": 0,
+      "declined": 4,
+      "missedCoverage": 1,
+      "reviewedProperly": 1,
+      "overconfident": 2,
+      "correctlyDeclined": 3,
+      "overreach": 7,
+      "macroF1": 0.969,
+      "macroPrecision": 0.957,
+      "macroRecall": 0.993
+    },
+    {
+      "strategy": "autocomplete only",
+      "note": "baseline: the browser attribute alone",
+      "resolved": 17,
+      "wrong": 0,
+      "declined": 51,
+      "missedCoverage": 39,
+      "reviewedProperly": 2,
+      "overconfident": 1,
+      "correctlyDeclined": 10,
+      "overreach": 0,
+      "macroF1": 0.348,
+      "macroPrecision": 0.506,
+      "macroRecall": 0.284
+    }
+  ]
+}

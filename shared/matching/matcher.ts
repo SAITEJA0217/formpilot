@@ -72,6 +72,27 @@ const TEXT_BEARING_TYPES: ReadonlySet<FieldType> = new Set([
 const FILE_GATE_PENALTY = 0.2;
 /** Multiplier when a disambiguating negative phrase is present. */
 const NEGATIVE_GATE_PENALTY = 0.15;
+/**
+ * Ceiling for a match that rests entirely on a context-dependent alias.
+ *
+ * Chosen to sit inside the `medium` confidence band (0.70–0.90), so the suggestion is still
+ * produced and still shown with its value, but never arrives pre-accepted. That is the
+ * honest disposition for a label like a bare `Company`: FormPilot has a good guess and no
+ * way to be sure, so the human decides.
+ */
+const CONTEXT_DEPENDENT_CEILING = 0.85;
+/**
+ * Labels that ask for prose *about* something rather than for the thing itself.
+ *
+ * The discriminator is the question word, not the presence of a question. "What is your job
+ * title?" asks for the stored value and `experience.job_title` is the right answer. "Why are
+ * you leaving your current role?" contains the same words but wants an explanation, and
+ * answering it with "Software Engineer" is nonsense — which is exactly what happened: that
+ * label matched `current role` and scored 0.93, high enough to be filled without review.
+ */
+const PROSE_QUESTION = /^\s*(why|describe|explain|tell\s+us|elaborate|discuss|in\s+your\s+own\s+words|what\s+(makes|motivates)|how\s+(do|did|would)\s+you)\b/i;
+/** Multiplier when a stored scalar is offered as the answer to a prose question. */
+const PROSE_QUESTION_PENALTY = 0.25;
 /** Below this gap the top two concepts are treated as indistinguishable. */
 export const AMBIGUITY_MARGIN = 0.08;
 
@@ -86,6 +107,8 @@ const MODIFIER_SIGNALS: ReadonlySet<string> = new Set([
   'type.incompatible',
   'type.fileMismatch',
   'negative',
+  'alias.contextDependent',
+  'label.proseQuestion',
 ]);
 
 export interface MatchContext {
@@ -302,6 +325,37 @@ function scoreConceptAgainstField(
       score *= NEGATIVE_GATE_PENALTY;
       signals.push({ signal: 'negative', weight: NEGATIVE_GATE_PENALTY, score: 0, detail: negative });
       break;
+    }
+  }
+
+  // 6. A prose question is never answered by a stored value.
+  if (!concept.def.generative && PROSE_QUESTION.test(field.label ?? '')) {
+    score *= PROSE_QUESTION_PENALTY;
+    signals.push({
+      signal: 'label.proseQuestion',
+      weight: PROSE_QUESTION_PENALTY,
+      score: 0,
+      detail: 'asks for an explanation, not a value',
+    });
+  }
+
+  // 7. Context-dependent aliases. When the *whole* label is one of them and nothing in the
+  // surrounding text corroborates the concept, cap the score below the auto-accept band.
+  // Checked against the whole label rather than as a substring on purpose: `Current Company`
+  // contains `company` but says whose, so it must stay fully confident.
+  if (concept.normalizedContextDependentAliases.length > 0) {
+    const wholeLabel = text.normalized.label || text.normalized.aria;
+    const restsOnAmbiguousAlias =
+      !!wholeLabel && concept.normalizedContextDependentAliases.includes(wholeLabel);
+    const corroborated = signals.some((signal) => signal.signal === 'context.boost');
+    if (restsOnAmbiguousAlias && !corroborated && score > CONTEXT_DEPENDENT_CEILING) {
+      score = CONTEXT_DEPENDENT_CEILING;
+      signals.push({
+        signal: 'alias.contextDependent',
+        weight: CONTEXT_DEPENDENT_CEILING,
+        score: 0,
+        detail: wholeLabel,
+      });
     }
   }
 

@@ -56,6 +56,18 @@ export interface ConceptDef {
   autocomplete?: string[];
   /** Section/nearby-text phrases that raise confidence for this concept. */
   contextBoost?: string[];
+  /**
+   * Aliases that are correct but genuinely context-dependent when they are the *whole*
+   * label, with nothing else to go on.
+   *
+   * A form field labelled only `Company` is a real example: on a job application it
+   * usually means the applicant's current employer, which is what this concept holds, but
+   * it can equally mean the company being applied to. The alias is not wrong, so removing
+   * it would lose a useful mapping; it is only *uncertain*. Listing it here keeps the
+   * mapping and caps its confidence below the auto-accept band unless a `contextBoost` cue
+   * corroborates it, so the suggestion is shown for review rather than applied silently.
+   */
+  contextDependentAliases?: string[];
   /** Phrases whose presence disqualifies this concept (disambiguators). */
   negative?: string[];
   policy: AutofillPolicy;
@@ -381,6 +393,12 @@ export const CONCEPTS: ConceptDef[] = [
     patterns: ['\\bcompany\\b', '\\bemployer\\b', '\\borgani[sz]ation\\b', '\\bfirm\\b'],
     autocomplete: ['organization'],
     contextBoost: ['experience', 'employment', 'work'],
+    // A bare `Company` or `Company Name` is the applicant's employer on most job
+    // applications, but on plenty of forms it is the company being applied to. With no
+    // section heading or nearby copy to settle it, the mapping is offered for review rather
+    // than auto-accepted. `Current Company` and `Employer` are not listed: they say whose
+    // company it is, so they stay fully confident.
+    contextDependentAliases: ['company', 'company name', 'organisation', 'organization', 'firm'],
     // An email, phone or address field is never the company *name*, however much the
     // words overlap: `Company Email` must not be answered with the employer's name.
     negative: ['email', 'e mail', 'phone', 'website', 'address', 'logo'],
@@ -424,6 +442,9 @@ export const CONCEPTS: ConceptDef[] = [
     aliases: ['duration', 'employment duration', 'period', 'tenure'],
     patterns: ['\\bduration\\b', '\\btenure\\b'],
     contextBoost: ['experience', 'employment'],
+    // `period` alone is a weak alias and matched "Notice Period", which is a different
+    // thing the profile does not hold at all. These keep it from claiming those fields.
+    negative: ['notice period', 'notice', 'probation period', 'grace period', 'cooling period'],
     policy: 'allow',
   },
 
@@ -551,6 +572,10 @@ export const CONCEPTS: ConceptDef[] = [
       'what\\s+motivates\\s+you',
     ],
     fieldTypes: ['textarea', 'richtext', 'text', 'unknown'],
+    // "Reason for leaving" overlaps heavily with "reason for applying" on tokens but asks
+    // the opposite question, and answering it from a motivation prompt would put words in
+    // the user's mouth about a former employer.
+    negative: ['reason for leaving', 'reason for resignation', 'why are you leaving'],
     policy: 'confirm',
     generative: true,
   },

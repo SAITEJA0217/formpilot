@@ -21,6 +21,8 @@ export interface IndexedConcept {
   compiledPatterns: RegExp[];
   normalizedNegatives: string[];
   normalizedContextBoost: string[];
+  /** Normalized `contextDependentAliases`; compared against the whole field label. */
+  normalizedContextDependentAliases: string[];
   autocompleteTokens: Set<string>;
 }
 
@@ -33,6 +35,9 @@ function indexConcept(def: ConceptDef): IndexedConcept {
     compiledPatterns: (def.patterns ?? []).map((p) => new RegExp(p, 'i')),
     normalizedNegatives: (def.negative ?? []).map((n) => normalizeText(n)).filter(Boolean),
     normalizedContextBoost: (def.contextBoost ?? []).map((c) => normalizeText(c)).filter(Boolean),
+    normalizedContextDependentAliases: (def.contextDependentAliases ?? [])
+      .map((a) => normalizeText(a))
+      .filter(Boolean),
     autocompleteTokens: new Set((def.autocomplete ?? []).map((a) => a.toLowerCase())),
   };
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T18:12:11.171Z",
+  "generatedAt": "2026-09-29T03:58:53.024Z",
   "engine": {
     "version": "2.0.0"
   },
@@ -48,9 +48,9 @@
     "clean": true
   },
   "efficiency": {
-    "detectMsMean": 46.58,
-    "detectMsStdev": 34.53,
-    "suggestMsMean": 20.87,
+    "detectMsMean": 59.51,
+    "detectMsStdev": 42.64,
+    "suggestMsMean": 25.58,
     "modelCallsTotal": 10,
     "modelBoundFields": 13,
     "fieldsEvaluated": 120,
@@ -58,14 +58,14 @@
   },
   "humanInTheLoop": {
     "statusTotals": {
-      "ready": 63,
-      "needsReview": 38,
+      "ready": 62,
+      "needsReview": 39,
       "manual": 9,
       "blocked": 10,
       "noData": 0
     },
-    "automationRate": 0.525,
-    "reviewBurden": 0.392,
+    "automationRate": 0.517,
+    "reviewBurden": 0.4,
     "note": "Acceptance, correction and override rates require human participants and are not measured here."
   },
   "pages": [
@@ -96,13 +96,13 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 110.98,
-        "suggestMs": 47.29,
-        "fillMs": 5.23
+        "detectMs": 133.69,
+        "suggestMs": 52.82,
+        "fillMs": 6.95
       },
       "statuses": {
-        "ready": 6,
-        "needsReview": 3,
+        "ready": 5,
+        "needsReview": 4,
         "manual": 3,
         "blocked": 0,
         "noData": 0
@@ -138,9 +138,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 52.01,
-        "suggestMs": 22.86,
-        "fillMs": 194.77
+        "detectMs": 65.17,
+        "suggestMs": 28.17,
+        "fillMs": 208.05
       },
       "statuses": {
         "ready": 3,
@@ -178,9 +178,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 34.14,
-        "suggestMs": 27.92,
-        "fillMs": 2.82
+        "detectMs": 44.91,
+        "suggestMs": 31.92,
+        "fillMs": 4.59
       },
       "statuses": {
         "ready": 7,
@@ -196,7 +196,7 @@
       "category": "Generic HTML",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "surveymonkey@1-experimental",
+      "adapter": "generic-html@1",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -218,9 +218,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 84.78,
-        "suggestMs": 37.72,
-        "fillMs": 12
+        "detectMs": 117.77,
+        "suggestMs": 43.47,
+        "fillMs": 17.08
       },
       "statuses": {
         "ready": 12,
@@ -229,9 +229,7 @@
         "blocked": 0,
         "noData": 0
       },
-      "warnings": [
-        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion."
-      ]
+      "warnings": []
     },
     {
       "page": "dynamic-form.html#employed",
@@ -260,9 +258,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 16.73,
-        "suggestMs": 9.23,
-        "fillMs": 1.07
+        "detectMs": 24.36,
+        "suggestMs": 14.73,
+        "fillMs": 1.77
       },
       "statuses": {
         "ready": 3,
@@ -300,9 +298,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 11.61,
-        "suggestMs": 4.53,
-        "fillMs": 0.52
+        "detectMs": 14.45,
+        "suggestMs": 5.73,
+        "fillMs": 0.83
       },
       "statuses": {
         "ready": 1,
@@ -340,9 +338,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 108.19,
-        "suggestMs": 31.48,
-        "fillMs": 192.05
+        "detectMs": 137.98,
+        "suggestMs": 38.99,
+        "fillMs": 196.31
       },
       "statuses": {
         "ready": 4,
@@ -380,9 +378,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 96.85,
-        "suggestMs": 55.47,
-        "fillMs": 6.65
+        "detectMs": 95.49,
+        "suggestMs": 58.72,
+        "fillMs": 11.5
       },
       "statuses": {
         "ready": 8,
@@ -422,9 +420,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 49.26,
-        "suggestMs": 29.29,
-        "fillMs": 188.72
+        "detectMs": 61.26,
+        "suggestMs": 34.95,
+        "fillMs": 193.73
       },
       "statuses": {
         "ready": 5,
@@ -442,7 +440,7 @@
       "category": "Multi-step",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "surveymonkey@1-experimental",
+      "adapter": "generic-html@1",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -464,9 +462,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 25.79,
-        "suggestMs": 7.44,
-        "fillMs": 1.14
+        "detectMs": 34.4,
+        "suggestMs": 12.1,
+        "fillMs": 2.02
       },
       "statuses": {
         "ready": 3,
@@ -476,7 +474,6 @@
         "noData": 0
       },
       "warnings": [
-        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion.",
         "This looks like a multi-step form (1 of 5). Only the current step is visible to FormPilot."
       ]
     },
@@ -485,7 +482,7 @@
       "category": "Multi-step",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "surveymonkey@1-experimental",
+      "adapter": "generic-html@1",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -507,9 +504,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 29.9,
-        "suggestMs": 8.82,
-        "fillMs": 1.16
+        "detectMs": 42.35,
+        "suggestMs": 12.02,
+        "fillMs": 2.34
       },
       "statuses": {
         "ready": 4,
@@ -519,7 +516,6 @@
         "noData": 0
       },
       "warnings": [
-        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion.",
         "This looks like a multi-step form (2 of 5). Only the current step is visible to FormPilot."
       ]
     },
@@ -528,7 +524,7 @@
       "category": "Multi-step",
       "platformDetected": "generic-html",
       "platformCorrect": true,
-      "adapter": "surveymonkey@1-experimental",
+      "adapter": "generic-html@1",
       "detection": {
         "precision": 1,
         "recall": 1,
@@ -550,9 +546,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 20.56,
-        "suggestMs": 4.3,
-        "fillMs": 0.1
+        "detectMs": 37.5,
+        "suggestMs": 5.85,
+        "fillMs": 0.13
       },
       "statuses": {
         "ready": 0,
@@ -562,7 +558,6 @@
         "noData": 0
       },
       "warnings": [
-        "generic-html support is experimental: the adapter was built against a reproduction of this platform's markup and has not been validated against the live product. Review every suggestion.",
         "This looks like a multi-step form (4 of 5). Only the current step is visible to FormPilot."
       ]
     },
@@ -593,9 +588,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 28.6,
-        "suggestMs": 27.75,
-        "fillMs": 0.12
+        "detectMs": 38.07,
+        "suggestMs": 37.6,
+        "fillMs": 0.19
       },
       "statuses": {
         "ready": 0,
@@ -633,9 +628,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 11.68,
-        "suggestMs": 10.55,
-        "fillMs": 1.24
+        "detectMs": 15.23,
+        "suggestMs": 16.47,
+        "fillMs": 3.1
       },
       "statuses": {
         "ready": 4,
@@ -673,9 +668,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 68.43,
-        "suggestMs": 24.08,
-        "fillMs": 2.86
+        "detectMs": 107.67,
+        "suggestMs": 35.45,
+        "fillMs": 5.51
       },
       "statuses": {
         "ready": 2,
@@ -715,9 +710,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 12.68,
-        "suggestMs": 3.33,
-        "fillMs": 0.72
+        "detectMs": 15.47,
+        "suggestMs": 3.69,
+        "fillMs": 0.77
       },
       "statuses": {
         "ready": 1,
@@ -757,9 +752,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 29.63,
-        "suggestMs": 2.73,
-        "fillMs": 1.13
+        "detectMs": 25.83,
+        "suggestMs": 2.16,
+        "fillMs": 1.32
       },
       "statuses": {
         "ready": 0,
@@ -870,8 +865,8 @@
       "proposedValue": "Nexturn Solutions",
       "domValue": "Nexturn Solutions",
       "valueCorrect": true,
-      "confidence": 0.97,
-      "band": "high",
+      "confidence": 0.85,
+      "band": "medium",
       "usedAI": false
     },
     {
