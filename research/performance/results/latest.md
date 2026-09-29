@@ -12,22 +12,22 @@ FormPilot performance by form size
   detect is a component of normalize, not an extra stage: total = normalize + suggest.
 
   fields  detected     (detect)       normalize       suggest         total      per field
-      10        10      21.4±2.0      27.7±4.8      20.2±0.5      47.9±4.7  4.788 ms
-      25        25      44.2±8.5      48.6±4.3      51.6±1.9     100.3±6.1  4.011 ms
-      50        50      82.5±5.0     93.5±16.1     102.8±4.5    196.4±17.9  3.928 ms
-     100       100    179.1±26.2     174.9±9.9    223.3±38.2    398.3±37.8  3.983 ms
-     200       200    426.9±52.9    441.8±61.0    466.2±39.3    908.0±87.6  4.540 ms
-     350       350    753.9±45.5    804.9±50.9    786.1±40.3   1591.0±66.2  4.546 ms
-     500       500   1298.2±49.9   1343.2±84.8   1202.8±62.5   2546.1±80.7  5.092 ms
+      10        10      22.4±2.9      28.2±5.3      20.8±0.5      49.0±5.0  4.901 ms
+      25        25      47.7±7.0      56.9±7.6     59.9±14.2    116.8±21.6  4.670 ms
+      50        50     91.4±16.6      93.9±9.4    110.9±12.3    204.8±20.0  4.096 ms
+     100       100     172.3±5.7    201.0±28.0    215.8±10.2    416.9±25.9  4.169 ms
+     200       200    376.9±25.9     387.6±5.8    430.5±22.0    818.1±21.7  4.091 ms
+     350       350    798.9±50.9    836.2±50.6    771.6±67.0  1607.8±111.8  4.594 ms
+     500       500   1329.3±99.2   1411.4±89.3   1136.0±63.0  2547.4±145.0  5.095 ms
 
 ── Scaling ──
-  50× the fields costs 53.2× the time
-  per-field cost 4.788 ms → 5.092 ms (1.06×)
+  50× the fields costs 52.0× the time
+  per-field cost 4.901 ms → 5.095 ms (1.04×)
   per-field cost is roughly flat: scaling is close to linear in field count
 
 ── Stage breakdown at 500 fields ──
-  normalize             1343.2 ms  (53% of pipeline)
-    of which detect     1298.2 ms  (97% of normalize)
-  suggest               1202.8 ms  (47% of pipeline)
+  normalize             1411.4 ms  (55% of pipeline)
+    of which detect     1329.3 ms  (94% of normalize)
+  suggest               1136.0 ms  (45% of pipeline)
 
 ```

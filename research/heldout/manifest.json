@@ -1,0 +1,849 @@
+{
+  "//": "Third-party HTML files discovered via GitHub code search. Nothing here was authored by this project.",
+  "//procedure": "One query per WHATWG autocomplete token, `language:HTML`, results taken in the order GitHub returned them. No file was inspected before being added, and none was dropped for being inconvenient. Duplicates across queries are kept once, at their first appearance.",
+  "//groundTruth": "Each file's own `autocomplete` attribute supplies the ground truth. The attribute is stripped before the matcher sees the field, so the task is: infer from the label a third party wrote the concept that third party's own attribute declares.",
+  "//date": "2026-09-29",
+  "//searchTool": "mcp__github__search_code (GitHub code search REST)",
+  "//license": "Only extracted field metadata is stored (label, name, id, type, autocomplete), never the source files, so no third-party code is redistributed.",
+  "queries": {
+    "family-name": 30,
+    "given-name": 6,
+    "street-address": 18,
+    "postal-code": 11,
+    "organization-title": 18,
+    "address-level2": 9,
+    "bday": 15,
+    "organization": 16,
+    "country-name": 15
+  },
+  "files": [
+    {
+      "repo": "GetLuko/Covid19-French-Auth",
+      "path": "demo.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 0
+    },
+    {
+      "repo": "ics-creative/160304_form_autocompletetype",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 1
+    },
+    {
+      "repo": "younginnovations/yi-frontend-starter-kit",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 2
+    },
+    {
+      "repo": "CastDev-j/Aplicacion-Contact-Form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 3
+    },
+    {
+      "repo": "ericwbailey/modal-nodes",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 4
+    },
+    {
+      "repo": "alaa-mekibes/intro-component-with-signup-form-frontend-mentor",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 5
+    },
+    {
+      "repo": "K0R0BKIN/odin-form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 6
+    },
+    {
+      "repo": "HeitorDalla/form-validation",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 7
+    },
+    {
+      "repo": "lvhuanid/huan-web",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 8
+    },
+    {
+      "repo": "erxu04/lab2-ITMD362",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 9
+    },
+    {
+      "repo": "samuel115-debug/Family-Connect",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 10
+    },
+    {
+      "repo": "maksymhrushytskyi/user_registration",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 11
+    },
+    {
+      "repo": "annaindistress/frontend-mentor-intro-component-with-sign-up-form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 12
+    },
+    {
+      "repo": "maxroe66/practice-form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 13
+    },
+    {
+      "repo": "roxxorarc/vibecoded-form-autocomplete",
+      "path": "popup.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 14
+    },
+    {
+      "repo": "joepio/seinhuis.nu",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 15
+    },
+    {
+      "repo": "nitin-chauhan66/name-numerology",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 16
+    },
+    {
+      "repo": "AsherDrake546/Week6VideoDemo",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 17
+    },
+    {
+      "repo": "makremriahi99/Italian-Payroll-Tax-Calculators",
+      "path": "cf.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 18
+    },
+    {
+      "repo": "JR3hn/Parking",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 19
+    },
+    {
+      "repo": "4GeeksAcademy/LavacostaFormulario",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 20
+    },
+    {
+      "repo": "mukhammadziyo554-netizen/LEARNcraft-web",
+      "path": "auth.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 21
+    },
+    {
+      "repo": "vinyll/attestation-covid",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 22
+    },
+    {
+      "repo": "serkoch/sign-up-form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 23
+    },
+    {
+      "repo": "tahaakvan-spec/Hoshimoshi",
+      "path": "login.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 24
+    },
+    {
+      "repo": "MarcosVale03/Chronos",
+      "path": "home.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 25
+    },
+    {
+      "repo": "mohammadhouda/shopify-automation",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 26
+    },
+    {
+      "repo": "PhilippeItsMe/fe-contact-form",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 27
+    },
+    {
+      "repo": "AzugBe/cloudbrew.be",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 28
+    },
+    {
+      "repo": "bayliemschnieder/3300-web-forms",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"family-name\"",
+      "rank": 29
+    },
+    {
+      "repo": "2541773-wits/Cryptid-Web-App",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"given-name\"",
+      "rank": 0
+    },
+    {
+      "repo": "soalko/FBD_Soldatov",
+      "path": "form.html",
+      "discoveredBy": "autocomplete=\"given-name\"",
+      "rank": 1
+    },
+    {
+      "repo": "Kingshen236/Code-talk",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"given-name\"",
+      "rank": 2
+    },
+    {
+      "repo": "Divya-02401/Front-End-Projects",
+      "path": "form.html",
+      "discoveredBy": "autocomplete=\"given-name\"",
+      "rank": 3
+    },
+    {
+      "repo": "irm1005-itec1005-fall-2023/assignment-01-AbdullaShabib",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"given-name\"",
+      "rank": 4
+    },
+    {
+      "repo": "relarson/sushi-go-scores",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"given-name\"",
+      "rank": 5
+    },
+    {
+      "repo": "osmlab/onosm.org",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 0
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "basic.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 1
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "layout.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 2
+    },
+    {
+      "repo": "PatelHarsh2006/ChaatBazaar",
+      "path": "signup.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 3
+    },
+    {
+      "repo": "dramsoc/email-signature-generator",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 4
+    },
+    {
+      "repo": "tomasmark79/routepeek",
+      "path": "popup.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 5
+    },
+    {
+      "repo": "shin1007/sharyou_tsuuhou",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 6
+    },
+    {
+      "repo": "kittsville/deedpoll.lgbt",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 7
+    },
+    {
+      "repo": "ma-tommy/ma-tommy.github.io",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 8
+    },
+    {
+      "repo": "Rogersson34/easy-shopping",
+      "path": "Input.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 9
+    },
+    {
+      "repo": "Rogersson34/easy-shopping",
+      "path": "Forms.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 10
+    },
+    {
+      "repo": "Thatgirl9/Kaychop-Restaurant",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 11
+    },
+    {
+      "repo": "johnniesue/church-route-pwa",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 12
+    },
+    {
+      "repo": "roxxorarc/vibecoded-form-autocomplete",
+      "path": "options.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 13
+    },
+    {
+      "repo": "pentestfunctions/fraudcheck",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 14
+    },
+    {
+      "repo": "davidxv15/Tiny-Commerce",
+      "path": "checkout.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 15
+    },
+    {
+      "repo": "chyrkov/pizza-project",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 16
+    },
+    {
+      "repo": "Nova-Scotia-Digital-Service/service-pattern-library",
+      "path": "address.html",
+      "discoveredBy": "autocomplete=\"street-address\"",
+      "rank": 17
+    },
+    {
+      "repo": "stripe/elements-examples",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 0
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "two_forms.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 1
+    },
+    {
+      "repo": "ketaro/LicenseParser",
+      "path": "sample.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 2
+    },
+    {
+      "repo": "Magrelinprt/validador-cep",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 3
+    },
+    {
+      "repo": "trchudley/postcode-imd-lookup",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 4
+    },
+    {
+      "repo": "Tezix-cyber/INSTANT_WEATHER",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 5
+    },
+    {
+      "repo": "dsmelser/WeatherWalk",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 6
+    },
+    {
+      "repo": "monidresses/Moni-Dresses-Client",
+      "path": "checkout.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 7
+    },
+    {
+      "repo": "jeisey/stormwatch",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 8
+    },
+    {
+      "repo": "mrcode-sys/Busca-de-CEP",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 9
+    },
+    {
+      "repo": "yvzn/frosto",
+      "path": "site/sign-up.html",
+      "discoveredBy": "autocomplete=\"postal-code\"",
+      "rank": 10
+    },
+    {
+      "repo": "ericwbailey/accessible-html-content-patterns",
+      "path": "docs/index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 0
+    },
+    {
+      "repo": "botingw/langgraph-dev-navigator",
+      "path": "web/codex/index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 1
+    },
+    {
+      "repo": "ogulcan-taspinar/html-form-api-integration",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 2
+    },
+    {
+      "repo": "saqibsattar07/editable-resume-builder",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 3
+    },
+    {
+      "repo": "saqibsattar07/dynamic-resume-builder",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 4
+    },
+    {
+      "repo": "ihuzaifamalik/editable-resume-milestone-4",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 5
+    },
+    {
+      "repo": "saqibsattar07/interactive-resume-builder",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 6
+    },
+    {
+      "repo": "sanand0/tools",
+      "path": "researchme/index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 7
+    },
+    {
+      "repo": "ihuzaifamalik/hackathon-milestone-3",
+      "path": "builder.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 8
+    },
+    {
+      "repo": "ogulcan-taspinar/html-form-api-integration",
+      "path": "outlook.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 9
+    },
+    {
+      "repo": "botingw/langgraph-dev-navigator",
+      "path": "web/landing/index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 10
+    },
+    {
+      "repo": "overtonlabs/qr-business-card",
+      "path": "public/index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 11
+    },
+    {
+      "repo": "RafaelCordova/FimasCorreoElectronico",
+      "path": "firma-web/index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 12
+    },
+    {
+      "repo": "coforma/email-signature-generator",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 13
+    },
+    {
+      "repo": "ukaoma/cos-starter",
+      "path": "kit/index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 14
+    },
+    {
+      "repo": "mscbuild/about",
+      "path": "cv.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 15
+    },
+    {
+      "repo": "boydcroberts/Contact-card",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 16
+    },
+    {
+      "repo": "lucasburlingham/vcard.lucasburlingham.me",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization-title\"",
+      "rank": 17
+    },
+    {
+      "repo": "avinash201199/weather-app",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 0
+    },
+    {
+      "repo": "Queer-Lexikon/regenbogenkarte",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 1
+    },
+    {
+      "repo": "janschill/solid-autocomplete",
+      "path": "src/index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 2
+    },
+    {
+      "repo": "harshahd/temperature",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 3
+    },
+    {
+      "repo": "Aarav2709/ProdTab",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 4
+    },
+    {
+      "repo": "Czechitas-podklady-WEB/Konfigurator-slidu",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 5
+    },
+    {
+      "repo": "huiishan99/web-weather-app",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 6
+    },
+    {
+      "repo": "SavindiPanditha/Weather-App",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 7
+    },
+    {
+      "repo": "Guielihan/busca-de-cep-com-fetch-api",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"address-level2\"",
+      "rank": 8
+    },
+    {
+      "repo": "samdutton/simpl",
+      "path": "inputnames/index.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 0
+    },
+    {
+      "repo": "alsacreations/KNACSS",
+      "path": "natives/input/input.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 1
+    },
+    {
+      "repo": "liberapay/liberapay.com",
+      "path": "templates/macros/identity.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 2
+    },
+    {
+      "repo": "LAB-MI/deplacement-covid-19",
+      "path": "src/index.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 3
+    },
+    {
+      "repo": "electerious/formbase",
+      "path": "demos/default.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 4
+    },
+    {
+      "repo": "GetLuko/Covid19-French-Auth",
+      "path": "generate.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 5
+    },
+    {
+      "repo": "triple-underscore/triple-underscore.github.io",
+      "path": "HTML-autofill-ja.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 6
+    },
+    {
+      "repo": "thoughtbot/roux",
+      "path": "site/examples/forms/basic.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 7
+    },
+    {
+      "repo": "umutcanbolat/Autofillr",
+      "path": "docs/index.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 8
+    },
+    {
+      "repo": "waic/wcag21",
+      "path": "understanding/identify-input-purpose.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 9
+    },
+    {
+      "repo": "npmInstallSnack/login-game",
+      "path": "levels/level6.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 10
+    },
+    {
+      "repo": "TobiasMue91/tobiasmue91.github.io",
+      "path": "tools/age_calculator.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 11
+    },
+    {
+      "repo": "wix-playground/mykhailom-wix-kickstart-2019",
+      "path": "form/index.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 12
+    },
+    {
+      "repo": "leebyron/4000",
+      "path": "docs/index.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 13
+    },
+    {
+      "repo": "devongarde/ssc",
+      "path": "recipe/toast/living/jul13/formex.html",
+      "discoveredBy": "autocomplete=\"bday\"",
+      "rank": 14
+    },
+    {
+      "repo": "DigiByte-Core/DigiByte.org",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 0
+    },
+    {
+      "repo": "NikolasLav/pp_wa",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 1
+    },
+    {
+      "repo": "peterruler/peterruler.github.io",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 2
+    },
+    {
+      "repo": "oguzhanozenc/welcomehomebody",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 3
+    },
+    {
+      "repo": "RAHB-REALTORS-Association/qrcodes",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 4
+    },
+    {
+      "repo": "alapan-khan-2832/Claud-",
+      "path": "login.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 5
+    },
+    {
+      "repo": "TST-Project/editor",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 6
+    },
+    {
+      "repo": "KenSaflok/DentalCo_Collection_worked",
+      "path": "demo.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 7
+    },
+    {
+      "repo": "Office-of-Digital-Services/California-State-Digital-Strategy",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 8
+    },
+    {
+      "repo": "kelvintk1/Renteaze-Sponsor",
+      "path": "role.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 9
+    },
+    {
+      "repo": "umitdrmz22-svg/ba-generator",
+      "path": "auth.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 10
+    },
+    {
+      "repo": "Mandyc73ESA/trakker",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 11
+    },
+    {
+      "repo": "McNish12/honors-showroom",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 12
+    },
+    {
+      "repo": "UoeExpolab/grch-inventory-booking-2026",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 13
+    },
+    {
+      "repo": "ahcashhh/landing-page",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 14
+    },
+    {
+      "repo": "LorenzoBoccaWork/salva-password-ultimate",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"organization\"",
+      "rank": 15
+    },
+    {
+      "repo": "elbwalker/walkerOS",
+      "path": "apps/demos/tagging/index.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 0
+    },
+    {
+      "repo": "JoseGarcia2001/Simple-Weather-App",
+      "path": "public/index.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 1
+    },
+    {
+      "repo": "virto-network/virto-sdk",
+      "path": "components/components.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 2
+    },
+    {
+      "repo": "R74nCom/R74n-Main",
+      "path": "contact.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 3
+    },
+    {
+      "repo": "mozilla/form-fill-examples",
+      "path": "autocomplete-all.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 4
+    },
+    {
+      "repo": "jbhoorasingh/simple-edl",
+      "path": "templates/gui/home.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 5
+    },
+    {
+      "repo": "willando-blair/info2180-lab5",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 6
+    },
+    {
+      "repo": "SpineEventEngine/SpineEventEngine.github.io",
+      "path": "site/layouts/checkout/single.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 7
+    },
+    {
+      "repo": "techambient/HybridAI",
+      "path": "v2.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 8
+    },
+    {
+      "repo": "AbbasZaidi11/QuickApply",
+      "path": "quickapply/popup/popup.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 9
+    },
+    {
+      "repo": "sun-jinian/Huanyuzhi",
+      "path": "register.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 10
+    },
+    {
+      "repo": "haze-09/formValidationPractice",
+      "path": "src/index.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 11
+    },
+    {
+      "repo": "Abdoallah-Badr/Simple-Azan-website",
+      "path": "index.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 12
+    },
+    {
+      "repo": "wet-boew/wet-boew-dist",
+      "path": "demos/formvalid/formvalid-en.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 13
+    },
+    {
+      "repo": "wet-boew/wet-boew-dist",
+      "path": "demos/formvalid/formvalid-fr.html",
+      "discoveredBy": "autocomplete=\"country-name\"",
+      "rank": 14
+    }
+  ]
+}

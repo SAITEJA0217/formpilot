@@ -1,0 +1,776 @@
+{
+  "//": "Held-out evaluation on third-party form labels. See evaluate.ts for the procedure.",
+  "freezeCommit": "6e01e8e99e0c52d1e79024ef20581e7494f4d89b",
+  "corpusFetchedAt": "2026-09-29T04:50:29.573Z",
+  "dataset": {
+    "controls": 658,
+    "files": 134,
+    "splits": {
+      "dev": 203,
+      "validation": 148,
+      "heldout": 307
+    },
+    "strata": {
+      "nonLatinLabels": 37,
+      "unlabelled": 136,
+      "mustRefuse": 72
+    },
+    "goldConcepts": 18
+  },
+  "heldout": {
+    "headline": {
+      "records": 307,
+      "accuracy": 0.821,
+      "macroPrecision": 0.804,
+      "macroRecall": 0.693,
+      "macroF1": 0.731,
+      "correctConcept": 223,
+      "correctRefusal": 29,
+      "wrongConcept": 31,
+      "declinedWhenAnswerable": 20,
+      "missedRefusal": 4
+    },
+    "perConcept": [
+      {
+        "conceptId": "address.city",
+        "support": 19,
+        "precision": 0.857,
+        "recall": 0.632,
+        "f1": 0.727,
+        "counts": {
+          "truePositives": 12,
+          "falsePositives": 2,
+          "falseNegatives": 7
+        }
+      },
+      {
+        "conceptId": "address.country",
+        "support": 7,
+        "precision": 1,
+        "recall": 0.714,
+        "f1": 0.833,
+        "counts": {
+          "truePositives": 5,
+          "falsePositives": 0,
+          "falseNegatives": 2
+        }
+      },
+      {
+        "conceptId": "address.full",
+        "support": 12,
+        "precision": 0.45,
+        "recall": 0.75,
+        "f1": 0.563,
+        "counts": {
+          "truePositives": 9,
+          "falsePositives": 11,
+          "falseNegatives": 3
+        }
+      },
+      {
+        "conceptId": "address.line1",
+        "support": 13,
+        "precision": 0.7,
+        "recall": 0.538,
+        "f1": 0.609,
+        "counts": {
+          "truePositives": 7,
+          "falsePositives": 3,
+          "falseNegatives": 6
+        }
+      },
+      {
+        "conceptId": "address.line2",
+        "support": 5,
+        "precision": 1,
+        "recall": 0.8,
+        "f1": 0.889,
+        "counts": {
+          "truePositives": 4,
+          "falsePositives": 0,
+          "falseNegatives": 1
+        }
+      },
+      {
+        "conceptId": "address.postal_code",
+        "support": 18,
+        "precision": 1,
+        "recall": 0.889,
+        "f1": 0.941,
+        "counts": {
+          "truePositives": 16,
+          "falsePositives": 0,
+          "falseNegatives": 2
+        }
+      },
+      {
+        "conceptId": "address.state",
+        "support": 11,
+        "precision": 1,
+        "recall": 0.545,
+        "f1": 0.706,
+        "counts": {
+          "truePositives": 6,
+          "falsePositives": 0,
+          "falseNegatives": 5
+        }
+      },
+      {
+        "conceptId": "experience.company",
+        "support": 12,
+        "precision": 0.8,
+        "recall": 0.667,
+        "f1": 0.727,
+        "counts": {
+          "truePositives": 8,
+          "falsePositives": 2,
+          "falseNegatives": 4
+        }
+      },
+      {
+        "conceptId": "experience.job_title",
+        "support": 14,
+        "precision": 1,
+        "recall": 0.429,
+        "f1": 0.6,
+        "counts": {
+          "truePositives": 6,
+          "falsePositives": 0,
+          "falseNegatives": 8
+        }
+      },
+      {
+        "conceptId": "links.portfolio",
+        "support": 3,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0,
+        "counts": {
+          "truePositives": 0,
+          "falsePositives": 0,
+          "falseNegatives": 3
+        }
+      },
+      {
+        "conceptId": "person.date_of_birth",
+        "support": 7,
+        "precision": 1,
+        "recall": 0.714,
+        "f1": 0.833,
+        "counts": {
+          "truePositives": 5,
+          "falsePositives": 0,
+          "falseNegatives": 2
+        }
+      },
+      {
+        "conceptId": "person.email",
+        "support": 43,
+        "precision": 0.977,
+        "recall": 1,
+        "f1": 0.989,
+        "counts": {
+          "truePositives": 43,
+          "falsePositives": 1,
+          "falseNegatives": 0
+        }
+      },
+      {
+        "conceptId": "person.first_name",
+        "support": 23,
+        "precision": 0.955,
+        "recall": 0.913,
+        "f1": 0.933,
+        "counts": {
+          "truePositives": 21,
+          "falsePositives": 1,
+          "falseNegatives": 2
+        }
+      },
+      {
+        "conceptId": "person.full_name",
+        "support": 28,
+        "precision": 0.765,
+        "recall": 0.929,
+        "f1": 0.839,
+        "counts": {
+          "truePositives": 26,
+          "falsePositives": 8,
+          "falseNegatives": 2
+        }
+      },
+      {
+        "conceptId": "person.gender",
+        "support": 2,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "counts": {
+          "truePositives": 2,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        }
+      },
+      {
+        "conceptId": "person.last_name",
+        "support": 24,
+        "precision": 1,
+        "recall": 0.958,
+        "f1": 0.979,
+        "counts": {
+          "truePositives": 23,
+          "falsePositives": 0,
+          "falseNegatives": 1
+        }
+      },
+      {
+        "conceptId": "person.middle_name",
+        "support": 3,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0,
+        "counts": {
+          "truePositives": 0,
+          "falsePositives": 0,
+          "falseNegatives": 3
+        }
+      },
+      {
+        "conceptId": "person.phone",
+        "support": 30,
+        "precision": 0.968,
+        "recall": 1,
+        "f1": 0.984,
+        "counts": {
+          "truePositives": 30,
+          "falsePositives": 1,
+          "falseNegatives": 0
+        }
+      }
+    ],
+    "errors": [
+      {
+        "label": "都道府県",
+        "expected": "address.state",
+        "got": "address.full",
+        "provenance": "ics-creative/160304_form_autocompletetype/index.html"
+      },
+      {
+        "label": "市区町村",
+        "expected": "address.city",
+        "got": "address.full",
+        "provenance": "ics-creative/160304_form_autocompletetype/index.html"
+      },
+      {
+        "label": "Additional Name",
+        "expected": "person.middle_name",
+        "got": "person.full_name",
+        "provenance": "ericwbailey/modal-nodes/index.html"
+      },
+      {
+        "label": "Organization Title",
+        "expected": "experience.job_title",
+        "got": "experience.company",
+        "provenance": "ericwbailey/modal-nodes/index.html"
+      },
+      {
+        "label": "Street Address",
+        "expected": "address.full",
+        "got": "address.line1",
+        "provenance": "ericwbailey/modal-nodes/index.html"
+      },
+      {
+        "label": "CC Name (Full name as given on the payment instrument)",
+        "expected": null,
+        "got": "person.full_name",
+        "provenance": "ericwbailey/modal-nodes/index.html"
+      },
+      {
+        "label": "CC Exp Year",
+        "expected": null,
+        "got": "experience.years_of_experience",
+        "provenance": "ericwbailey/modal-nodes/index.html"
+      },
+      {
+        "label": "Bday",
+        "expected": "person.date_of_birth",
+        "got": null,
+        "provenance": "ericwbailey/modal-nodes/index.html"
+      },
+      {
+        "label": "URL",
+        "expected": "links.portfolio",
+        "got": null,
+        "provenance": "ericwbailey/modal-nodes/index.html"
+      },
+      {
+        "label": "First name",
+        "expected": "person.full_name",
+        "got": "person.first_name",
+        "provenance": "alaa-mekibes/intro-component-with-signup-form-frontend-mentor/index.html"
+      },
+      {
+        "label": "Sobrenome:",
+        "expected": "person.last_name",
+        "got": null,
+        "provenance": "HeitorDalla/form-validation/index.html"
+      },
+      {
+        "label": "(address)",
+        "expected": "address.line1",
+        "got": "address.full",
+        "provenance": "vinyll/attestation-covid/index.html"
+      },
+      {
+        "label": "(city)",
+        "expected": "address.state",
+        "got": "address.city",
+        "provenance": "vinyll/attestation-covid/index.html"
+      },
+      {
+        "label": "Address",
+        "expected": "address.line1",
+        "got": "address.full",
+        "provenance": "mohammadhouda/shopify-automation/index.html"
+      },
+      {
+        "label": "(Username)",
+        "expected": "person.first_name",
+        "got": "person.email",
+        "provenance": "2541773-wits/Cryptid-Web-App/index.html"
+      },
+      {
+        "label": "Имя",
+        "expected": "person.first_name",
+        "got": "person.full_name",
+        "provenance": "soalko/FBD_Soldatov/form.html"
+      },
+      {
+        "label": "Street Address:",
+        "expected": "address.full",
+        "got": "address.line1",
+        "provenance": "mozilla/form-fill-examples/basic.html"
+      },
+      {
+        "label": "Address Level 2:",
+        "expected": "address.city",
+        "got": "address.full",
+        "provenance": "mozilla/form-fill-examples/basic.html"
+      },
+      {
+        "label": "Address Level 1:",
+        "expected": "address.state",
+        "got": "address.full",
+        "provenance": "mozilla/form-fill-examples/basic.html"
+      },
+      {
+        "label": "New Name",
+        "expected": "address.line2",
+        "got": "person.full_name",
+        "provenance": "kittsville/deedpoll.lgbt/index.html"
+      },
+      {
+        "label": "Address",
+        "expected": "address.line1",
+        "got": "address.full",
+        "provenance": "stripe/elements-examples/index.html"
+      },
+      {
+        "label": "Address",
+        "expected": "address.line1",
+        "got": "address.full",
+        "provenance": "stripe/elements-examples/index.html"
+      },
+      {
+        "label": "CEP:",
+        "expected": "address.postal_code",
+        "got": null,
+        "provenance": "Magrelinprt/validador-cep/index.html"
+      },
+      {
+        "label": "Education",
+        "expected": "experience.job_title",
+        "got": "education.degree",
+        "provenance": "saqibsattar07/editable-resume-builder/index.html"
+      },
+      {
+        "label": "Experience",
+        "expected": "experience.job_title",
+        "got": null,
+        "provenance": "saqibsattar07/editable-resume-builder/index.html"
+      },
+      {
+        "label": "Education",
+        "expected": "experience.job_title",
+        "got": "education.degree",
+        "provenance": "saqibsattar07/dynamic-resume-builder/index.html"
+      },
+      {
+        "label": "Experience",
+        "expected": "experience.job_title",
+        "got": null,
+        "provenance": "saqibsattar07/dynamic-resume-builder/index.html"
+      },
+      {
+        "label": "Education",
+        "expected": "experience.job_title",
+        "got": "education.degree",
+        "provenance": "saqibsattar07/interactive-resume-builder/index.html"
+      },
+      {
+        "label": "Experience",
+        "expected": "experience.job_title",
+        "got": null,
+        "provenance": "saqibsattar07/interactive-resume-builder/index.html"
+      },
+      {
+        "label": "Name deiner Stadt / Postleitzahl",
+        "expected": "address.city",
+        "got": null,
+        "provenance": "Queer-Lexikon/regenbogenkarte/index.html"
+      },
+      {
+        "label": "Name deiner Stadt oder Postleitzahl",
+        "expected": "address.city",
+        "got": null,
+        "provenance": "Queer-Lexikon/regenbogenkarte/index.html"
+      },
+      {
+        "label": "Řádek 1:",
+        "expected": "person.full_name",
+        "got": null,
+        "provenance": "Czechitas-podklady-WEB/Konfigurator-slidu/index.html"
+      },
+      {
+        "label": "Řádek 3:",
+        "expected": "address.city",
+        "got": null,
+        "provenance": "Czechitas-podklady-WEB/Konfigurator-slidu/index.html"
+      },
+      {
+        "label": "CEP",
+        "expected": "address.postal_code",
+        "got": null,
+        "provenance": "Guielihan/busca-de-cep-com-fetch-api/index.html"
+      },
+      {
+        "label": "Rua",
+        "expected": "address.line1",
+        "got": null,
+        "provenance": "Guielihan/busca-de-cep-com-fetch-api/index.html"
+      },
+      {
+        "label": "ESTADO",
+        "expected": "address.state",
+        "got": null,
+        "provenance": "Guielihan/busca-de-cep-com-fetch-api/index.html"
+      },
+      {
+        "label": "Cidade",
+        "expected": "address.city",
+        "got": null,
+        "provenance": "Guielihan/busca-de-cep-com-fetch-api/index.html"
+      },
+      {
+        "label": "(additional-name)",
+        "expected": "person.middle_name",
+        "got": "person.full_name",
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(address-level1)",
+        "expected": "address.state",
+        "got": "address.full",
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(address-level2)",
+        "expected": "address.city",
+        "got": "address.full",
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(bday)",
+        "expected": "person.date_of_birth",
+        "got": null,
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(cc-exp-year)",
+        "expected": null,
+        "got": "experience.years_of_experience",
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(cc-name)",
+        "expected": null,
+        "got": "person.full_name",
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(organization-title)",
+        "expected": "experience.job_title",
+        "got": "experience.company",
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(street-address)",
+        "expected": "address.full",
+        "got": "address.line1",
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "(url)",
+        "expected": "links.portfolio",
+        "got": null,
+        "provenance": "samdutton/simpl/inputnames/index.html"
+      },
+      {
+        "label": "Adresse",
+        "expected": "address.line1",
+        "got": "address.full",
+        "provenance": "LAB-MI/deplacement-covid-19/src/index.html"
+      },
+      {
+        "label": "Additional name",
+        "expected": "person.middle_name",
+        "got": "person.full_name",
+        "provenance": "electerious/formbase/demos/default.html"
+      },
+      {
+        "label": "Practice name",
+        "expected": "experience.company",
+        "got": "person.full_name",
+        "provenance": "KenSaflok/DentalCo_Collection_worked/demo.html"
+      },
+      {
+        "label": "Department or agency",
+        "expected": "experience.company",
+        "got": "education.field_of_study",
+        "provenance": "Office-of-Digital-Services/California-State-Digital-Strategy/index.html"
+      },
+      {
+        "label": "Phone number",
+        "expected": "experience.company",
+        "got": "person.phone",
+        "provenance": "kelvintk1/Renteaze-Sponsor/role.html"
+      },
+      {
+        "label": "Client",
+        "expected": "experience.company",
+        "got": null,
+        "provenance": "Mandyc73ESA/trakker/index.html"
+      },
+      {
+        "label": "Personal URL",
+        "expected": "links.portfolio",
+        "got": null,
+        "provenance": "R74nCom/R74n-Main/contact.html"
+      },
+      {
+        "label": "Location",
+        "expected": "address.country",
+        "got": null,
+        "provenance": "R74nCom/R74n-Main/contact.html"
+      },
+      {
+        "label": "ابحث عن مدينتك",
+        "expected": "address.country",
+        "got": "address.city",
+        "provenance": "Abdoallah-Badr/Simple-Azan-website/index.html"
+      }
+    ]
+  },
+  "baselines": [
+    {
+      "method": "A exact label",
+      "note": "normalized label == an alias",
+      "accuracy": 0.44,
+      "macroPrecision": 0.764,
+      "macroRecall": 0.294,
+      "macroF1": 0.413,
+      "correctConcept": 110,
+      "wrongConcept": 7,
+      "declinedWhenAnswerable": 157,
+      "correctRefusal": 25,
+      "missedRefusal": 8
+    },
+    {
+      "method": "B exact + metadata",
+      "note": "as A, over label/aria/name/id/placeholder",
+      "accuracy": 0.723,
+      "macroPrecision": 0.833,
+      "macroRecall": 0.609,
+      "macroF1": 0.689,
+      "correctConcept": 205,
+      "wrongConcept": 13,
+      "declinedWhenAnswerable": 56,
+      "correctRefusal": 17,
+      "missedRefusal": 16
+    },
+    {
+      "method": "C substring",
+      "note": "longest alias contained in any metadata",
+      "accuracy": 0.756,
+      "macroPrecision": 0.796,
+      "macroRecall": 0.682,
+      "macroF1": 0.718,
+      "correctConcept": 219,
+      "wrongConcept": 31,
+      "declinedWhenAnswerable": 24,
+      "correctRefusal": 13,
+      "missedRefusal": 20
+    },
+    {
+      "method": "D semantic",
+      "note": "token-set F1 and char bigrams, no gates",
+      "accuracy": 0.749,
+      "macroPrecision": 0.785,
+      "macroRecall": 0.704,
+      "macroF1": 0.729,
+      "correctConcept": 225,
+      "wrongConcept": 39,
+      "declinedWhenAnswerable": 10,
+      "correctRefusal": 5,
+      "missedRefusal": 28
+    },
+    {
+      "method": "FormPilot (full)",
+      "note": "weighted signals, gates, negatives, threshold, ambiguity guard",
+      "accuracy": 0.759,
+      "macroPrecision": 0.804,
+      "macroRecall": 0.693,
+      "macroF1": 0.731,
+      "correctConcept": 223,
+      "wrongConcept": 31,
+      "declinedWhenAnswerable": 20,
+      "correctRefusal": 10,
+      "missedRefusal": 23
+    }
+  ],
+  "ablation": [
+    {
+      "configuration": "1 label only",
+      "note": "matcher sees the label alone",
+      "policyApplied": false,
+      "accuracy": 0.515,
+      "macroF1": 0.529,
+      "wrongConcept": 27,
+      "declinedWhenAnswerable": 106,
+      "correctRefusal": 17,
+      "missedRefusal": 16
+    },
+    {
+      "configuration": "2 + metadata",
+      "note": "plus name, id, placeholder, aria-label",
+      "policyApplied": false,
+      "accuracy": 0.743,
+      "macroF1": 0.725,
+      "wrongConcept": 39,
+      "declinedWhenAnswerable": 11,
+      "correctRefusal": 4,
+      "missedRefusal": 29
+    },
+    {
+      "configuration": "3 + control type",
+      "note": "plus the input type (see note in the source)",
+      "policyApplied": false,
+      "accuracy": 0.739,
+      "macroF1": 0.725,
+      "wrongConcept": 39,
+      "declinedWhenAnswerable": 11,
+      "correctRefusal": 3,
+      "missedRefusal": 30
+    },
+    {
+      "configuration": "4 + confidence floor",
+      "note": "declines below the commitment threshold",
+      "policyApplied": false,
+      "accuracy": 0.759,
+      "macroF1": 0.731,
+      "wrongConcept": 38,
+      "declinedWhenAnswerable": 12,
+      "correctRefusal": 9,
+      "missedRefusal": 24
+    },
+    {
+      "configuration": "5 + ambiguity guard",
+      "note": "also declines when the top two are close",
+      "policyApplied": false,
+      "accuracy": 0.759,
+      "macroF1": 0.731,
+      "wrongConcept": 31,
+      "declinedWhenAnswerable": 20,
+      "correctRefusal": 10,
+      "missedRefusal": 23
+    },
+    {
+      "configuration": "6 + safety policy",
+      "note": "full shipped pipeline",
+      "policyApplied": true,
+      "accuracy": 0.821,
+      "macroF1": 0.731,
+      "wrongConcept": 31,
+      "declinedWhenAnswerable": 20,
+      "correctRefusal": 29,
+      "missedRefusal": 4
+    }
+  ],
+  "strata": [
+    {
+      "stratum": "all held-out",
+      "n": 307,
+      "accuracy": 0.821,
+      "macroF1": 0.731,
+      "correctConcept": 223,
+      "wrongConcept": 31,
+      "declinedWhenAnswerable": 20,
+      "correctRefusal": 29,
+      "missedRefusal": 4
+    },
+    {
+      "stratum": "Latin labels",
+      "n": 206,
+      "accuracy": 0.811,
+      "macroF1": 0.721,
+      "correctConcept": 149,
+      "wrongConcept": 19,
+      "declinedWhenAnswerable": 18,
+      "correctRefusal": 18,
+      "missedRefusal": 2
+    },
+    {
+      "stratum": "non-Latin labels",
+      "n": 21,
+      "accuracy": 0.81,
+      "macroF1": 0.501,
+      "correctConcept": 17,
+      "wrongConcept": 4,
+      "declinedWhenAnswerable": 0,
+      "correctRefusal": 0,
+      "missedRefusal": 0
+    },
+    {
+      "stratum": "no label (name/id only)",
+      "n": 80,
+      "accuracy": 0.85,
+      "macroF1": 0.755,
+      "correctConcept": 57,
+      "wrongConcept": 8,
+      "declinedWhenAnswerable": 2,
+      "correctRefusal": 11,
+      "missedRefusal": 2
+    },
+    {
+      "stratum": "must-refuse controls",
+      "n": 33,
+      "accuracy": 0.879,
+      "macroF1": 0,
+      "correctConcept": 0,
+      "wrongConcept": 0,
+      "declinedWhenAnswerable": 0,
+      "correctRefusal": 29,
+      "missedRefusal": 4
+    }
+  ]
+}

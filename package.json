@@ -23,6 +23,8 @@
     "study:matching": "vite-node research/matching/run.ts",
     "study:performance": "vite-node research/performance/run.ts",
     "study:routing": "vite-node research/routing/run.ts",
+    "study:heldout": "vite-node research/heldout/evaluate.ts",
+    "heldout:fetch": "node research/heldout/fetch.mjs",
     "test:e2e": "playwright test",
     "build:apps": "node tests/e2e/apps/build.mjs"
   },
