@@ -383,12 +383,28 @@ invalidates it.
 
 ## 16. GitHub push status
 
-See the closing section of this report for the attempt made at the end of Phase 3. The Phase 2 attempt
-failed with **HTTP 403** (`Claude doesn't have GitHub access to SAITEJA0217/formpilot for your
-organization`), and read access works while write does not.
+**GitHub authentication/access failure. The push did not succeed.**
 
-If the push fails again, that is an **authentication and access failure**, not a code problem, and the
-repository owner can push the branch after installing the Claude GitHub App at
+Attempted once at the end of Phase 3, after `git status` reported a clean tree and `git diff` reported
+no unstaged changes:
+
+```
+$ git push -u origin claude/exciting-faraday-2jfepm
+remote: Claude doesn't have GitHub access to SAITEJA0217/formpilot for your organization.
+fatal: unable to access 'https://github.com/SAITEJA0217/formpilot/':
+       The requested URL returned error: 403
+exit code: 128
+```
+
+Confirmed absent from the remote — `git ls-remote --heads origin` returns only
+`refs/heads/main` at `a799f7c`. Not retried beyond this single attempt: a 403 on authorization does not
+become a 200 on repetition.
+
+Read access works; the clone and `git ls-remote` both succeed through the container's git proxy. Only
+write is refused. **This is an access failure, not a code problem**, and every commit is intact on the
+local branch — nothing was squashed, rebased, force-pushed or discarded in this phase or the last.
+
+The repository owner can push the branch after installing the Claude GitHub App at
 <https://github.com/apps/claude/installations/select_target>:
 
 ```bash
