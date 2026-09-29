@@ -30,6 +30,14 @@ export interface PanelCard {
 
 const ROOT = path.resolve(import.meta.dirname, '../../..');
 const EXTENSION_DIR = path.join(ROOT, 'extension/dist');
+/**
+ * Chromium as the development image ships it.
+ *
+ * Used only when it is actually there — see the launch options below. `PLAYWRIGHT_BROWSERS_PATH`
+ * already points Playwright at this directory in that image, so skipping the explicit path costs
+ * nothing locally and is what lets CI work at all.
+ */
+const PINNED_CHROMIUM = '/opt/pw-browsers/chromium';
 /** The engine bundle the popup injects, at its fixed build path. */
 const ENGINE_BUNDLE = 'injected/universal.js';
 
@@ -175,8 +183,17 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
       // `page.setViewportSize()` on its own page. Stating it here makes that visible instead of
       // leaving specs to depend on whatever Chromium's default happens to be.
       viewport: { width: 1280, height: 720 },
-      // The image ships Chromium at a fixed path; use it rather than downloading one.
-      executablePath: '/opt/pw-browsers/chromium',
+      // Use the pre-installed Chromium where there is one, and let Playwright find its own
+      // otherwise.
+      //
+      // This path was hard-coded, and it is real only inside the development image. A GitHub
+      // Actions runner installs Chromium through `npx playwright install` into its own cache, so
+      // the pin pointed at a file that does not exist there and every one of the 83 specs failed
+      // in the worker fixture with "Failed to launch chromium because executable doesn't exist at
+      // /opt/pw-browsers/chromium" — before a single test body ran. Existence is the only honest
+      // condition: where the image supplies the browser, use it and skip the download; where it
+      // does not, Playwright resolves the one it installed.
+      ...(fs.existsSync(PINNED_CHROMIUM) ? { executablePath: PINNED_CHROMIUM } : {}),
       args: [
         `--disable-extensions-except=${EXTENSION_DIR}`,
         `--load-extension=${EXTENSION_DIR}`,
