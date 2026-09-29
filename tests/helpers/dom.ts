@@ -93,3 +93,48 @@ export function attachListboxBehaviour(root: Document = document): () => void {
   root.addEventListener('click', handler);
   return () => root.removeEventListener('click', handler);
 }
+
+/**
+ * Emulate the section navigation in `google-forms-advanced-mock.html`.
+ *
+ * The fixture's own script branches on the answer to one question: "Full time" leads to section 2
+ * and "Contract" to section 3, and both converge on section 4. The branch is the point — a form
+ * whose next section depends on an answer has no fixed field count, so detection has to report what
+ * is reachable now rather than a total.
+ *
+ * Attach `attachAriaWidgetBehaviour` too if the test needs to choose the branch by clicking.
+ */
+export function attachSectionNavigation(root: Document = document): () => void {
+  const history: string[] = [];
+
+  const sections = (): HTMLElement[] =>
+    Array.from(root.querySelectorAll<HTMLElement>('[data-section]'));
+  const current = (): HTMLElement | undefined => sections().find((section) => !section.hidden);
+  const show = (id: string): void => {
+    for (const section of sections()) section.hidden = section.getAttribute('data-section') !== id;
+  };
+
+  const handler = (event: Event): void => {
+    const target = event.target as Element | null;
+    const here = current()?.getAttribute('data-section');
+    if (!here) return;
+
+    if (target?.closest('[data-next]')) {
+      const chosen = root.querySelector('[data-branch] [aria-checked="true"][data-goto]');
+      const next = here === '1' ? (chosen?.getAttribute('data-goto') ?? '2') : '4';
+      history.push(here);
+      show(next);
+      return;
+    }
+    if (target?.closest('[data-back]')) {
+      const previous = history.pop();
+      if (previous) show(previous);
+      return;
+    }
+    if (target?.closest('[data-submit]')) {
+      (root.defaultView as unknown as { __submitted?: boolean }).__submitted = true;
+    }
+  };
+  root.addEventListener('click', handler);
+  return () => root.removeEventListener('click', handler);
+}

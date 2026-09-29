@@ -170,6 +170,11 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
 
     const context = await chromium.launchPersistentContext(profileDir, {
       headless: true,
+      // Pinned rather than left to the default. The context is worker-scoped, so a spec's
+      // `test.use({ viewport })` never reaches it — a spec that needs a different size calls
+      // `page.setViewportSize()` on its own page. Stating it here makes that visible instead of
+      // leaving specs to depend on whatever Chromium's default happens to be.
+      viewport: { width: 1280, height: 720 },
       // The image ships Chromium at a fixed path; use it rather than downloading one.
       executablePath: '/opt/pw-browsers/chromium',
       args: [

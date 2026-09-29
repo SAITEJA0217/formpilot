@@ -93,6 +93,28 @@ does not pretend otherwise:
 * A **file** cannot be attached without the user picking it. FormPilot stores no document bytes and
   opens a native picker.
 
+## 5b. The panel can cover the page it is reviewing
+
+The review panel is a fixed 400px column against the right edge of the window. On a page whose form
+is centred, a narrow window puts the panel on top of the form's right-hand side — and a form's own
+buttons are usually on that side.
+
+Measured, not estimated: in a 1280×720 window on
+`frontend/public/test-forms/google-forms-advanced-mock.html`, whose form is 680px and centred,
+`document.elementFromPoint` at the centre of the form's own **Next** button returns the panel host,
+not the button. Chromium refuses to click through it, and so would a user's mouse.
+`tests/e2e/specs/google-forms-sections.spec.ts` asserts both halves of this: that the panel is on
+top, and that closing it gives the button straight back.
+
+It is a layout limitation rather than a safety one — nothing is hidden or altered, the panel has a
+Close button, and the page is fully usable the moment it closes. It is recorded here because a
+multi-step form is exactly where it bites: the user wants the panel open *while* navigating, and on a
+small screen they cannot have both.
+
+Not fixed in this phase. Any fix is a real design decision — docking the panel so it reshapes the
+page, making it draggable, or collapsing it to an edge — and none of those should be chosen from a
+single fixture's geometry.
+
 ## 6. Heuristics that will be wrong sometimes
 
 * **Step detection** has no standard markup to rely on. It infers a wizard from an indicator list

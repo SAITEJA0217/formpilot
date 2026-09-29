@@ -31,6 +31,38 @@ function splitRequired(text: string): { text: string; required: boolean } {
   return { text: collapse(text.replace(/\*/g, '')), required };
 }
 
+/**
+ * The part of a date or time a split input holds.
+ *
+ * Google does not render `<input type="date">`. A date question is three number inputs and a time
+ * question is two, each carrying only an `aria-label` — the question text lives in the heading
+ * above them all. So the generic engine labels every one of them with the question, and a date
+ * question arrives as three fields indistinguishable from each other: three identical cards in the
+ * review panel, and a matcher that will happily write a whole date into the box meant for the day.
+ *
+ * Keyed on Google's own `aria-label` wording rather than on position, because the order of the
+ * inputs follows the form's locale — a US form renders month before day.
+ */
+const DATE_TIME_PARTS: ReadonlyMap<RegExp, string> = new Map([
+  [/^day\b|day of (the )?month/i, 'Day'],
+  [/^month\b/i, 'Month'],
+  [/^year\b/i, 'Year'],
+  [/^hour/i, 'Hour'],
+  [/^minute/i, 'Minute'],
+  [/^second/i, 'Second'],
+  [/am\s*\/?\s*pm|meridiem/i, 'AM/PM'],
+]);
+
+/** Which part of a split date/time this input is, or `''` if it is not one. */
+function dateTimePart(element: Element): string {
+  const own = collapse(element.getAttribute('aria-label') ?? '');
+  if (!own) return '';
+  for (const [pattern, part] of DATE_TIME_PARTS) {
+    if (pattern.test(own)) return part;
+  }
+  return '';
+}
+
 function isGridContainer(container: Element): boolean {
   return !!container.querySelector('div[role="grid"], div[role="table"]');
 }
@@ -155,7 +187,19 @@ export const googleFormsAdapter: FormAdapter = {
       meta.widget = 'listbox';
     }
 
-    const refined: UnifiedField = { ...field, platformMeta: meta };
+    // A split date or time: qualify each input with the part it holds, the way the Jotform
+    // adapter qualifies the inputs of a composite address. `Start date — Day` is answerable;
+    // three fields all called `Start date` are not.
+    const part = dateTimePart(element);
+    let label = field.label;
+    if (part) {
+      meta.composite = 'true';
+      meta.compositePart = part;
+      const base = field.label ?? '';
+      label = base ? `${base} — ${part}` : part;
+    }
+
+    const refined: UnifiedField = { ...field, label, platformMeta: meta };
 
     // Google Forms never uses native `maxlength`; drop the noise if present.
     if (refined.maxLength === 0) delete refined.maxLength;
