@@ -64,6 +64,40 @@ type GroupKind = 'single' | 'radio_group' | 'checkbox_group' | 'adapter_group';
 /** Types that mean "several controls, one logical field". */
 const GROUPING_TYPES: ReadonlySet<FieldType> = new Set(['radio_group', 'checkbox_group', 'rating']);
 
+/**
+ * May this ARIA option be merged with its siblings into one question?
+ *
+ * Native controls answer this with `name`: a shared name *is* the statement that several controls
+ * form one question, and the author wrote it deliberately. ARIA options usually have no name, so the
+ * code used to fall back to "same parent element", which is not the same claim at all — a `<fieldset>`
+ * is a section, and a section routinely holds several unrelated questions.
+ *
+ * So merging needs a positive signal instead of the absence of one:
+ *
+ *   - a `role="radiogroup"`, `role="group"` or `role="listbox"` ancestor. This is how ARIA says "these
+ *     belong together", and an author who built a multi-select out of divs and labelled it properly
+ *     has said so.
+ *   - a container an adapter supplied. A platform adapter's containers are questions by
+ *     construction — Google Forms' `role="listitem"` is one question — so its word is enough.
+ *   - a radio. Radios are mutually exclusive by definition, so treating a set of them as one
+ *     question cannot merge two independent decisions the way checkboxes can.
+ *
+ * Everything else stands alone. The cost is a genuine one and worth stating: a div-based multi-select
+ * with no ARIA group and no adapter comes through as several boolean fields rather than one
+ * multi-select question, so a profile list cannot be applied to it in one go. That is the better
+ * error. Splitting a question asks the user to tick boxes one at a time; merging two questions puts
+ * one decision behind a label describing another, and where one of them is consent, that is exactly
+ * the case the safety layer exists to prevent.
+ */
+function groupableAria(element: Element, container: Element | null): boolean {
+  const role = (element.getAttribute('role') ?? '').toLowerCase();
+  if (role === 'radio') return true;
+  if (container) return true;
+  return element.parentElement?.closest('[role="radiogroup"],[role="group"],[role="listbox"]') !== null
+    ? true
+    : element.closest('[role="radiogroup"],[role="group"],[role="listbox"]') !== null;
+}
+
 interface ControlGroup {
   key: string;
   kind: GroupKind;
@@ -516,11 +550,20 @@ export function detectFields(options: DetectFieldsOptions = {}): DetectionResult
         ? `c${container.getAttribute('data-formpilot-container')}`
         : (element.parentElement ? `p${ordered.length}:${element.parentElement.tagName}` : 'root');
       // Grouping key: prefer the shared `name`, else the shared container/parent.
+      //
+      // `groupableAria` is the exception, and it exists because of a real merge that should not
+      // have happened: two independent custom checkboxes — a marketing opt-in and a legal consent —
+      // sat side by side in one `<fieldset>`, and a shared-parent key turned them into a single
+      // field labelled with the fieldset's legend. One control, two unrelated decisions, and a
+      // label naming neither.
       const key = name
         ? `${groupScope(element, container)}|name=${name}`
-        : container
-          ? `${parentKey}|aria`
-          : `${element.parentElement ? buildSelector(element.parentElement, candidate.root) : 'root'}|aria`;
+        : groupableAria(element, container)
+          ? container
+            ? `${parentKey}|aria`
+            : `${element.parentElement ? buildSelector(element.parentElement, candidate.root) : 'root'}|aria`
+          : // Not groupable: a key unique to this control, so it stands alone.
+            `solo:${buildSelector(element, candidate.root)}`;
 
       const existing = groups.get(key);
       if (existing) {

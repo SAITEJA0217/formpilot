@@ -129,6 +129,21 @@ single fixture's geometry.
   sufficiently hostile re-render will still lose a binding.
 * **The abbreviation table and ontology are English-only.** A non-English form falls back to the
   weakest signals.
+* **ARIA options with no group markup are not merged.** A multi-select built from `role="checkbox"`
+  divs is treated as one question only where the author said so — an enclosing `role="group"`,
+  `role="radiogroup"` or `role="listbox"`, or a container a platform adapter supplied. Without one of
+  those, each checkbox comes through as its own boolean field, so a list from the profile cannot be
+  applied to it in one go and the user ticks the boxes themselves.
+
+  This is a deliberate trade, made after the previous rule — group ARIA options by shared parent
+  element — merged a marketing opt-in and a legal consent that happened to sit in the same
+  `<fieldset>` into a single field labelled with the fieldset's legend: one control for two unrelated
+  decisions, under a label naming neither. Splitting a question costs the user some clicking. Merging
+  two questions puts one decision behind a label describing another, and where either is consent,
+  that is the case the safety layer exists to prevent. `tests/unit/aria-option-grouping.test.ts`
+  tests both directions, since the trade only holds if the capability it costs is the smaller one.
+  Radios are exempt and still merge on a shared parent: they are mutually exclusive by definition, so
+  grouping them cannot fuse two independent decisions.
 
 ## 7. Testing environment
 

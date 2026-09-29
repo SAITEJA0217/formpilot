@@ -32,6 +32,17 @@ function shell(title, bundle, notes, mount = '<div id="root"></div>') {
   fieldset { margin-top: 1rem; }
   fieldset label, label > input[type="checkbox"], label > input[type="radio"] { display: inline-block; font-weight: 400; }
   .note { background: #fffbe6; border-left: 4px solid #d4a017; padding: 0.75rem; margin-bottom: 1.5rem; font-size: 0.9rem; }
+  /* Custom widgets: enough layout that options are visible and clickable, and no more. */
+  .field { margin-top: 0.75rem; }
+  .field .label { display: block; font-weight: 500; }
+  [role="listbox"] { border: 1px solid #999; padding: 0.4rem; cursor: pointer; }
+  .options { border: 1px solid #ccc; border-top: 0; }
+  [role="option"] { padding: 0.3rem 0.4rem; cursor: pointer; }
+  [role="option"]:hover { background: #eef; }
+  [role="checkbox"], [role="radio"] { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; cursor: pointer; }
+  [role="checkbox"] .box, [role="radio"] .box { width: 14px; height: 14px; border: 2px solid #555; display: inline-block; }
+  [role="radio"] .box { border-radius: 50%; }
+  [aria-checked="true"] .box { background: #4f7cff; border-color: #4f7cff; }
 </style>
 <p class="note">${notes}</p>
 ${mount}
@@ -53,6 +64,13 @@ await build({
   ...common,
   entryPoints: [join(here, 'react/app.jsx')],
   outfile: join(outDir, 'react.js'),
+  jsx: 'automatic',
+});
+
+await build({
+  ...common,
+  entryPoints: [join(here, 'react-widgets/app.jsx')],
+  outfile: join(outDir, 'react-widgets.js'),
   jsx: 'automatic',
 });
 
@@ -84,6 +102,15 @@ await writeFile(
   shell('React controlled form', 'react.js', `React 19, every input controlled by component state. ${NOTE}`),
 );
 await writeFile(
+  join(outDir, 'react-widgets.html'),
+  shell(
+    'React custom widgets',
+    'react-widgets.js',
+    'React 19: uncontrolled inputs, a select and boolean controls built from divs, and fields whose ' +
+      `label and input live in different components. ${NOTE}`,
+  ),
+);
+await writeFile(
   join(outDir, 'vue.html'),
   shell('Vue controlled form', 'vue.js', `Vue 3 with <code>v-model</code> on every control. ${NOTE}`),
 );
@@ -99,7 +126,7 @@ await writeFile(
 );
 
 const sizes = await Promise.all(
-  ['react.js', 'vue.js', 'angular.js'].map(async (name) => {
+  ['react.js', 'react-widgets.js', 'vue.js', 'angular.js'].map(async (name) => {
     const bytes = (await readFile(join(outDir, name))).byteLength;
     return `${name} ${(bytes / 1024).toFixed(0)} KiB`;
   }),
