@@ -83,11 +83,80 @@ const CONSENT_PHRASES = [
   'send me', 'contact me', 'contacted by', 'third parties', 'partners',
 ];
 
-/** `autocomplete` tokens that identify payment or one-time-code inputs. */
-const BLOCKED_AUTOCOMPLETE = new Set([
-  'cc-number', 'cc-csc', 'cc-exp', 'cc-exp-month', 'cc-exp-year',
-  'cc-type', 'cc-name', 'one-time-code', 'new-password', 'current-password',
-]);
+/** `autocomplete` tokens that identify a credential or one-time code. */
+const BLOCKED_AUTOCOMPLETE = new Set(['one-time-code', 'new-password', 'current-password']);
+
+/**
+ * `autocomplete` token prefixes that identify a payment instrument.
+ *
+ * A prefix rule rather than an enumeration. Every payment token the WHATWG autofill table defines
+ * begins `cc-`, and the table gains entries over time; an enumeration only covers the ones whoever
+ * wrote it happened to know. `cc-given-name` and `cc-additional-name` are already in the
+ * specification and were both missing from the list this replaced.
+ */
+const BLOCKED_AUTOCOMPLETE_PREFIXES = ['cc-'];
+
+/**
+ * Field-name patterns for payment instruments.
+ *
+ * These exist because a phrase list could not catch what real markup actually does. The v1 held-out
+ * evaluation put the policy in front of 33 payment and credential controls written by strangers and
+ * it missed four, all of the same shape: authors name the field after the `autocomplete` token they
+ * are pairing it with, so a cardholder-name input is `cc-name` or labelled "CC Name" — words that
+ * appear nowhere in a list built by imagining how a payment field might be worded.
+ *
+ * A pattern generalises where a list cannot. `cc` or `card` beside a payment noun is the naming
+ * convention the whole industry uses, and matching the convention covers the spellings nobody here
+ * thought of.
+ *
+ * The payment noun is required. A bare `cc` must stay fillable: in an email compose form `CC` means
+ * carbon copy, and blocking it would be the same class of mistake as blocking "PIN Code" — an
+ * Indian postal code — which a bare `pin` in the phrase list did until it was caught.
+ */
+const PAYMENT_FIELD_PATTERNS: readonly RegExp[] = [
+  // `cc name`, `card expiry`, `cc exp year`, `card type`. Normalization has already split
+  // `cc-exp-year` into words, so one pattern covers attributes and visible labels alike.
+  // `experience` is accepted beside a card token as a second line of defence: the normalizer now
+  // expands `cc exp` to `cc expiry`, but the safety layer should not depend on that being right.
+  /\b(cc|card|creditcard|debitcard)\s+(number|num|no|name|holder|owner|given\s+name|family\s+name|additional\s+name|exp|expiry|expiration|expires|experience|month|year|date|code|csc|cvv|cvc|cvn|cid|type|brand|pin|security|verification)\b/,
+  // One word, no space: `cardholder`, `cardnumber`.
+  /\bcard\s*(holder|number|num)\b|\bcardholder\b/,
+  // The reverse order checkout pages use, with room for the words people put in between:
+  // `name on card`, `name as it appears on the card`, `number printed on your card`.
+  /\b(number|name|code|csc|cvv|cvc|expiry|expiration)\b[a-z\s]{0,24}\bon\s+(the\s+|your\s+)?(credit\s+|debit\s+)?card\b/,
+  // `card verification value`, spelled out.
+  /\bcard\s+verification\b/,
+];
+
+/**
+ * Words that mean a nearby `card` is not a payment card.
+ *
+ * Without this, "Library card name" is refused — the same class of mistake as refusing "PIN Code",
+ * an Indian postal code, which a bare `pin` in the phrase list did until an independent test caught
+ * it. Over-blocking is a real defect: a safety net that catches ordinary fields stops being used.
+ */
+const NOT_A_PAYMENT_CARD = [
+  'library', 'loyalty', 'membership', 'member', 'id card', 'identity card', 'business card',
+  'sim card', 'graphics card', 'report card', 'gift card holder name', 'boarding',
+  'access card', 'key card', 'student card', 'travel card', 'transit card',
+];
+
+/**
+ * Phrases that mark a boolean control as authorising money to move.
+ *
+ * Kept separate from `CONSENT_PHRASES` because the consequence is different in kind: agreeing to
+ * terms is a commitment, authorising a charge is a transaction. Both are refused, and the reason
+ * shown to the user names which one it is.
+ */
+const FINANCIAL_AUTHORISATION_PATTERNS: readonly RegExp[] = [
+  /\bauthoris|\bauthoriz/,
+  /\bcharge(d)?\b/,
+  /\bdirect\s+debit\b/,
+  /\bstanding\s+order\b/,
+  /\brecurring\s+(billing|payment|charge)\b/,
+  /\bauto\s*renew/,
+  /\bsubscri(be|ption)\b/,
+];
 
 /**
  * Text on a control that submits, pays, or otherwise commits the user.
@@ -206,7 +275,11 @@ export function evaluateFieldSafety(field: {
   }
 
   const autocompleteToken = field.autocomplete?.toLowerCase().trim().split(/\s+/).pop();
-  if (autocompleteToken && BLOCKED_AUTOCOMPLETE.has(autocompleteToken)) {
+  if (
+    autocompleteToken &&
+    (BLOCKED_AUTOCOMPLETE.has(autocompleteToken) ||
+      BLOCKED_AUTOCOMPLETE_PREFIXES.some((prefix) => autocompleteToken.startsWith(prefix)))
+  ) {
     return {
       sensitivity: 'blocked',
       reason: 'This field is declared as a credential or payment field.',
@@ -230,6 +303,16 @@ export function evaluateFieldSafety(field: {
       return haystacks.some((haystack) => containsPhrase(haystack, needle));
     });
 
+  const matchesPattern = (patterns: readonly RegExp[]): boolean =>
+    patterns.some((pattern) => haystacks.some((haystack) => pattern.test(haystack)));
+
+  if (matchesPattern(PAYMENT_FIELD_PATTERNS) && !matchesAny(NOT_A_PAYMENT_CARD)) {
+    return {
+      sensitivity: 'blocked',
+      reason: 'Payment card details are never autofilled — you enter those yourself.',
+    };
+  }
+
   if (matchesAny(SECRET_PHRASES)) {
     return {
       sensitivity: 'blocked',
@@ -239,6 +322,12 @@ export function evaluateFieldSafety(field: {
 
   const isBooleanControl =
     field.type === 'checkbox' || field.type === 'checkbox_group' || field.type === 'radio_group';
+  if (isBooleanControl && matchesPattern(FINANCIAL_AUTHORISATION_PATTERNS)) {
+    return {
+      sensitivity: 'blocked',
+      reason: 'Authorising a payment is a decision only you can make.',
+    };
+  }
   if (isBooleanControl && matchesAny(CONSENT_PHRASES)) {
     return {
       sensitivity: 'blocked',

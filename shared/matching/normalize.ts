@@ -109,6 +109,22 @@ const NO_MEANS_NUMBER_AFTER: ReadonlySet<string> = new Set([
   'house', 'flat', 'door', 'id', 'account', 'aadhaar', 'pan',
 ]);
 
+/**
+ * Tokens after which `exp` means *expiry*, not *experience*.
+ *
+ * `exp` normally abbreviates "experience" on an application form, and expanding it is what lets
+ * "Exp (years)" match `experience.years_of_experience`. Beside a card token it means the opposite,
+ * and the unqualified expansion caused a real defect: a third-party payment form's `cc-exp-year`
+ * input normalized to "cc experience year" and was mapped to years of employment. The independent
+ * evaluation in `research/heldout/` caught it.
+ *
+ * Expanding to `expiry` rather than leaving `exp` alone makes the meaning explicit to the safety
+ * policy and the matcher at once, the same way `NO_MEANS_NUMBER_AFTER` disambiguates `no`.
+ */
+const EXP_MEANS_EXPIRY_AFTER: ReadonlySet<string> = new Set([
+  'cc', 'card', 'credit', 'debit', 'cvv', 'cvc', 'payment', 'visa', 'mastercard', 'amex',
+]);
+
 /** Strip required/optional decorations a form author added to a label. */
 export function stripDecorations(input: string): string {
   return input
@@ -142,6 +158,13 @@ function expandTokens(tokens: string[]): string[] {
       const prev = out.length > 0 ? out[out.length - 1] : '';
       out.push(NO_MEANS_NUMBER_AFTER.has(prev) ? 'number' : 'no');
       continue;
+    }
+    if (token === 'exp') {
+      const prev = out.length > 0 ? out[out.length - 1] : '';
+      if (EXP_MEANS_EXPIRY_AFTER.has(prev)) {
+        out.push('expiry');
+        continue;
+      }
     }
     const expansion = ABBREVIATIONS[token];
     if (expansion) {

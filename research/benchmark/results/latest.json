@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T04:45:33.221Z",
+  "generatedAt": "2026-09-29T05:40:07.733Z",
   "engine": {
     "version": "2.0.0"
   },
@@ -48,9 +48,9 @@
     "clean": true
   },
   "efficiency": {
-    "detectMsMean": 63.03,
-    "detectMsStdev": 46.56,
-    "suggestMsMean": 24.59,
+    "detectMsMean": 60.89,
+    "detectMsStdev": 41.5,
+    "suggestMsMean": 24.89,
     "modelCallsTotal": 10,
     "modelBoundFields": 13,
     "fieldsEvaluated": 120,
@@ -96,9 +96,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 124.25,
-        "suggestMs": 53.15,
-        "fillMs": 7.13
+        "detectMs": 140.1,
+        "suggestMs": 88.25,
+        "fillMs": 6.96
       },
       "statuses": {
         "ready": 5,
@@ -138,9 +138,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 94.24,
-        "suggestMs": 24.29,
-        "fillMs": 199.03
+        "detectMs": 70,
+        "suggestMs": 25.99,
+        "fillMs": 201.78
       },
       "statuses": {
         "ready": 3,
@@ -178,9 +178,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 39.29,
-        "suggestMs": 30.98,
-        "fillMs": 4.74
+        "detectMs": 39.92,
+        "suggestMs": 30.37,
+        "fillMs": 4.76
       },
       "statuses": {
         "ready": 7,
@@ -218,9 +218,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 161.71,
-        "suggestMs": 43.06,
-        "fillMs": 16.08
+        "detectMs": 110.04,
+        "suggestMs": 37.84,
+        "fillMs": 15.33
       },
       "statuses": {
         "ready": 12,
@@ -258,9 +258,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 21.54,
-        "suggestMs": 12.34,
-        "fillMs": 1.78
+        "detectMs": 23.08,
+        "suggestMs": 11.64,
+        "fillMs": 1.87
       },
       "statuses": {
         "ready": 3,
@@ -298,9 +298,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 14.44,
-        "suggestMs": 5.18,
-        "fillMs": 2.2
+        "detectMs": 15.43,
+        "suggestMs": 7.11,
+        "fillMs": 1.02
       },
       "statuses": {
         "ready": 1,
@@ -338,9 +338,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 117.47,
-        "suggestMs": 37.2,
-        "fillMs": 196.76
+        "detectMs": 127.72,
+        "suggestMs": 33.05,
+        "fillMs": 198.13
       },
       "statuses": {
         "ready": 4,
@@ -378,9 +378,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 102.49,
-        "suggestMs": 58.94,
-        "fillMs": 10.95
+        "detectMs": 114.33,
+        "suggestMs": 59.66,
+        "fillMs": 11.87
       },
       "statuses": {
         "ready": 8,
@@ -420,9 +420,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 103.14,
-        "suggestMs": 38.99,
-        "fillMs": 195.33
+        "detectMs": 71.11,
+        "suggestMs": 31.83,
+        "fillMs": 196.22
       },
       "statuses": {
         "ready": 5,
@@ -462,9 +462,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 35.58,
-        "suggestMs": 12.87,
-        "fillMs": 4.22
+        "detectMs": 31.84,
+        "suggestMs": 9.78,
+        "fillMs": 2.03
       },
       "statuses": {
         "ready": 3,
@@ -504,9 +504,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 39.97,
-        "suggestMs": 9.96,
-        "fillMs": 2.57
+        "detectMs": 36.98,
+        "suggestMs": 7.97,
+        "fillMs": 2.06
       },
       "statuses": {
         "ready": 4,
@@ -546,9 +546,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 29.86,
-        "suggestMs": 5.34,
-        "fillMs": 0.13
+        "detectMs": 28.86,
+        "suggestMs": 4.49,
+        "fillMs": 0.18
       },
       "statuses": {
         "ready": 0,
@@ -588,9 +588,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 38.57,
-        "suggestMs": 37.52,
-        "fillMs": 0.16
+        "detectMs": 34.49,
+        "suggestMs": 29.63,
+        "fillMs": 0.29
       },
       "statuses": {
         "ready": 0,
@@ -628,9 +628,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 15.54,
-        "suggestMs": 12.39,
-        "fillMs": 2.83
+        "detectMs": 15.92,
+        "suggestMs": 12.18,
+        "fillMs": 2.43
       },
       "statuses": {
         "ready": 4,
@@ -668,9 +668,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 90.15,
-        "suggestMs": 29.74,
-        "fillMs": 5.33
+        "detectMs": 96.14,
+        "suggestMs": 27.45,
+        "fillMs": 5.54
       },
       "statuses": {
         "ready": 2,
@@ -710,9 +710,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 16.59,
-        "suggestMs": 3.73,
-        "fillMs": 0.73
+        "detectMs": 32.25,
+        "suggestMs": 3.94,
+        "fillMs": 1.6
       },
       "statuses": {
         "ready": 1,
@@ -752,9 +752,9 @@
       },
       "safetyViolations": [],
       "timings": {
-        "detectMs": 26.72,
-        "suggestMs": 2.28,
-        "fillMs": 1.49
+        "detectMs": 47,
+        "suggestMs": 1.96,
+        "fillMs": 1.59
       },
       "statuses": {
         "ready": 0,
