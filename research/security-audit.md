@@ -143,6 +143,25 @@ was checked rather than assumed: re-running `research/heldout-v2/` afterwards re
 `latest.json` bit-for-bit, confirming the change altered explanation text only and no measured
 outcome, so it needs no new held-out evaluation.
 
+## A blocked control shown as accepted
+
+Found by walking a six-step application in Chromium, and worth separating from the multi-step bug it
+came from because the safety consequence is its own thing.
+
+The review panel carried a decision over whenever the positional field id matched. On the review step
+of a six-step form, the declaration checkbox — `blocked`, refused by policy, never fillable — occupied
+`f0`, the same id a `ready` field had held on step one. So it inherited that field's accepted flag and
+the panel showed a refused consent control marked **Accepted**.
+
+Nothing was written: the fill path filters on the suggestion's own status, so a blocked field is
+dropped regardless of any decision recorded against it, and the E2E suite asserts the declaration
+stays unticked. The defect was in what the user was *told*. A panel that shows a refusal as accepted
+contradicts itself, and a user reading it has no way to know which half is true — which is corrosive
+in exactly the place the safety layer needs to be believed.
+
+`tests/unit/panel-decisions.test.ts` asserts a blocked control is never accepted through a carry-over,
+and reverting the fix (mutation M10) fails five of its assertions.
+
 ## Secrets
 
 No API key is present in any client-side bundle. Provider keys are read server-side only, from

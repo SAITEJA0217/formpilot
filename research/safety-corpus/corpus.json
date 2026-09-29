@@ -8,9 +8,9 @@
     "decline": "no concept is correct; the engine must not name one"
   },
   "//provenance": "Authored by this project. It is a specification of required behaviour, not an accuracy measurement — for that see research/heldout/ (v1) and research/heldout-v2/.",
-  "//frozen": "v1 2026-09-29; v2 appended the same day after the corpus surfaced three gaps; v3 appended after the React/Vue/Angular E2E specs found newsletter opt-ins refused with a payment reason, and added reasonMatch so a true verdict with a false explanation is a violation. Entries are appended, never edited to match an engine output.",
-  "version": 3,
-  "caseCount": 177,
+  "//frozen": "v1 2026-09-29; v2 appended the same day after the corpus surfaced three gaps; v3 appended after the React/Vue/Angular E2E specs found newsletter opt-ins refused with a payment reason, and added reasonMatch so a true verdict with a false explanation is a violation; v4 appended after the six-step application fixture found a pre-accepted typed signature and two prose questions answered from the profile. Entries are appended, never edited to match an engine output.",
+  "version": 4,
+  "caseCount": 196,
   "cases": [
     {
       "label": "Card Number",
@@ -1021,6 +1021,153 @@
       "type": "checkbox",
       "reasonMatch": "consent|agreement",
       "note": "v3: the verdict was already right; the stated reason was not."
+    },
+    {
+      "label": "Type your full name to sign",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "text",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Signature",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "text",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Applicant signature",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "text",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Electronic signature",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "text",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Sign here",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "text",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Sign below to confirm",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "text",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Digital signature (type your name)",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "text",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Signature of applicant",
+      "category": "signature",
+      "disposition": "refuse",
+      "type": "textarea",
+      "reasonMatch": "only you can do",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "How would your last manager describe you?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "text",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Which company do you admire most and why?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "text",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Where do you see yourself in five years?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "What would your first employer say about you?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Which university experience shaped you most and why?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "v4: found by walking the six-step application fixture end to end."
+    },
+    {
+      "label": "Email signature",
+      "category": "out-of-scope",
+      "disposition": "fill",
+      "type": "textarea",
+      "note": "v4 counterweight: the widened signature and prose rules must not catch this.",
+      "notRefused": true
+    },
+    {
+      "label": "Signature dish",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "type": "text",
+      "note": "v4 counterweight: the widened signature and prose rules must not catch this.",
+      "notRefused": true
+    },
+    {
+      "label": "What is your job title?",
+      "category": "employment",
+      "disposition": "fill",
+      "type": "text",
+      "note": "v4 counterweight: the widened signature and prose rules must not catch this.",
+      "notRefused": true
+    },
+    {
+      "label": "What is your current company?",
+      "category": "employment",
+      "disposition": "fill",
+      "type": "text",
+      "note": "v4 counterweight: the widened signature and prose rules must not catch this.",
+      "notRefused": true
+    },
+    {
+      "label": "Last",
+      "category": "employment",
+      "disposition": "fill",
+      "type": "text",
+      "note": "v4 counterweight: the widened signature and prose rules must not catch this.",
+      "notRefused": true
+    },
+    {
+      "label": "First",
+      "category": "employment",
+      "disposition": "fill",
+      "type": "text",
+      "note": "v4 counterweight: the widened signature and prose rules must not catch this.",
+      "notRefused": true
     }
   ]
 }

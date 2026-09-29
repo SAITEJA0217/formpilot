@@ -201,6 +201,49 @@ const MONEY_SIGNAL_PATTERNS: readonly RegExp[] = [
 const SUBSCRIPTION_PATTERN = /\bsubscri(be|ption|bing)\b/;
 
 /**
+ * Controls that ask the user to sign.
+ *
+ * A typed signature is the signature. "Type your full name to sign" is a text input whose label
+ * happens to contain "full name", so the matcher answered it with the profile's name at 0.93 — high
+ * enough to arrive pre-accepted, which means FormPilot signed the application and the user only found
+ * out afterwards. The consent rule did not catch it because that rule only applies to boolean
+ * controls, and a signature is not a checkbox.
+ *
+ * Signing is the same kind of act as ticking "I agree" and belongs under the same rule: the user
+ * does it. Applied to every control type, not just booleans, because that control-type assumption is
+ * what let this through.
+ */
+const SIGNATURE_PATTERNS: readonly RegExp[] = [
+  /\bsignature\b/,
+  /\bsign\s+(here|below|above|and|to\s+confirm)\b/,
+  /\bto\s+sign\b/,
+  /\b(e|digitally|electronically)[\s-]*sign(ed|ing)?\b/,
+  /\bsign\s+(this|the)\s+(form|application|document|agreement)\b/,
+];
+
+/**
+ * "Signature" in a sense that has nothing to do with signing.
+ *
+ * An email signature is a block of text a user genuinely wants filled; a signature dish is a menu.
+ * Refusing those would make the rule the kind of over-blocking that gets a safety layer switched off.
+ */
+const NOT_A_SIGNATURE: readonly string[] = [
+  'email signature',
+  'mail signature',
+  'signature block',
+  'signature dish',
+  'signature move',
+  'signature style',
+  'signature colour',
+  'signature color',
+  'signature drink',
+  'method signature',
+  'function signature',
+  'type signature',
+  'signature verification code',
+];
+
+/**
  * Text on a control that submits, pays, or otherwise commits the user.
  *
  * Over-matching here is cheap and under-matching is not: the only consequence of a false
@@ -366,6 +409,15 @@ export function evaluateFieldSafety(field: {
     return {
       sensitivity: 'blocked',
       reason: 'Credentials, one-time codes and payment or identity numbers are never autofilled.',
+    };
+  }
+
+  // Before the boolean-only rules below: a signature is usually a text input, and treating signing
+  // as a checkbox-shaped problem is what let a pre-accepted signature through.
+  if (matchesPattern(SIGNATURE_PATTERNS) && !matchesAny(NOT_A_SIGNATURE)) {
+    return {
+      sensitivity: 'blocked',
+      reason: 'Signing is something only you can do.',
     };
   }
 

@@ -29,7 +29,71 @@ export interface ReviewPanelProps {
   error?: string | null;
 }
 
-type Decision = { accepted: boolean; value: string | string[] | boolean | null; edited: boolean };
+export type Decision = {
+  accepted: boolean;
+  value: string | string[] | boolean | null;
+  edited: boolean;
+  /**
+   * Which field this decision was made about.
+   *
+   * Recorded because the map is keyed by `fieldId`, and a field id is positional — the detector
+   * names fields `f0`, `f1`, `f2` in document order. Within one screen that is unique, but a
+   * multi-step form re-detects on every step and numbers each step from zero again, so step two's
+   * `f0` is a different field wearing step one's name.
+   *
+   * The carry-over below existed for a good reason — a framework re-render must not throw away a
+   * decision the user already made — but keyed on the id alone it did the opposite of its job: on a
+   * six-step application it copied "Full Name" onto "Degree", "Email Address" onto "University", and
+   * a `ready` accepted flag along with them, so pressing Fill wrote the applicant's name into their
+   * degree. Comparing identity is what makes the carry-over mean "the same field again" instead of
+   * "the same position again".
+   */
+  identity: string;
+};
+
+/**
+ * A field's identity, as much of it as a suggestion carries.
+ *
+ * `extension/src/core/session/formSession.ts` computes the same thing from the field itself as
+ * `fieldKey`, using type, label and `name`. A `FieldSuggestion` has no `name`, so this uses type and
+ * label. That is enough for the job here, which is only to tell "this is the field I decided about"
+ * from "this is a different field that happens to sit where that one did".
+ */
+export function identityOf(suggestion: FieldSuggestion): string {
+  const label = (suggestion.label ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+  return `${suggestion.fieldType}|${label || 'unlabelled'}`;
+}
+
+/**
+ * Work out the decision state for a new set of suggestions, given the previous one.
+ *
+ * Exported and pure so the invariant can be tested directly: a decision is kept when the same field
+ * comes back, and discarded when a different field arrives at the same position. Testing that through
+ * the rendered panel would need a browser for something that is a property of a map.
+ */
+export function reconcileDecisions(
+  previous: Record<string, Decision>,
+  suggestions: FieldSuggestion[],
+): Record<string, Decision> {
+  const next: Record<string, Decision> = {};
+  for (const suggestion of suggestions) {
+    const identity = identityOf(suggestion);
+    const existing = previous[suggestion.fieldId];
+    // Carry a decision over only when it was made about *this* field. A positional id match is not
+    // that: see `Decision.identity`.
+    if (existing && existing.identity === identity) {
+      next[suggestion.fieldId] = existing;
+      continue;
+    }
+    next[suggestion.fieldId] = {
+      accepted: suggestion.status === 'ready' && !isAffirmationControl(suggestion.fieldType),
+      value: suggestion.value,
+      edited: false,
+      identity,
+    };
+  }
+  return next;
+}
 
 const GROUP_ORDER: { key: FieldSuggestion['status'][]; label: string }[] = [
   { key: ['ready'], label: 'Ready to fill' },
@@ -70,22 +134,7 @@ export default function ReviewPanel({
   // always miss some phrasing. Requiring a click here is the part of that defence that does
   // not depend on reading the label correctly.
   useEffect(() => {
-    setDecisions((previous) => {
-      const next: Record<string, Decision> = {};
-      for (const suggestion of suggestions) {
-        const existing = previous[suggestion.fieldId];
-        if (existing) {
-          next[suggestion.fieldId] = existing;
-          continue;
-        }
-        next[suggestion.fieldId] = {
-          accepted: suggestion.status === 'ready' && !isAffirmationControl(suggestion.fieldType),
-          value: suggestion.value,
-          edited: false,
-        };
-      }
-      return next;
-    });
+    setDecisions((previous) => reconcileDecisions(previous, suggestions));
   }, [suggestions]);
 
   const acceptedList = useMemo(
@@ -113,7 +162,12 @@ export default function ReviewPanel({
     const previous = valueToText(suggestion.value) || null;
     setDecisions((prev) => ({
       ...prev,
-      [suggestion.fieldId]: { accepted: true, value: draft, edited: true },
+      [suggestion.fieldId]: {
+        accepted: true,
+        value: draft,
+        edited: true,
+        identity: identityOf(suggestion),
+      },
     }));
     setEditing(null);
     if (draft.trim() && draft !== previous) onEdit(suggestion.fieldId, draft, previous);

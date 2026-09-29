@@ -123,6 +123,22 @@ single fixture's geometry.
   and the user is told only about the step in front of them.
 * **Section inference** falls back to the nearest preceding heading in document order, which is
   wrong on visually columnar layouts.
+* **Field ids are positional.** The detector names fields `f0`, `f1`, `f2` in document order, so an
+  id identifies a *place on the current screen*, not a field. A multi-step form re-detects on every
+  step and numbers each step from zero again, which means step two's `f0` wears step one's name.
+
+  Anything keying on a field id across a re-detection is therefore wrong, and one thing was: the
+  review panel carried a user's decision over whenever the id matched, so on a six-step application
+  it copied step one's answers onto step two's questions — the applicant's name into Degree, their
+  email into University — accepted flags included, and pressing Fill wrote them. Fixed by recording
+  the field's identity alongside each decision and requiring both to match
+  (`reconcileDecisions`, pinned by `tests/unit/panel-decisions.test.ts`), and the session layer was
+  already correct because it keys by `fieldKey(field)` rather than by id.
+
+  The ids themselves are still positional. Making them content-derived is the deeper fix and was not
+  attempted here: ids thread through the element map, the selectors, the suggestion pipeline and the
+  benchmark's ground truth, and that is not a change to make in a release pass. Until then, a field id
+  is safe to use *within* one detection and never across two.
 * **Selector stability** is best-effort. A framework that regenerates ids and class names on every
   render can invalidate a selector between detection and filling. The session keys decisions by
   field *identity* rather than id to limit the damage, and the engine re-detects on mutation, but a

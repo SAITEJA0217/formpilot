@@ -90,7 +90,27 @@ const CONTEXT_DEPENDENT_CEILING = 0.85;
  * answering it with "Software Engineer" is nonsense — which is exactly what happened: that
  * label matched `current role` and scored 0.93, high enough to be filled without review.
  */
-const PROSE_QUESTION = /^\s*(why|describe|explain|tell\s+us|elaborate|discuss|in\s+your\s+own\s+words|what\s+(makes|motivates)|how\s+(do|did|would)\s+you)\b/i;
+const PROSE_MARKER =
+  /(why|describe|explain|tell\s+us|elaborate|discuss|in\s+your\s+own\s+words|what\s+(makes|motivates)|how\s+(do|did|would)\s+you)\b/i;
+const PROSE_QUESTION_OPENER = new RegExp(`^\\s*${PROSE_MARKER.source}`, 'i');
+
+/**
+ * Does this label ask for prose?
+ *
+ * A prose marker at the *start* is the strong case — "Why are you leaving?", "Describe your
+ * experience". A marker anywhere is only meaningful when the label is actually a question, and then
+ * it is just as decisive: "Which company do you admire most **and why**?" was scoring
+ * `experience.company` at 0.93 and arriving pre-accepted, so the user's own employer was offered as
+ * the company they admire. The single-word `company` pattern that matched it sidesteps the
+ * lone-token discount below, because a pattern carries no token count to discount.
+ *
+ * Requiring the question mark is what keeps this narrow. "What is your job title?" is a question and
+ * carries no marker, so it still resolves from the profile, which is right.
+ */
+function asksForProse(label: string): boolean {
+  if (PROSE_QUESTION_OPENER.test(label)) return true;
+  return label.trimEnd().endsWith('?') && PROSE_MARKER.test(label);
+}
 /** Multiplier when a stored scalar is offered as the answer to a prose question. */
 const PROSE_QUESTION_PENALTY = 0.25;
 /** Below this gap the top two concepts are treated as indistinguishable. */
@@ -329,7 +349,7 @@ function scoreConceptAgainstField(
   }
 
   // 6. A prose question is never answered by a stored value.
-  if (!concept.def.generative && PROSE_QUESTION.test(field.label ?? '')) {
+  if (!concept.def.generative && asksForProse(field.label ?? '')) {
     score *= PROSE_QUESTION_PENALTY;
     signals.push({
       signal: 'label.proseQuestion',

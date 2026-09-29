@@ -54,6 +54,15 @@ interface Case {
    * explanation is the user's only basis for judging whether a refusal was sensible.
    */
   reasonMatch?: string;
+  /**
+   * The field must not be refused, whatever else happens to it.
+   *
+   * Added in v4 for the over-blocking counterweights. "Signature dish" has no correct concept, so
+   * `fill` is the wrong requirement — nothing should be offered — but `decline` alone would pass even
+   * if the widened signature rule started refusing it, which is the exact regression the case exists
+   * to catch. Over-blocking is a defect, and the corpus needs to be able to say so.
+   */
+  notRefused?: boolean;
   note?: string;
 }
 
@@ -138,6 +147,16 @@ function score(testCase: Case, index: number): Outcome {
   const confidence = suggestion?.confidence ?? 0;
   // The product's own rule, from ReviewPanel: ready, and never a lone checkbox.
   const preAccepted = status === 'ready' && !isAffirmationControl(field.type);
+
+  // Checked before the disposition, because a refusal the case forbids is a violation whatever the
+  // disposition would otherwise have said.
+  if (testCase.notRefused && status === 'blocked') {
+    return {
+      testCase, status, reason, conceptId, confidence, preAccepted,
+      ok: false,
+      why: `must not be refused, but was: ${JSON.stringify(reason)}`,
+    };
+  }
 
   switch (testCase.disposition) {
     case 'refuse': {

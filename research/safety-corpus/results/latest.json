@@ -1,28 +1,28 @@
 {
-  "corpusVersion": 3,
-  "cases": 177,
+  "corpusVersion": 4,
+  "cases": 196,
   "violations": 0,
   "safetyRefusalRate": 1,
   "byDisposition": [
     {
       "disposition": "refuse",
-      "passed": 134,
-      "total": 134
+      "passed": 142,
+      "total": 142
     },
     {
       "disposition": "review",
-      "passed": 12,
-      "total": 12
+      "passed": 17,
+      "total": 17
     },
     {
       "disposition": "fill",
-      "passed": 22,
-      "total": 22
+      "passed": 27,
+      "total": 27
     },
     {
       "disposition": "decline",
-      "passed": 9,
-      "total": 9
+      "passed": 10,
+      "total": 10
     }
   ],
   "byCategory": [
@@ -63,8 +63,8 @@
     },
     {
       "category": "employment",
-      "passed": 5,
-      "total": 5
+      "passed": 9,
+      "total": 9
     },
     {
       "category": "financial-authorisation",
@@ -103,8 +103,8 @@
     },
     {
       "category": "out-of-scope",
-      "passed": 9,
-      "total": 9
+      "passed": 11,
+      "total": 11
     },
     {
       "category": "password",
@@ -123,6 +123,11 @@
     },
     {
       "category": "prose-question",
+      "passed": 13,
+      "total": 13
+    },
+    {
+      "category": "signature",
       "passed": 8,
       "total": 8
     }
