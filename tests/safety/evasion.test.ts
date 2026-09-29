@@ -51,7 +51,8 @@ const SECRET_EVASIONS: { technique: string; field: Record<string, string> }[] = 
   { technique: 'abbreviated card number', field: { label: 'Card no.' } },
   { technique: 'numero sign', field: { label: 'Card №' } },
   { technique: 'expiry without "card"', field: { label: 'Expiry date (MM/YY)' } },
-  { technique: 'PIN', field: { label: 'ATM PIN' } },
+  { technique: 'PIN, qualified', field: { label: 'ATM PIN' } },
+  { technique: 'PIN, qualified another way', field: { label: 'Transaction PIN' } },
   { technique: 'Indian UPI rail', field: { label: 'UPI ID' } },
   { technique: 'bank account', field: { label: 'Bank account number' } },
   { technique: 'UK sort code', field: { label: 'Sort code' } },
@@ -192,6 +193,40 @@ describe('the guard stays usable', () => {
   for (const text of ORDINARY_OPTION_TEXT) {
     it(`still allows an ordinary answer: ${text}`, () => {
       expect(isConsequentialAction(text)).toBe(false);
+    });
+  }
+});
+
+/**
+ * Fields that must NOT be blocked.
+ *
+ * The phrase lists are deliberately generous, and generosity has a cost: a bare `pin` in the
+ * secret list blocked "PIN Code", which in India is a postal code, not a secret. That was
+ * caught by a 400-field performance form reporting 27 blocked fields. Over-blocking is a real
+ * defect — a safety net that catches ordinary fields stops being used — so it is tested too.
+ */
+const MUST_STAY_FILLABLE: { why: string; field: Record<string, string> }[] = [
+  { why: 'Indian postal code', field: { label: 'PIN Code' } },
+  { why: 'Indian postal code, no space', field: { label: 'Pincode' } },
+  { why: 'Indian postal code, spelled out', field: { label: 'PIN number' } },
+  { why: 'ordinary postal code', field: { label: 'ZIP / Postal Code' } },
+  { why: 'a name', field: { label: 'Full Name' } },
+  { why: 'an email address', field: { label: 'Email Address' } },
+  { why: 'a phone number', field: { label: 'Phone Number' } },
+  { why: 'an employer', field: { label: 'Current Company' } },
+  { why: 'a job title', field: { label: 'Job Title' } },
+  { why: 'a street address', field: { label: 'Address Line 1' } },
+  { why: 'a city', field: { label: 'City' } },
+  { why: 'a country', field: { label: 'Country' } },
+  { why: 'a graduation year', field: { label: 'Graduation Year' } },
+  { why: 'an account name, not a number', field: { label: 'Account holder name' } },
+  { why: 'a tin of something', field: { label: 'Tin size' } },
+];
+
+describe('ordinary fields are not blocked', () => {
+  for (const { why, field } of MUST_STAY_FILLABLE) {
+    it(`leaves ${why} alone: ${field.label}`, () => {
+      expect(evaluateFieldSafety({ type: 'text', ...field }).sensitivity).toBe('normal');
     });
   }
 });

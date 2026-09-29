@@ -46,6 +46,14 @@ export interface AiCallRecord {
 export interface TestServer {
   server: Server;
   origin: string;
+  /**
+   * The same server seen from a different origin.
+   *
+   * `localhost` and `127.0.0.1` resolve to the same socket but are distinct origins, so a
+   * frame loaded from here is subject to the real same-origin policy while still serving
+   * the fixture content.
+   */
+  foreignOrigin: string;
   /** Every request the extension made to the stub AI endpoint, in order. */
   aiCalls: AiCallRecord[];
   /** Answers the stub will return, keyed by field id. Set per test. */
@@ -76,6 +84,38 @@ async function readBody(req: IncomingMessage): Promise<string> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(chunk as Buffer);
   return Buffer.concat(chunks).toString('utf8');
+}
+
+/**
+ * Labels for a generated form: a mix the ontology knows and a mix it does not, so matching
+ * does real work at both ends. Kept in step with `research/performance/run.ts`.
+ */
+const GEN_KNOWN = [
+  'Full Name', 'Email Address', 'Phone Number', 'Date of Birth', 'City', 'State',
+  'PIN Code', 'Country', 'Current Company', 'Job Title', 'Highest Qualification',
+  'College Name', 'Graduation Year', 'LinkedIn Profile', 'GitHub Profile',
+];
+const GEN_UNKNOWN = [
+  'Referral code', 'Preferred interview slot', 'Favourite ice cream flavour',
+  'Vehicle registration', 'Employee ID', 'Locker number', 'Badge colour',
+];
+
+/** A form with `count` labelled text inputs, sectioned every ten fields. */
+function generateForm(count: number): string {
+  const rows: string[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const pool = i % 3 !== 2 ? GEN_KNOWN : GEN_UNKNOWN;
+    const suffix = i >= pool.length ? ` ${Math.floor(i / pool.length) + 1}` : '';
+    if (i % 10 === 0) rows.push(`${i > 0 ? '</section>' : ''}<section><h2>Section ${i / 10 + 1}</h2>`);
+    rows.push(`<label for="f${i}">${pool[i % pool.length]}${suffix}</label><input id="f${i}" name="f${i}" />`);
+  }
+  rows.push('</section>');
+  return (
+    '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+    `<title>Generated form (${count} fields)</title></head><body>` +
+    `<h1>Generated form</h1><p>Local performance fixture, ${count} fields.</p>` +
+    `<form>${rows.join('')}</form></body></html>`
+  );
 }
 
 async function serveStatic(pathname: string, res: ServerResponse): Promise<boolean> {
@@ -164,6 +204,15 @@ export async function startTestServer(port = 3000): Promise<TestServer> {
         return;
       }
 
+      // A form of any size, generated on demand, for the in-browser performance spec. The
+      // same generator shape as research/performance/run.ts so the jsdom curve and the real
+      // browser numbers describe the same pages.
+      if (pathname === '/__generated-form') {
+        const count = Math.min(1000, Math.max(1, Number(url.searchParams.get('fields') ?? '100')));
+        send(res, 200, generateForm(count), MIME['.html']);
+        return;
+      }
+
       if (await serveStatic(pathname, res)) return;
 
       send(res, 404, `not found: ${pathname}`, 'text/plain; charset=utf-8');
@@ -174,12 +223,19 @@ export async function startTestServer(port = 3000): Promise<TestServer> {
 
   await new Promise<void>((resolve, reject) => {
     server.once('error', reject);
-    server.listen(port, '127.0.0.1', () => resolve());
+    // Bound to all interfaces, not just 127.0.0.1, so the same content is reachable as
+    // `http://localhost:<port>` too. `localhost` and `127.0.0.1` are *different origins* to
+    // the browser even though they are the same server, which is how the suite gets a
+    // genuinely cross-origin iframe that actually loads. Pointing one at a real external
+    // site would only prove that a blocked request fails.
+    server.listen(port, '0.0.0.0', () => resolve());
   });
 
   return {
     server,
     origin: `http://127.0.0.1:${port}`,
+    /** The same server under a different origin, for cross-origin isolation tests. */
+    foreignOrigin: `http://localhost:${port}`,
     aiCalls,
     stubAnswers,
     close: () =>

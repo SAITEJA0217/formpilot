@@ -20,6 +20,7 @@ import {
   type ProfileLike,
 } from '../../../shared/matching';
 import { authorizedFetch, readJson, STORAGE_KEYS } from './api';
+import { redactProfileForAI } from '../../../shared/privacy/redact';
 
 export interface ExtensionSettings {
   allowAI: boolean;
@@ -115,12 +116,20 @@ export async function buildSuggestionsForForm(form: UnifiedForm): Promise<Sugges
       aiError = 'Sign in on the FormPilot dashboard to let the assistant draft the remaining answers.';
     } else {
       try {
+        // Send only what the requested modes can use. The server route serialises whatever
+        // it receives straight into the prompt, so a whole-profile send means the provider
+        // sees the user's phone number, date of birth, saved documents and alternate personas
+        // in order to draft one paragraph.
+        const { profile: minimised } = redactProfileForAI(
+          profile as Record<string, unknown>,
+          aiRequests.map((request) => request.mode),
+        );
         const response = await authorizedFetch(
           '/api/ai/generate',
           {
             method: 'POST',
             body: JSON.stringify({
-              profile,
+              profile: minimised,
               fields: aiRequests,
               formContext: {
                 title: form.title,

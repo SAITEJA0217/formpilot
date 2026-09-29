@@ -23,8 +23,13 @@ import { containsPhrase } from '../matching/similarity';
  * several layers — see `isAffirmationControl` and the `confusables` fold below.
  */
 const SECRET_PHRASES = [
-  // Passwords and PINs.
-  'password', 'passcode', 'pass phrase', 'passphrase', 'pin', 'pin number',
+  // Passwords and PINs. `pin` alone is deliberately absent: in India "PIN Code" and
+  // "PIN number" both mean Postal Index Number, so a bare `pin` blocked ordinary
+  // postal-code fields — 27 of them in a 400-field test form. Only the qualified forms,
+  // where the word can only mean a secret, are listed.
+  'password', 'passcode', 'pass phrase', 'passphrase',
+  'atm pin', 'card pin', 'debit pin', 'credit pin', 'upi pin', 'mpin',
+  'security pin', 'transaction pin', 'login pin', 'pin to authorise',
   // One-time and second-factor codes.
   'otp', 'one time password', 'one time code', 'single use code',
   'verification code', 'security code', 'authentication code', 'authenticator',
@@ -40,7 +45,8 @@ const SECRET_PHRASES = [
   'upi', 'upi id', 'vpa',
   // Government and national identifiers.
   'ssn', 'social security', 'aadhaar', 'aadhar', 'pan number', 'passport number',
-  'national id', 'national insurance', 'nin', 'tax id', 'tin', 'voter id',
+  // `tin` alone is left out for the same reason as `pin`: too short to be unambiguous.
+  'national id', 'national insurance', 'nin', 'tax id', 'tin number', 'voter id',
   'driving licence', 'drivers licence', 'driving license', 'drivers license',
   'licence number', 'license number',
   // Anti-bot.

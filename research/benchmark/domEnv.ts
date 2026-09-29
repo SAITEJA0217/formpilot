@@ -84,6 +84,8 @@ export interface DomEnvironment {
   window: JSDOM['window'];
   /** Build a fresh realm from a fixture page, run its inline scripts, install globals. */
   loadPage(fileName: string, url?: string): JSDOM['window'];
+  /** Same, from markup held in memory rather than a file on disk. */
+  loadMarkup(markup: string, url?: string): JSDOM['window'];
   html(fileName: string): string;
 }
 
@@ -95,7 +97,10 @@ export function createDomEnvironment(): DomEnvironment {
     window: undefined as unknown as JSDOM['window'],
     html,
     loadPage(fileName: string, url = 'https://benchmark.local/'): JSDOM['window'] {
-      const dom = new JSDOM(html(fileName), {
+      return env.loadMarkup(html(fileName), url);
+    },
+    loadMarkup(markup: string, url = 'https://benchmark.local/'): JSDOM['window'] {
+      const dom = new JSDOM(markup, {
         url,
         pretendToBeVisual: true,
         runScripts: 'dangerously',
