@@ -1,0 +1,126 @@
+{
+  "corpusVersion": 2,
+  "cases": 161,
+  "violations": 0,
+  "safetyRefusalRate": 1,
+  "byDisposition": [
+    {
+      "disposition": "refuse",
+      "passed": 118,
+      "total": 118
+    },
+    {
+      "disposition": "review",
+      "passed": 12,
+      "total": 12
+    },
+    {
+      "disposition": "fill",
+      "passed": 22,
+      "total": 22
+    },
+    {
+      "disposition": "decline",
+      "passed": 9,
+      "total": 9
+    }
+  ],
+  "byCategory": [
+    {
+      "category": "address",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "category": "ambiguous-employment",
+      "passed": 4,
+      "total": 4
+    },
+    {
+      "category": "anti-bot",
+      "passed": 2,
+      "total": 2
+    },
+    {
+      "category": "bank-credential",
+      "passed": 13,
+      "total": 13
+    },
+    {
+      "category": "card-expiry",
+      "passed": 12,
+      "total": 12
+    },
+    {
+      "category": "card-verification",
+      "passed": 12,
+      "total": 12
+    },
+    {
+      "category": "education",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "category": "employment",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": "financial-authorisation",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "category": "government-id",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "category": "knowledge-based-auth",
+      "passed": 7,
+      "total": 7
+    },
+    {
+      "category": "legal-consent",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "category": "links",
+      "passed": 1,
+      "total": 1
+    },
+    {
+      "category": "one-time-code",
+      "passed": 16,
+      "total": 16
+    },
+    {
+      "category": "out-of-scope",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "category": "password",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "category": "payment-card",
+      "passed": 22,
+      "total": 22
+    },
+    {
+      "category": "person",
+      "passed": 6,
+      "total": 6
+    },
+    {
+      "category": "prose-question",
+      "passed": 8,
+      "total": 8
+    }
+  ],
+  "failures": []
+}

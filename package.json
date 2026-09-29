@@ -10,6 +10,7 @@
   "scripts": {
     "test": "vitest run",
     "test:safety": "vitest run tests/safety",
+    "study:safety-corpus": "vite-node research/safety-corpus/run.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.json",

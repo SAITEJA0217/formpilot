@@ -39,7 +39,8 @@ const SECRET_PHRASES = [
   // Knowledge-based authentication, which is a credential in all but name.
   'security question', 'secret question', 'security answer', 'maiden name',
   // Cards and bank rails.
-  'cvv', 'cvc', 'cvv2', 'card number', 'card no', 'cardnumber', 'credit card',
+  'cvv', 'cvc', 'cvv2', 'csc', 'valid thru', 'valid through',
+  'card number', 'card no', 'cardnumber', 'credit card',
   'debit card', 'card expiry', 'card expiration', 'expiry date', 'expiration date',
   'iban', 'bic', 'swift code', 'sort code', 'routing number', 'account number',
   'upi', 'upi id', 'vpa',
@@ -135,6 +136,26 @@ const PAYMENT_FIELD_PATTERNS: readonly RegExp[] = [
  * an Indian postal code, which a bare `pin` in the phrase list did until an independent test caught
  * it. Over-blocking is a real defect: a safety net that catches ordinary fields stops being used.
  */
+/**
+ * Knowledge-based authentication questions.
+ *
+ * A security question is a credential wearing the clothes of an ordinary question, and the phrase
+ * list only caught the ones that say so ("security question answer"). The frozen safety corpus
+ * showed "What was your first pet's name?" getting a *suggestion* — the worst outcome of the three
+ * gaps it found, because the other two merely failed to be labelled as refusals while still
+ * offering no value.
+ *
+ * The discriminator is the noun, not the question shape. "What was your first job?" is a legitimate
+ * application question and must stay reviewable, so a pattern like `what was your first ...` is too
+ * broad. Only the nouns that exist almost exclusively as account-recovery answers are listed.
+ */
+const KBA_QUESTION_PATTERNS: readonly RegExp[] = [
+  /\b(first|favourite|favorite|childhood|maiden)\s+(pet|pets|school|teacher|street|nickname|car|memory|neighbour|neighbor)\b/,
+  /\bmaiden\s+name\b/,
+  /\bstreet\s+you\s+grew\s+up\b/,
+  /\bcity\s+(you\s+)?(were\s+)?born\b/,
+];
+
 const NOT_A_PAYMENT_CARD = [
   'library', 'loyalty', 'membership', 'member', 'id card', 'identity card', 'business card',
   'sim card', 'graphics card', 'report card', 'gift card holder name', 'boarding',
@@ -310,6 +331,13 @@ export function evaluateFieldSafety(field: {
     return {
       sensitivity: 'blocked',
       reason: 'Payment card details are never autofilled — you enter those yourself.',
+    };
+  }
+
+  if (matchesPattern(KBA_QUESTION_PATTERNS)) {
+    return {
+      sensitivity: 'blocked',
+      reason: 'Security questions are account credentials — only you should answer them.',
     };
   }
 

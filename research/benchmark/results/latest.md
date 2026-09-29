@@ -1,6 +1,6 @@
 # FormPilot benchmark results
 
-Generated: 2026-09-29T05:40:07.733Z
+Generated: 2026-09-29T05:43:42.410Z
 Runtime: node v22.22.2, jsdom. **No language model was called**: fields the router
 defers to a model are scored on the routing decision only.
 
@@ -27,8 +27,8 @@ Reproduce with `npm run bench`.
 
 | Metric | Value |
 |---|---|
-| Detection time per page (mean) | 60.89 ms (sd 41.5) |
-| Matching time per page (mean) | 24.89 ms |
+| Detection time per page (mean) | 53.76 ms (sd 39.25) |
+| Matching time per page (mean) | 21.75 ms |
 | Model calls required (total) | 10 |
 | Fields needing a model | 13 of 120 |
 | Fields resolved without a model | 89.2% |
@@ -103,23 +103,23 @@ estimate them.
 
 | Page | Platform | Adapter | Det. F1 | Mapping acc. | Routing acc. | Autofill | Detect ms |
 |---|---|---|---|---|---|---|---|
-| ambiguous-labels.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 140.1 |
-| aria-widgets.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 70 |
-| basic-html.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 8/8 | 39.92 |
-| complex-html.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 14/14 | 110.04 |
-| dynamic-form.html#employed | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 3/3 | 23.08 |
-| dynamic-form.html#initial | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 1/1 | 15.43 |
-| google-forms-mock.html | google-forms | google-forms@2 | 100.0% | 100.0% | 100.0% | 7/7 | 127.72 |
-| jotform-mock.html | jotform | jotform@1-experimental | 100.0% | 100.0% | 100.0% | 13/13 | 114.33 |
-| microsoft-forms-mock.html | microsoft-forms | microsoft-forms@1-experimental | 100.0% | 100.0% | 100.0% | 8/8 | 71.11 |
-| multi-step.html#step-1 | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 3/3 | 31.84 |
-| multi-step.html#step-2 | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 4/4 | 36.98 |
-| multi-step.html#step-4-documents | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | n/a | 28.86 |
-| sensitive-fields.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | n/a | 34.49 |
-| shadow-dom.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 4/4 | 15.92 |
-| surveymonkey-mock.html | surveymonkey | surveymonkey@1-experimental | 100.0% | 100.0% | 100.0% | 5/5 | 96.14 |
-| typeform-mock.html#block-1-short-text | typeform | typeform@1-experimental | 100.0% | 100.0% | 100.0% | 1/1 | 32.25 |
-| typeform-mock.html#block-4-choice | typeform | typeform@1-experimental | 100.0% | 100.0% | 100.0% | 1/1 | 47 |
+| ambiguous-labels.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 131.84 |
+| aria-widgets.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 6/6 | 52.87 |
+| basic-html.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 8/8 | 39.64 |
+| complex-html.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 14/14 | 102.54 |
+| dynamic-form.html#employed | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 3/3 | 27.68 |
+| dynamic-form.html#initial | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 1/1 | 13.81 |
+| google-forms-mock.html | google-forms | google-forms@2 | 100.0% | 100.0% | 100.0% | 7/7 | 123.01 |
+| jotform-mock.html | jotform | jotform@1-experimental | 100.0% | 100.0% | 100.0% | 13/13 | 89.74 |
+| microsoft-forms-mock.html | microsoft-forms | microsoft-forms@1-experimental | 100.0% | 100.0% | 100.0% | 8/8 | 58.34 |
+| multi-step.html#step-1 | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 3/3 | 31.26 |
+| multi-step.html#step-2 | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 4/4 | 37.69 |
+| multi-step.html#step-4-documents | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | n/a | 25.43 |
+| sensitive-fields.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | n/a | 32.49 |
+| shadow-dom.html | generic-html | generic-html@1 | 100.0% | 100.0% | 100.0% | 4/4 | 15.08 |
+| surveymonkey-mock.html | surveymonkey | surveymonkey@1-experimental | 100.0% | 100.0% | 100.0% | 5/5 | 94.08 |
+| typeform-mock.html#block-1-short-text | typeform | typeform@1-experimental | 100.0% | 100.0% | 100.0% | 1/1 | 13.86 |
+| typeform-mock.html#block-4-choice | typeform | typeform@1-experimental | 100.0% | 100.0% | 100.0% | 1/1 | 24.54 |
 
 ## Disagreements with ground truth (0)
 

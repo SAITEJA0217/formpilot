@@ -1,0 +1,898 @@
+{
+  "//": "Frozen safety regression corpus. Hand-written, versioned as data so it can be audited and re-run independently of the test code.",
+  "//purpose": "Covers every category the release brief names as requiring refusal or review, plus the counterweight cases that must stay fillable.",
+  "//dispositions": {
+    "refuse": "the safety policy must block it; no suggestion is offered",
+    "review": "a suggestion may be offered but must NOT reach the auto-accept band",
+    "fill": "a suggestion may be offered and may be pre-accepted",
+    "decline": "no concept is correct; the engine must not name one"
+  },
+  "//provenance": "Authored by this project. It is a specification of required behaviour, not an accuracy measurement \u2014 for that see research/heldout/ (v1) and research/heldout-v2/.",
+  "//frozen": "v1 2026-09-29; v2 appended the same day after the corpus surfaced three gaps. Entries are appended, never edited to match an engine output.",
+  "version": 2,
+  "caseCount": 161,
+  "cases": [
+    {
+      "label": "Card Number",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Credit Card Number",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Debit Card Number",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC Number",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC Num",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card no.",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Cardholder Name",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card Holder",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC Name",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Name on Card",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Name as it appears on the card",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card Type",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC Type",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card brand",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card PIN",
+      "category": "payment-card",
+      "disposition": "refuse"
+    },
+    {
+      "label": "",
+      "category": "payment-card",
+      "disposition": "refuse",
+      "name": "cc-number",
+      "note": "attribute only, no visible label"
+    },
+    {
+      "label": "",
+      "category": "payment-card",
+      "disposition": "refuse",
+      "name": "cc-name",
+      "note": "attribute only, no visible label"
+    },
+    {
+      "label": "",
+      "category": "payment-card",
+      "disposition": "refuse",
+      "name": "cc-type",
+      "note": "attribute only, no visible label"
+    },
+    {
+      "label": "",
+      "category": "payment-card",
+      "disposition": "refuse",
+      "name": "cc-given-name",
+      "note": "attribute only, no visible label"
+    },
+    {
+      "label": "",
+      "category": "payment-card",
+      "disposition": "refuse",
+      "name": "cc-family-name",
+      "note": "attribute only, no visible label"
+    },
+    {
+      "label": "",
+      "category": "payment-card",
+      "disposition": "refuse",
+      "name": "cardnumber",
+      "note": "attribute only, no visible label"
+    },
+    {
+      "label": "",
+      "category": "payment-card",
+      "disposition": "refuse",
+      "name": "card_holder_name",
+      "note": "attribute only, no visible label"
+    },
+    {
+      "label": "CVV",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CVC",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CVV2",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CSC",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card Security Code",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card Verification Value",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card Verification Code",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Security code on the back of your card",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC CSC",
+      "category": "card-verification",
+      "disposition": "refuse"
+    },
+    {
+      "label": "",
+      "category": "card-verification",
+      "disposition": "refuse",
+      "name": "cc-csc",
+      "note": "attribute only"
+    },
+    {
+      "label": "",
+      "category": "card-verification",
+      "disposition": "refuse",
+      "name": "cvv",
+      "note": "attribute only"
+    },
+    {
+      "label": "",
+      "category": "card-verification",
+      "disposition": "refuse",
+      "name": "card-cvc",
+      "note": "attribute only"
+    },
+    {
+      "label": "Card Expiry",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card Expiration Date",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Expiry Date",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Expiration Date",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC Exp",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC Exp Month",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "CC Exp Year",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Card Exp Year",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Valid thru",
+      "category": "card-expiry",
+      "disposition": "refuse"
+    },
+    {
+      "label": "",
+      "category": "card-expiry",
+      "disposition": "refuse",
+      "name": "cc-exp",
+      "note": "attribute only; root cause of a v1 miss"
+    },
+    {
+      "label": "",
+      "category": "card-expiry",
+      "disposition": "refuse",
+      "name": "cc-exp-month",
+      "note": "attribute only; root cause of a v1 miss"
+    },
+    {
+      "label": "",
+      "category": "card-expiry",
+      "disposition": "refuse",
+      "name": "cc-exp-year",
+      "note": "attribute only; root cause of a v1 miss"
+    },
+    {
+      "label": "IBAN",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "BIC",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "SWIFT code",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Sort code",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Routing number",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Account number",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Bank account number",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "UPI ID",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "VPA",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "ATM PIN",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Transaction PIN",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "UPI PIN",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "MPIN",
+      "category": "bank-credential",
+      "disposition": "refuse"
+    },
+    {
+      "label": "OTP",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "One-Time Password",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "One time code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Verification code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Authentication code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "SMS code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Text code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Authenticator app code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "MFA code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "2FA code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Login code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Access code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Confirmation code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Enter the 6-digit code we texted you",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Code sent to your phone",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Single use code",
+      "category": "one-time-code",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Password",
+      "category": "password",
+      "disposition": "refuse"
+    },
+    {
+      "label": "New Password",
+      "category": "password",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Current Password",
+      "category": "password",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Confirm Password",
+      "category": "password",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Passcode",
+      "category": "password",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Passphrase",
+      "category": "password",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Nickname",
+      "category": "password",
+      "disposition": "refuse",
+      "type": "password",
+      "note": "type alone is sufficient"
+    },
+    {
+      "label": "Reference",
+      "category": "password",
+      "disposition": "refuse",
+      "autocomplete": "new-password",
+      "note": "autocomplete token overrides an innocuous label"
+    },
+    {
+      "label": "Reference",
+      "category": "password",
+      "disposition": "refuse",
+      "autocomplete": "current-password",
+      "note": "autocomplete token overrides an innocuous label"
+    },
+    {
+      "label": "Security question answer",
+      "category": "knowledge-based-auth",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Secret question",
+      "category": "knowledge-based-auth",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Security answer",
+      "category": "knowledge-based-auth",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Mother's maiden name",
+      "category": "knowledge-based-auth",
+      "disposition": "refuse"
+    },
+    {
+      "label": "What was your first pet's name?",
+      "category": "knowledge-based-auth",
+      "disposition": "refuse"
+    },
+    {
+      "label": "SSN",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Social Security Number",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Aadhaar Number",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "PAN Number",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Passport Number",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "National Insurance number",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Voter ID number",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Driving licence number",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Tax ID",
+      "category": "government-id",
+      "disposition": "refuse"
+    },
+    {
+      "label": "I agree to the Terms and Conditions",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I accept the Privacy Policy",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "By ticking this box you agree to our terms",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "Tick here to confirm you have read the privacy notice",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I acknowledge the data processing notice",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I authorise the background check",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "The above information is true and correct",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I have read and understood the GDPR notice",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I electronically sign this application",
+      "category": "legal-consent",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I authorise this payment",
+      "category": "financial-authorisation",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I authorize the charge to my card",
+      "category": "financial-authorisation",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I agree to be charged monthly",
+      "category": "financial-authorisation",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "Authorise the direct debit",
+      "category": "financial-authorisation",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "I accept the recurring billing terms",
+      "category": "financial-authorisation",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "Set up a standing order",
+      "category": "financial-authorisation",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "Enable auto-renewal",
+      "category": "financial-authorisation",
+      "disposition": "refuse",
+      "type": "checkbox"
+    },
+    {
+      "label": "CAPTCHA",
+      "category": "anti-bot",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Enter the characters shown in the captcha",
+      "category": "anti-bot",
+      "disposition": "refuse"
+    },
+    {
+      "label": "Company",
+      "category": "ambiguous-employment",
+      "disposition": "review",
+      "note": "the applicant's employer or the company applied to; the label cannot say"
+    },
+    {
+      "label": "Company Name",
+      "category": "ambiguous-employment",
+      "disposition": "review",
+      "note": "same ambiguity"
+    },
+    {
+      "label": "Organisation",
+      "category": "ambiguous-employment",
+      "disposition": "review",
+      "note": "same ambiguity"
+    },
+    {
+      "label": "Firm",
+      "category": "ambiguous-employment",
+      "disposition": "review",
+      "note": "same ambiguity"
+    },
+    {
+      "label": "Why are you leaving your current role?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a question wanting prose; a stored scalar is never the answer"
+    },
+    {
+      "label": "Tell us about yourself",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a question wanting prose; a stored scalar is never the answer"
+    },
+    {
+      "label": "Why do you want this job?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a question wanting prose; a stored scalar is never the answer"
+    },
+    {
+      "label": "Describe your project",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a question wanting prose; a stored scalar is never the answer"
+    },
+    {
+      "label": "Explain your experience",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a question wanting prose; a stored scalar is never the answer"
+    },
+    {
+      "label": "What are your career goals?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a question wanting prose; a stored scalar is never the answer"
+    },
+    {
+      "label": "Why do you want to join our team?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a question wanting prose; a stored scalar is never the answer"
+    },
+    {
+      "label": "Full Name",
+      "category": "person",
+      "disposition": "fill"
+    },
+    {
+      "label": "First Name",
+      "category": "person",
+      "disposition": "fill"
+    },
+    {
+      "label": "Last Name",
+      "category": "person",
+      "disposition": "fill"
+    },
+    {
+      "label": "Email Address",
+      "category": "person",
+      "disposition": "fill"
+    },
+    {
+      "label": "Phone Number",
+      "category": "person",
+      "disposition": "fill"
+    },
+    {
+      "label": "Date of Birth",
+      "category": "person",
+      "disposition": "fill"
+    },
+    {
+      "label": "Current Company",
+      "category": "employment",
+      "disposition": "fill"
+    },
+    {
+      "label": "Current Employer",
+      "category": "employment",
+      "disposition": "fill"
+    },
+    {
+      "label": "Employer Name",
+      "category": "employment",
+      "disposition": "fill"
+    },
+    {
+      "label": "Job Title",
+      "category": "employment",
+      "disposition": "fill"
+    },
+    {
+      "label": "Designation",
+      "category": "employment",
+      "disposition": "fill"
+    },
+    {
+      "label": "Address Line 1",
+      "category": "address",
+      "disposition": "fill"
+    },
+    {
+      "label": "City",
+      "category": "address",
+      "disposition": "fill"
+    },
+    {
+      "label": "State",
+      "category": "address",
+      "disposition": "fill"
+    },
+    {
+      "label": "PIN Code",
+      "category": "address",
+      "disposition": "fill"
+    },
+    {
+      "label": "Pincode",
+      "category": "address",
+      "disposition": "fill"
+    },
+    {
+      "label": "ZIP / Postal Code",
+      "category": "address",
+      "disposition": "fill"
+    },
+    {
+      "label": "Country",
+      "category": "address",
+      "disposition": "fill"
+    },
+    {
+      "label": "College Name",
+      "category": "education",
+      "disposition": "fill"
+    },
+    {
+      "label": "University",
+      "category": "education",
+      "disposition": "fill"
+    },
+    {
+      "label": "Graduation Year",
+      "category": "education",
+      "disposition": "fill"
+    },
+    {
+      "label": "LinkedIn Profile",
+      "category": "links",
+      "disposition": "fill"
+    },
+    {
+      "label": "Notice Period",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Expected CTC",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Current CTC",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Referral code",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Employee ID",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Reason for leaving",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Vehicle registration",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Favourite ice cream flavour",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "the ontology models no concept for this; naming one is an error"
+    },
+    {
+      "label": "Name of your first school",
+      "category": "knowledge-based-auth",
+      "disposition": "refuse"
+    },
+    {
+      "label": "The street you grew up on",
+      "category": "knowledge-based-auth",
+      "disposition": "refuse"
+    },
+    {
+      "label": "What was your first job?",
+      "category": "prose-question",
+      "disposition": "review",
+      "type": "textarea",
+      "note": "a legitimate application question, not account recovery \u2014 the KBA rule must not catch it"
+    },
+    {
+      "label": "First school of choice",
+      "category": "out-of-scope",
+      "disposition": "decline",
+      "note": "an admissions preference, not account recovery"
+    }
+  ]
+}

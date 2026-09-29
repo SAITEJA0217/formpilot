@@ -36,6 +36,11 @@ jobs:
       # the built bundle, so no build step is needed here.
       - name: Adversarial safety and behavioural invariants
         run: npx vitest run tests/safety
+      # The frozen safety corpus is scored through the whole pipeline rather than against the
+      # policy in isolation, and exits non-zero on any violation. It catches a pipeline that
+      # ignores a correct policy verdict, which a policy-level assertion cannot.
+      - name: Safety regression corpus
+        run: npm run study:safety-corpus
 
   test:
     name: Unit and integration tests
