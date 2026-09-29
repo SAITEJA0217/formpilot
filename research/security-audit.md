@@ -53,42 +53,62 @@ list will always miss some wording. A checkbox *group* is a choice among options
 
 ## The suite has teeth
 
-Mutation-tested. Two deliberate regressions, each caught:
+Mutation-tested. Every deliberate regression below was caught by the suite named beside it:
 
-| Mutation | Result |
+| Mutation | Caught by |
 | --- | --- |
-| Remove the confusable fold (so "Раssword" with Cyrillic letters stops matching) | suite fails |
-| Make `fillField` trust the caller's `sensitivity` instead of re-checking | suite fails |
+| Remove the confusable fold (so "Раssword" with Cyrillic letters stops matching) | `tests/safety` |
+| Make `fillField` trust the caller's `sensitivity` instead of re-checking | `tests/safety` |
+| Drop the `cc-` prefix rule from `BLOCKED_AUTOCOMPLETE_PREFIXES` | `tests/safety` + corpus |
+| Delete `PAYMENT_FIELD_PATTERNS` | `tests/safety` + corpus |
+| Revert the context-sensitive `exp` → `expiry` expansion in the normalizer | `tests/unit/card-expiry-normalization.test.ts` |
+| Treat a bare "subscribe" as a payment authorisation again | `tests/safety` + corpus |
+
+The fifth row is the one worth noting. Reverting the normalizer fix left the whole safety suite green,
+because the policy-level payment pattern independently caught the same labels and masked the
+regression — defence in depth hiding a hole in one layer. The matcher-level test exists because of
+that: a mutation the safety suite cannot see is a mutation the safety suite cannot be trusted on.
 
 `.github/workflows/ci.yml` runs `tests/safety` as its own required job, separate from the main test
 run, so a regression reads as the security defect it is rather than one line inside a 536-assertion
 run. CI also fails the build if the benchmark records any safety violation, which covers the whole
 pipeline rather than the policy in isolation.
 
-## Open finding: 4 missed refusals on third-party markup
+## Closed finding: 4 missed refusals on third-party markup
 
-The held-out evaluation put the policy in front of 33 real credential and payment controls it had
+The v1 held-out evaluation put the policy in front of 33 real credential and payment controls it had
 never seen. It refused 29 and missed 4:
 
-| Label, as a third party wrote it | Mapped to |
+| Label, as a third party wrote it | Was mapped to |
 | --- | --- |
 | `CC Name (Full name as given on the payment card)` | `person.full_name` |
 | `CC Exp Year` | `experience.years_of_experience` |
+| `name="cc-name"`, no visible label | `person.full_name` |
+| `name="cc-exp-year"`, no visible label | `experience.years_of_experience` |
 
-**This is a genuine pre-existing gap.** The phrase list covers `cc-name` as an `autocomplete` token
-and `card number` as visible text, but not a label beginning "CC ". Only independent data surfaced
-it; 60 self-authored adversarial cases did not.
+Only independent data surfaced these; 60 self-authored adversarial cases did not. The phrase list had
+been written by someone imagining how a payment field might be labelled, and real authors name them
+after the `autocomplete` token they pair the input with.
 
-Severity is bounded but real: nothing is submitted, and every suggestion appears in the review panel
-before it is written — but a plausible mapping to `person.full_name` can be pre-accepted at high
-confidence, so a user clicking through would put their name into a cardholder field. That is a
-privacy leak into a payment form, not a financial loss.
+**Root cause, not four more phrases.** Two of the four were a *matching* bug rather than a policy
+gap: `normalizeText` expanded `exp` to `experience` unconditionally, so `CC Exp Year` arrived at the
+matcher reading "cc experience year" and landed on `experience.years_of_experience` — a high-scoring,
+entirely wrong mapping. The fix is in three structural pieces:
 
-**Not fixed in this phase, deliberately.** The held-out configuration was frozen at `6e01e8e` before
-the evaluation ran, and patching the policy against results from that set would destroy the only
-independent measurement the project has. The fix is known and small — add `cc name`, `cc exp`,
-`cc csc`, `cc type` and a `\bcc\b` pattern to `SECRET_PHRASES`, with tests — and it needs a fresh
-held-out corpus to be measured honestly. It is the highest-priority item in `final-results.md`.
+- `BLOCKED_AUTOCOMPLETE_PREFIXES = ['cc-']`, a prefix rule rather than an enumeration, so a payment
+  token the WHATWG table has not defined yet is still refused.
+- `PAYMENT_FIELD_PATTERNS`, which requires a payment noun beside the card word, so `CC` meaning
+  carbon copy and `Library card name` stay fillable.
+- Context-sensitive expansion in the normalizer: `exp` becomes `expiry` after a payment word and
+  `experience` everywhere else.
+
+**Verified independently.** The four labels are reproduced verbatim in
+`tests/safety/payment-regression.test.ts`. The fix was then measured on
+`research/heldout-v2/` — a corpus with zero file overlap with v1, built after the fix and frozen
+before scoring — where all 45 credential and payment controls were refused. The v1 record stays
+exactly as it was measured, at 82.1% with the 4 misses, in
+`research/heldout/results/latest.json`; see that directory's `README.md` for why the post-fix
+rescore of v1 is *not* an independent number and must not be cited as one.
 
 ## Over-blocking is also a defect
 
@@ -96,6 +116,32 @@ A safety net that catches ordinary fields stops being used. Phase 2 added a bare
 phrases and blocked "PIN Code" — an Indian Postal Index Number — in 27 of 400 generated fields. 15
 assertions now guard the other direction, and short ambiguous tokens (`pin`, `tin`) appear only in
 qualified forms. Every widening of these lists needs a matching test on the usable side.
+
+### A true verdict can still carry a false reason
+
+The financial-authorisation rule added this phase listed a bare `subscribe|subscription` as a payment
+commitment. Every `Subscribe to the newsletter` checkbox in the React, Vue and Angular apps was then
+refused — the right outcome, a marketing opt-in being the user's own choice — but refused with
+*"Authorising a payment is a decision only you can make."* Nothing about those controls involves
+money.
+
+This is a defect and not a cosmetic one. The refusal count was correct, so any test that counted
+refusals stayed green; three E2E specs caught it only because they assert the *reason* shown. It
+matters because the sentence beside a refusal is the user's whole basis for judging whether the
+refusal was sensible. A reason visibly wrong on a newsletter opt-in trains them to discount the same
+sentence on a real payment control, which is the one place it has to be believed.
+
+The fix draws the line at consideration: a subscription counts as a financial commitment only where
+the control also names money (`MONEY_SIGNAL_PATTERNS`), and otherwise falls through to the consent
+rule, which already covered `newsletter` and `subscribe` and gives the reason that applies. Both
+paths still refuse.
+
+Two things were hardened as a result. `corpus.json` cases now take an optional `reasonMatch`, so a
+correct verdict with a wrong explanation is a corpus violation rather than a pass — the v2 corpus
+could not express that, which is why it had nothing to say here. And the measured effect of the fix
+was checked rather than assumed: re-running `research/heldout-v2/` afterwards reproduced
+`latest.json` bit-for-bit, confirming the change altered explanation text only and no measured
+outcome, so it needs no new held-out evaluation.
 
 ## Secrets
 
@@ -109,8 +155,9 @@ committed `.env.local`, so a checkout carries no file that resembles real config
 
 - Any live hosted platform. None is reachable; see `platform-evaluation.md`.
 - The model provider's handling of a prompt. Out of FormPilot's control and not its claim to make.
-- Completeness of the phrase lists. 60 evasion techniques are covered and 4 real-world misses are
-  now documented. A label nobody has thought of can still be misclassified, which is why the
-  structural rule exists and why nothing is ever submitted.
+- Completeness of the phrase lists. 60 evasion techniques are covered, and the 4 real-world misses
+  are now fixed at root cause and independently re-measured on a disjoint corpus. A label nobody has
+  thought of can still be misclassified, which is why the structural rules exist, why the corpus is
+  append-only, and why nothing is ever submitted.
 - Independence. This audit was written by the agent that wrote the code. Every row names the test or
   file that substantiates it so a reader can check rather than trust.

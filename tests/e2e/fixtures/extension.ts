@@ -51,6 +51,18 @@ export interface EngineDriver {
   showPanel(page: Page): Promise<void>;
   /** Read the cards as the user sees them, from the panel's shadow DOM. */
   panelCards(page: Page): Promise<PanelCard[]>;
+  /**
+   * Click every unaccepted suggestion's Accept button, the way a reviewer would.
+   *
+   * Re-queries after each click rather than iterating a fixed count: accepting a card changes its
+   * button text to "Accepted", so the locator set shrinks as the loop runs and an index-based loop
+   * eventually clicks nothing and times out.
+   *
+   * Needed because `fillViaPanel` writes only accepted suggestions, and anything below the
+   * auto-accept band starts unaccepted — Jotform's composite labels land at 0.84–0.86, for
+   * instance. Returns how many were accepted.
+   */
+  acceptAll(page: Page): Promise<number>;
   /** Apply a fill through the panel's own accept/fill buttons. */
   fillViaPanel(page: Page): Promise<void>;
   /** Ask the content script to fill a given set directly (bypassing the UI). */
@@ -72,6 +84,43 @@ interface WorkerFixtures {
   driver: EngineDriver;
 }
 
+/**
+ * Source trees whose contents end up inside the injected bundle.
+ *
+ * `shared/` is in the list because that is where the safety policy lives, and a stale bundle there
+ * is the dangerous case rather than a merely inconvenient one.
+ */
+const BUNDLED_SOURCES = ['extension/src', 'shared'];
+
+/** The newest mtime under a directory tree, ignoring build output. */
+function newestSourceMtime(dir: string): { path: string; mtimeMs: number } {
+  let newest = { path: dir, mtimeMs: 0 };
+  const walk = (current: string): void => {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      if (entry.name === 'node_modules' || entry.name === 'dist') continue;
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (/\.(ts|tsx|js|json|css|html)$/.test(entry.name)) {
+        const { mtimeMs } = fs.statSync(full);
+        if (mtimeMs > newest.mtimeMs) newest = { path: full, mtimeMs };
+      }
+    }
+  };
+  walk(dir);
+  return newest;
+}
+
+/**
+ * Refuse to run against a bundle that is missing, or older than the sources it was built from.
+ *
+ * The existence check alone was not enough, and the gap was not hypothetical: a safety-policy fix
+ * landed in `shared/safety/policy.ts`, every unit test and the whole safety corpus went green, and
+ * three E2E specs kept failing against the previous bundle — which looked like the fix being wrong
+ * rather than the build being old. The reverse is what makes this worth a hard failure: a bundle
+ * built *before* a safety regression was introduced will pass the E2E suite and say nothing, so a
+ * green run would mean the opposite of what it appears to mean.
+ */
 function assertBuilt(): void {
   const manifest = path.join(EXTENSION_DIR, 'manifest.json');
   const engine = path.join(EXTENSION_DIR, ENGINE_BUNDLE);
@@ -80,6 +129,19 @@ function assertBuilt(): void {
       `extension/dist is missing ${fs.existsSync(manifest) ? ENGINE_BUNDLE : 'manifest.json'}. ` +
         'Run `npm run build:extension` before the e2e suite.',
     );
+  }
+
+  const builtAt = fs.statSync(engine).mtimeMs;
+  for (const relative of BUNDLED_SOURCES) {
+    const newest = newestSourceMtime(path.join(ROOT, relative));
+    if (newest.mtimeMs > builtAt) {
+      const behindBy = Math.round((newest.mtimeMs - builtAt) / 1000);
+      throw new Error(
+        `extension/dist/${ENGINE_BUNDLE} is ${behindBy}s older than ` +
+          `${path.relative(ROOT, newest.path)}, so this suite would test a stale build. ` +
+          'Run `npm run build:extension` first.',
+      );
+    }
   }
 }
 
@@ -295,6 +357,23 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
             };
           }),
         );
+      },
+
+      async acceptAll(page: Page): Promise<number> {
+        let accepted = 0;
+        // Bounded so a UI that never updates its button text fails the test instead of hanging.
+        for (let guard = 0; guard < 200; guard += 1) {
+          // `:not([disabled])` matters: the panel disables Accept on a card with no value to
+          // apply — a blocked field, or one the profile has nothing for. A disabled button never
+          // changes to "Accepted", so without this the loop re-clicks it until Playwright times out.
+          const pending = page.locator('#formpilot-root .card .btn:not([disabled])', {
+            hasText: /^Accept$/,
+          });
+          if ((await pending.count()) === 0) break;
+          await pending.first().click();
+          accepted += 1;
+        }
+        return accepted;
       },
 
       async fillViaPanel(page: Page): Promise<void> {

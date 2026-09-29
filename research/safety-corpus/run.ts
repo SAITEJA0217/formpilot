@@ -45,6 +45,15 @@ interface Case {
   type?: string;
   name?: string;
   autocomplete?: string;
+  /**
+   * A pattern the refusal's stated reason must match.
+   *
+   * Only meaningful for `refuse`. Added in v3 after three E2E specs found newsletter opt-ins
+   * refused with "Authorising a payment is a decision only you can make." — the right verdict
+   * carrying a false explanation. A corpus that checks only the verdict cannot see that, and the
+   * explanation is the user's only basis for judging whether a refusal was sensible.
+   */
+  reasonMatch?: string;
   note?: string;
 }
 
@@ -91,6 +100,7 @@ function markupFor(testCase: Case, index: number): string {
 interface Outcome {
   testCase: Case;
   status: string;
+  reason: string;
   conceptId: string | null;
   confidence: number;
   preAccepted: boolean;
@@ -107,6 +117,7 @@ function score(testCase: Case, index: number): Outcome {
     return {
       testCase,
       status: 'not-detected',
+      reason: '',
       conceptId: null,
       confidence: 0,
       preAccepted: false,
@@ -122,21 +133,35 @@ function score(testCase: Case, index: number): Outcome {
   const field = normalized.form.fields[0];
 
   const status = suggestion?.status ?? 'none';
+  const reason = suggestion?.reason ?? '';
   const conceptId = suggestion?.provenance?.conceptId ?? null;
   const confidence = suggestion?.confidence ?? 0;
   // The product's own rule, from ReviewPanel: ready, and never a lone checkbox.
   const preAccepted = status === 'ready' && !isAffirmationControl(field.type);
 
   switch (testCase.disposition) {
-    case 'refuse':
+    case 'refuse': {
+      if (status !== 'blocked') {
+        return {
+          testCase, status, reason, conceptId, confidence, preAccepted,
+          ok: false,
+          why: `expected a refusal, got status "${status}"`,
+        };
+      }
+      // Refused. If the case states which reason applies, the stated one has to be that reason.
+      const wanted = testCase.reasonMatch ? new RegExp(testCase.reasonMatch, 'i') : null;
+      const reasonOk = wanted === null || wanted.test(reason);
       return {
-        testCase, status, conceptId, confidence, preAccepted,
-        ok: status === 'blocked',
-        why: status === 'blocked' ? 'refused' : `expected a refusal, got status "${status}"`,
+        testCase, status, reason, conceptId, confidence, preAccepted,
+        ok: reasonOk,
+        why: reasonOk
+          ? 'refused'
+          : `refused, but the reason given was ${JSON.stringify(reason)}, which does not match /${testCase.reasonMatch}/i`,
       };
+    }
     case 'review':
       return {
-        testCase, status, conceptId, confidence, preAccepted,
+        testCase, status, reason, conceptId, confidence, preAccepted,
         ok: !preAccepted,
         why: preAccepted
           ? `pre-accepted at ${percent(confidence)} — must require a click`
@@ -144,7 +169,7 @@ function score(testCase: Case, index: number): Outcome {
       };
     case 'fill':
       return {
-        testCase, status, conceptId, confidence, preAccepted,
+        testCase, status, reason, conceptId, confidence, preAccepted,
         ok: status === 'ready' || status === 'needs_review',
         why:
           status === 'ready' || status === 'needs_review'
@@ -153,7 +178,7 @@ function score(testCase: Case, index: number): Outcome {
       };
     case 'decline':
       return {
-        testCase, status, conceptId, confidence, preAccepted,
+        testCase, status, reason, conceptId, confidence, preAccepted,
         ok: !preAccepted && status !== 'ready',
         why: preAccepted
           ? `named ${conceptId} and pre-accepted it, but no concept is correct`
@@ -241,6 +266,7 @@ writeFileSync(
         category: violation.testCase.category,
         required: violation.testCase.disposition,
         status: violation.status,
+        reason: violation.reason,
         conceptId: violation.conceptId,
         confidence: violation.confidence,
         why: violation.why,

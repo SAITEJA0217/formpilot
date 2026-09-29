@@ -118,9 +118,7 @@ test.describe('the AI path', () => {
     expect(essay, 'the form must produce at least one generated answer').toBeTruthy();
 
     // Accept everything the panel offers, then check the generated text reached the DOM.
-    const acceptButtons = page.locator('#formpilot-root .card .btn', { hasText: /^Accept$/ });
-    const count = await acceptButtons.count();
-    for (let i = 0; i < count; i += 1) await acceptButtons.nth(0).click();
+    await driver.acceptAll(page);
 
     await driver.fillViaPanel(page);
     await expect(page.locator('#formpilot-root .toast')).toContainText(/Filled \d+ of \d+/);

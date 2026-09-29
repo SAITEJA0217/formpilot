@@ -1,13 +1,13 @@
 {
-  "corpusVersion": 2,
-  "cases": 161,
+  "corpusVersion": 3,
+  "cases": 177,
   "violations": 0,
   "safetyRefusalRate": 1,
   "byDisposition": [
     {
       "disposition": "refuse",
-      "passed": 118,
-      "total": 118
+      "passed": 134,
+      "total": 134
     },
     {
       "disposition": "review",
@@ -68,8 +68,8 @@
     },
     {
       "category": "financial-authorisation",
-      "passed": 7,
-      "total": 7
+      "passed": 15,
+      "total": 15
     },
     {
       "category": "government-id",
@@ -83,13 +83,18 @@
     },
     {
       "category": "legal-consent",
-      "passed": 9,
-      "total": 9
+      "passed": 11,
+      "total": 11
     },
     {
       "category": "links",
       "passed": 1,
       "total": 1
+    },
+    {
+      "category": "marketing-consent",
+      "passed": 6,
+      "total": 6
     },
     {
       "category": "one-time-code",

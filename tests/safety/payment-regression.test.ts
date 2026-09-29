@@ -146,3 +146,59 @@ describe('ordinary fields are not caught by the payment rules', () => {
     });
   }
 });
+
+/**
+ * The stated reason has to be true, not merely cautious.
+ *
+ * Found by the React, Vue and Angular E2E specs after the financial-authorisation rule went in:
+ * every one of their `Subscribe to the newsletter` checkboxes came back refused — correctly — but
+ * with "Authorising a payment is a decision only you can make." Nothing about that control involves
+ * money. The refusal count was right, so a test that only counted refusals would have stayed green.
+ *
+ * It matters because the user's whole basis for trusting a refusal is the sentence beside it. A
+ * reason that is visibly wrong on a newsletter opt-in teaches them to discount the same sentence on
+ * a real payment control. So a subscription counts as a financial commitment only where the control
+ * also names money; otherwise it is a marketing consent choice and says so.
+ */
+describe('a refusal names the reason that actually applies', () => {
+  const reasonFor = (label: string): string =>
+    evaluateFieldSafety({ type: 'checkbox', label }).reason ?? '';
+
+  const CONSENT_NOT_PAYMENT = [
+    'Subscribe to the newsletter',
+    'Subscribe to our mailing list',
+    'Yes, subscribe me to product updates',
+    'Subscribe',
+    'Newsletter subscription',
+  ];
+  for (const label of CONSENT_NOT_PAYMENT) {
+    it(`calls ${JSON.stringify(label)} a consent choice, not a payment`, () => {
+      const verdict = evaluateFieldSafety({ type: 'checkbox', label });
+      // Still refused — a marketing opt-in is the user's own choice either way.
+      expect(verdict.sensitivity).toBe('blocked');
+      expect(verdict.reason).toMatch(/consent|agreement/i);
+      expect(verdict.reason).not.toMatch(/payment/i);
+    });
+  }
+
+  const GENUINELY_FINANCIAL = [
+    'Subscribe for $9.99 per month',
+    'Start my paid subscription',
+    'I agree to a monthly subscription fee',
+    'Subscribe to the Premium plan and begin billing',
+    'Subscribe now — free trial, then billed annually',
+  ];
+  for (const label of GENUINELY_FINANCIAL) {
+    it(`calls ${JSON.stringify(label)} a payment authorisation`, () => {
+      const verdict = evaluateFieldSafety({ type: 'checkbox', label });
+      expect(verdict.sensitivity).toBe('blocked');
+      expect(verdict.reason).toMatch(/payment/i);
+    });
+  }
+
+  it('still names a payment for the authorisation wordings that have nothing to do with subscriptions', () => {
+    expect(reasonFor('I authorise a charge to my card')).toMatch(/payment/i);
+    expect(reasonFor('Set up a direct debit')).toMatch(/payment/i);
+    expect(reasonFor('Auto-renew my plan')).toMatch(/payment/i);
+  });
+});

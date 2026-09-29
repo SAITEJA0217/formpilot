@@ -42,7 +42,11 @@ export const googleFormsAdapter: FormAdapter = {
   supportStatus: 'verified',
 
   matches(ctx) {
-    if (ctx.platform === 'google-forms') return true;
+    // Markup, not the URL. This adapter used to return true on a `docs.google.com/forms` URL
+    // alone, which made it the only one of the five that trusted the address bar — and it is the
+    // worst candidate for that, because Google Forms markup is generated and unversioned. If the
+    // structure changes, a URL match selects an adapter that then parses nothing and reports zero
+    // fields, where falling through to the generic engine would still have found the inputs.
     return !!ctx.document.querySelector(descendantSelector(LISTITEM, HEADING));
   },
 

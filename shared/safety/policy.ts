@@ -176,8 +176,29 @@ const FINANCIAL_AUTHORISATION_PATTERNS: readonly RegExp[] = [
   /\bstanding\s+order\b/,
   /\brecurring\s+(billing|payment|charge)\b/,
   /\bauto\s*renew/,
-  /\bsubscri(be|ption)\b/,
 ];
+
+/**
+ * Money named on the control: what separates a paid subscription from a newsletter.
+ *
+ * "Subscribe" on its own is how nearly every site words its marketing opt-in, so treating the
+ * bare word as a payment would tell the user something untrue — the control would be refused
+ * with the wrong reason. Both outcomes are a refusal either way, and a refusal whose stated
+ * reason is false is worse than one that is merely cautious, because the user calibrates their
+ * trust on the explanation. A subscription is therefore a financial commitment only when the
+ * control also names consideration; without that it falls through to the consent rule below,
+ * which already covers `newsletter` and `subscribe` and gives the reason that actually applies.
+ */
+const MONEY_SIGNAL_PATTERNS: readonly RegExp[] = [
+  /[$\u00a3\u20ac\u00a5\u20b9]\s?\d/,
+  /\b\d+(\.\d{2})?\s?(usd|eur|gbp|inr|per\s+month|per\s+year|pm|pa)\b/,
+  /\b(paid|pay|price|pricing|fee|cost|billing|billed|invoice|premium\s+plan)\b/,
+  /\b(monthly|yearly|annual|annually)\s+(plan|payment|fee|billing|charge|subscription)\b/,
+  /\bfree\s+trial\b/,
+];
+
+/** A subscription commits the user financially only when the control also names money. */
+const SUBSCRIPTION_PATTERN = /\bsubscri(be|ption|bing)\b/;
 
 /**
  * Text on a control that submits, pays, or otherwise commits the user.
@@ -350,7 +371,10 @@ export function evaluateFieldSafety(field: {
 
   const isBooleanControl =
     field.type === 'checkbox' || field.type === 'checkbox_group' || field.type === 'radio_group';
-  if (isBooleanControl && matchesPattern(FINANCIAL_AUTHORISATION_PATTERNS)) {
+  const authorisesPayment =
+    matchesPattern(FINANCIAL_AUTHORISATION_PATTERNS) ||
+    (matchesPattern([SUBSCRIPTION_PATTERN]) && matchesPattern(MONEY_SIGNAL_PATTERNS));
+  if (isBooleanControl && authorisesPayment) {
     return {
       sensitivity: 'blocked',
       reason: 'Authorising a payment is a decision only you can make.',
