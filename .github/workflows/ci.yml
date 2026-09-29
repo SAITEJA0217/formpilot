@@ -52,7 +52,12 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Typecheck (root, extension, frontend)
+      # The extension is its own npm workspace with its own lockfile, and `typecheck:extension`
+      # runs `tsc` inside it. Without this install there is no `extension/node_modules`, so TS
+      # resolves `react` from the ROOT tree — which carries react but no `@types/react` — and the
+      # job fails with "Could not find a declaration file for module 'react'".
+      - run: npm --prefix extension ci
+      - name: Typecheck (root and extension)
         run: |
           npm run typecheck
           npm run typecheck:extension
@@ -81,6 +86,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # `build:extension` runs `tsc && vite build` inside `extension/`, so it needs that
+      # workspace's own dependencies. `frontend` is installed too: the framework test apps and
+      # the Next.js route the E2E suite drives are served from there.
+      - run: npm --prefix extension ci
       - run: npm --prefix frontend ci
       - name: Install Chromium for Playwright
         run: npx playwright install --with-deps chromium
