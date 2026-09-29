@@ -1,0 +1,15 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "claude/exciting-faraday-2jfepm",
+    "main"
+  ],
+  "parent": {
+    "claude/exciting-faraday-2jfepm": "main",
+    "main": null
+  },
+  "order": [
+    "main",
+    "claude/exciting-faraday-2jfepm"
+  ]
+}

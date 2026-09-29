@@ -183,17 +183,24 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
       // `page.setViewportSize()` on its own page. Stating it here makes that visible instead of
       // leaving specs to depend on whatever Chromium's default happens to be.
       viewport: { width: 1280, height: 720 },
-      // Use the pre-installed Chromium where there is one, and let Playwright find its own
-      // otherwise.
+      // Where the browser comes from, and why it must be a full Chromium.
       //
-      // This path was hard-coded, and it is real only inside the development image. A GitHub
-      // Actions runner installs Chromium through `npx playwright install` into its own cache, so
-      // the pin pointed at a file that does not exist there and every one of the 83 specs failed
-      // in the worker fixture with "Failed to launch chromium because executable doesn't exist at
-      // /opt/pw-browsers/chromium" — before a single test body ran. Existence is the only honest
-      // condition: where the image supplies the browser, use it and skip the download; where it
-      // does not, Playwright resolves the one it installed.
-      ...(fs.existsSync(PINNED_CHROMIUM) ? { executablePath: PINNED_CHROMIUM } : {}),
+      // The pinned path is real only inside the development image, so hard-coding it failed every
+      // spec on a GitHub runner before any test body ran ("executable doesn't exist at
+      // /opt/pw-browsers/chromium"). Existence is the honest condition.
+      //
+      // `channel: 'chromium'` is the other half, and it is not cosmetic. Since Playwright 1.49 a
+      // plain `headless: true` runs **chrome-headless-shell**, which cannot load extensions: it
+      // accepts `--load-extension` and silently ignores it. The whole suite then fails 20 seconds
+      // at a time waiting for an MV3 service worker that will never register — 83 specs × the
+      // 20s timeout below, which is exactly the 28 minutes the first CI run burned. The channel
+      // asks for the full Chromium build, whose new headless mode does support extensions.
+      //
+      // Locally the pinned binary is already a full Chrome, so the channel is unnecessary there
+      // and `executablePath` would override it anyway.
+      ...(fs.existsSync(PINNED_CHROMIUM)
+        ? { executablePath: PINNED_CHROMIUM }
+        : { channel: 'chromium' }),
       args: [
         `--disable-extensions-except=${EXTENSION_DIR}`,
         `--load-extension=${EXTENSION_DIR}`,
@@ -211,7 +218,21 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
     async ({ extensionContext: context, server }, use) => {
     // Resolve the extension id from the MV3 service worker.
     let worker = context.serviceWorkers()[0];
-    if (!worker) worker = await context.waitForEvent('serviceworker', { timeout: 20_000 });
+    if (!worker) {
+      try {
+        worker = await context.waitForEvent('serviceworker', { timeout: 20_000 });
+      } catch {
+        // Say what this actually means. A browser that cannot load extensions reports nothing at
+        // all — it accepts `--load-extension` and ignores it — so the bare timeout reads as a slow
+        // service worker rather than a browser that was never going to register one.
+        throw new Error(
+          'The extension never registered a service worker. The usual cause is a Chromium build ' +
+            'that cannot load extensions: chrome-headless-shell accepts --load-extension and ' +
+            'silently ignores it. Launch a full Chromium (channel: "chromium" or an explicit ' +
+            `executablePath). Loaded from: ${EXTENSION_DIR}`,
+        );
+      }
+    }
     const extensionId = new URL(worker.url()).host;
 
     // Seed auth + profile through the shipped dashboard bridge, not by writing storage.
