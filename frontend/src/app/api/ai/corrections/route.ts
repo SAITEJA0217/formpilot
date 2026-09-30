@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { adminAuth, adminDb } from '../../../../lib/firebase-admin';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { callOpenRouter, FREE_OPENROUTER_MODEL, OpenRouterError, extractJsonFromResponse } from '@/lib/openrouter';
 
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get('origin');
@@ -42,7 +40,6 @@ export async function POST(req: Request) {
     }
 
     // Classify the correction
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const prompt = `
       Analyze this user correction to an AI-generated form answer.
       Question: "${originalQuestion}"
@@ -57,12 +54,16 @@ export async function POST(req: Request) {
       Return ONLY a JSON object: {"type": "fact-level" | "phrasing-level"}
     `;
 
-    const result = await model.generateContent(prompt);
     let type = 'phrasing-level'; // default
     try {
-      let cleaned = result.response.text();
-      cleaned = cleaned.substring(cleaned.indexOf('{'), cleaned.lastIndexOf('}') + 1);
-      const parsed = JSON.parse(cleaned);
+      const responseText = await callOpenRouter({
+        model: process.env.OPENROUTER_MODEL || FREE_OPENROUTER_MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        responseFormat: { type: 'json_object' },
+        temperature: 0.1,
+        maxTokens: 500
+      });
+      const parsed = extractJsonFromResponse(responseText);
       if (parsed.type === 'fact-level') type = 'fact-level';
     } catch (e) {
       console.error("Failed to parse classification", e);
@@ -79,13 +80,13 @@ export async function POST(req: Request) {
       timestamp: Date.now()
     });
 
-    // If fact-level, we should ideally update the profile, but safely doing deep updates based on sourceDetail is risky without a second AI pass.
-    // For this MVP, we save the classification and return it.
-
     return NextResponse.json({ success: true, type }, { headers: corsHeaders });
 
   } catch (error: any) {
     console.error("Corrections Route Error:", error);
+    if (error instanceof OpenRouterError) {
+      return NextResponse.json({ error: error.message }, { status: error.status || 502, headers: corsHeaders });
+    }
     return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
   }
 }

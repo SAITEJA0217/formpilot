@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '../../../../lib/firebase-admin';
-import https from 'https';
+import { callOpenRouter, FREE_OPENROUTER_MODEL, OpenRouterError, extractJsonFromResponse } from '@/lib/openrouter';
 
 function getCorsHeaders(req: NextRequest) {
   const origin = req.headers.get('origin');
@@ -48,11 +48,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'File size exceeds limit. Maximum allowed size is 5MB.' }, { status: 400, headers: corsHeaders });
     }
 
-    // Convert PDF to base64 for direct Gemini inline upload (no pdf-parse needed)
     const buffer = Buffer.from(await file.arrayBuffer());
-    const base64Pdf = buffer.toString('base64');
+    let extractedText = '';
+    try {
+      // Try extracting text using pdf-parse if available
+      const pdfParse = require('pdf-parse');
+      const pdfData = await pdfParse(buffer);
+      extractedText = pdfData?.text?.trim() || '';
+    } catch (parseErr) {
+      console.warn('[API /ai/parse-resume] Text extraction via pdf-parse skipped/failed:', parseErr);
+    }
 
-    const prompt = `You are an expert resume parser. Extract the following information from the provided resume PDF and format it EXACTLY according to the JSON schema below. 
+    const prompt = `You are an expert resume parser. Extract the following information from the provided resume and format it EXACTLY according to the JSON schema below. 
 Return ONLY valid JSON, without any markdown formatting or code blocks.
 
 JSON Schema required:
@@ -104,84 +111,74 @@ JSON Schema required:
   }
 }`;
 
-    const geminiApiKey = process.env.GEMINI_API_KEY;
-    if (!geminiApiKey) {
-      return NextResponse.json({ error: 'Gemini API key not configured.' }, { status: 500, headers: corsHeaders });
+    const apiKey = process.env.OPENROUTER_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'OpenRouter API key not configured (OPENROUTER_API_KEY).' }, { status: 500, headers: corsHeaders });
     }
+
+    const modelName = process.env.OPENROUTER_MODEL || FREE_OPENROUTER_MODEL;
 
     let parsedData;
     try {
-      const requestBody = JSON.stringify({
-        contents: [{
-          parts: [
+      let rawResponseText = '';
+
+      if (extractedText && extractedText.length > 50) {
+        // We have clean text from the PDF, send text directly
+        rawResponseText = await callOpenRouter({
+          model: modelName,
+          messages: [
             {
-              inline_data: {
-                mime_type: 'application/pdf',
-                data: base64Pdf,
-              }
-            },
-            { text: prompt }
-          ]
-        }],
-        generationConfig: {
-          response_mime_type: 'application/json',
-        }
-      });
-
-      // Use Node.js native https to bypass Next.js/undici fetch issues
-      const geminiResponse = await new Promise<string>((resolve, reject) => {
-        const options = {
-          hostname: 'generativelanguage.googleapis.com',
-          path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(requestBody),
-          },
-          timeout: 60000,
-        };
-
-        const req = https.request(options, (res) => {
-          let data = '';
-          res.on('data', (chunk) => { data += chunk; });
-          res.on('end', () => resolve(data));
+              role: 'user',
+              content: `${prompt}\n\nRESUME CONTENT:\n${extractedText}`
+            }
+          ],
+          responseFormat: { type: 'json_object' },
+          temperature: 0.1,
+          maxTokens: 2000
         });
-
-        req.on('error', reject);
-        req.on('timeout', () => { req.destroy(); reject(new Error('Gemini API timeout')); });
-        req.write(requestBody);
-        req.end();
-      });
-
-      const geminiJson = JSON.parse(geminiResponse);
-
-      // Check for API-level errors first
-      if (geminiJson.error) {
-        throw new Error(`Gemini API error: ${geminiJson.error.message || JSON.stringify(geminiJson.error)}`);
+      } else {
+        // Multimodal PDF fallback
+        const base64Pdf = buffer.toString('base64');
+        rawResponseText = await callOpenRouter({
+          model: modelName,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: `data:application/pdf;base64,${base64Pdf}`
+                  }
+                },
+                {
+                  type: 'text',
+                  text: prompt
+                }
+              ]
+            }
+          ],
+          responseFormat: { type: 'json_object' },
+          temperature: 0.1,
+          maxTokens: 2000
+        });
       }
 
-      const candidate = geminiJson?.candidates?.[0];
-      const finishReason = candidate?.finishReason;
-      if (finishReason && finishReason !== 'STOP') {
-        throw new Error(`Gemini blocked response: ${finishReason}`);
-      }
-
-      const rawText = candidate?.content?.parts?.[0]?.text?.trim() ?? '';
-      if (!rawText) throw new Error('Empty response from Gemini');
-
-      const jsonText = rawText.replace(/^```json?\s*/i, '').replace(/```\s*$/i, '').trim();
-      parsedData = JSON.parse(jsonText);
+      parsedData = extractJsonFromResponse(rawResponseText);
 
       // Sanitize: replace all null values with "" so React controlled inputs don't warn
       parsedData = JSON.parse(JSON.stringify(parsedData, (_key, val) => val === null ? '' : val));
     } catch (aiError: any) {
       console.error('AI extraction failed:', aiError?.message || aiError);
-      return NextResponse.json({ error: 'AI extraction failed. Please try again.' }, { status: 502, headers: corsHeaders });
+      if (aiError instanceof OpenRouterError) {
+        return NextResponse.json({ error: aiError.message }, { status: aiError.status || 502, headers: corsHeaders });
+      }
+      return NextResponse.json({ error: aiError.message || 'AI extraction failed. Please try again.' }, { status: 502, headers: corsHeaders });
     }
 
     return NextResponse.json(parsedData, { headers: corsHeaders });
   } catch (error: any) {
     console.error('Unexpected error parsing resume:', error);
-    return NextResponse.json({ error: 'An unexpected error occurred while processing your request.' }, { status: 500, headers: corsHeaders });
+    return NextResponse.json({ error: error.message || 'An unexpected error occurred while processing your request.' }, { status: 500, headers: corsHeaders });
   }
 }

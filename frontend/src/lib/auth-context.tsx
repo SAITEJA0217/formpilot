@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User, signInWithPopup, GoogleAuthProvider, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, app, db, doc, getDoc, setDoc } from '../../../shared/utils/firebase';
+import { auth, app, db, doc, getDoc, setDoc } from '@/shared/utils/firebase';
 import { toast } from 'sonner';
 
 interface AuthContextType {

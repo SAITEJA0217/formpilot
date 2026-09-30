@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { FORMPILOT_SYSTEM_PROMPT } from '../../../../../../shared/prompts';
-import { UserProfile, FormQuestion, AIAnswer } from '../../../../../../shared/types';
+import { FORMPILOT_SYSTEM_PROMPT } from '@/shared/prompts';
+import { UserProfile, FormQuestion, AIAnswer } from '@/shared/types';
 import { adminAuth, adminDb } from '../../../../lib/firebase-admin';
+import { callOpenRouter, FREE_OPENROUTER_MODEL, OpenRouterError, extractJsonFromResponse } from '@/lib/openrouter';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const MAX_REQUESTS_PER_DAY = 1000;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -113,46 +112,47 @@ export async function POST(req: Request) {
       // Continue anyway
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      console.error(`[API /ai/generate] Server misconfiguration: GEMINI_API_KEY is missing`);
+    const apiKey = process.env.OPENROUTER_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error(`[API /ai/generate] Server misconfiguration: OPENROUTER_API_KEY is missing`);
       return NextResponse.json({ error: 'Server misconfiguration: AI provider key missing' }, { status: 500, headers: corsHeaders });
     }
 
-    console.log(`[API /ai/generate] AI Provider selected: Gemini (gemini-2.5-flash)`);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const modelName = process.env.OPENROUTER_MODEL || FREE_OPENROUTER_MODEL;
+    console.log(`[API /ai/generate] AI Provider selected: OpenRouter (${modelName})`);
 
-    const prompt = `
-      ${FORMPILOT_SYSTEM_PROMPT}
-      
-      ${correctionsContext}
+    const userContent = `
+${correctionsContext ? `USER'S PREFERRED CORRECTIONS:\n${correctionsContext}\n` : ''}
+USER PROFILE:
+${JSON.stringify(profile, null, 2)}
 
-      USER PROFILE:
-      ${JSON.stringify(profile, null, 2)}
+FORM QUESTIONS:
+${JSON.stringify(questions, null, 2)}
 
-      FORM QUESTIONS:
-      ${JSON.stringify(questions, null, 2)}
-    `;
+CRITICAL: Return ONLY valid JSON format {"answers": [...]}. Start directly with { and end with }.
+    `.trim();
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
-    
-    let cleanedText = responseText;
-    const startIdx = cleanedText.indexOf('{');
-    const endIdx = cleanedText.lastIndexOf('}');
-    if (startIdx !== -1 && endIdx !== -1) {
-      cleanedText = cleanedText.substring(startIdx, endIdx + 1);
-    }
+    const responseText = await callOpenRouter({
+      model: modelName,
+      messages: [
+        { role: 'system', content: FORMPILOT_SYSTEM_PROMPT },
+        { role: 'user', content: userContent }
+      ],
+      responseFormat: { type: 'json_object' },
+      temperature: 0.1,
+      maxTokens: 4096
+    });
     
     let parsedResponse;
     try {
-      parsedResponse = JSON.parse(cleanedText);
+      parsedResponse = extractJsonFromResponse(responseText);
       if (!parsedResponse || !Array.isArray(parsedResponse.answers)) {
         throw new Error('Response is missing answers array');
       }
       console.log(`[API /ai/generate] AI Generation successful. Parsed ${parsedResponse.answers.length} answers.`);
     } catch (e: any) {
       console.error(`[API /ai/generate] AI returned malformed JSON: ${e.message}. Raw text preview: ${responseText.substring(0, 100)}...`);
-      return NextResponse.json({ error: 'AI returned invalid response format. Please try again.' }, { status: 502, headers: corsHeaders });
+      return NextResponse.json({ error: `AI returned invalid response format: ${e.message}. Please try again.` }, { status: 502, headers: corsHeaders });
     }
 
     // 4. Honesty Check for Confidence & Provenance
@@ -179,9 +179,11 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error(`[API /ai/generate] Unexpected AI Generation Route Error:`, error);
     
-    // Check if it's a Gemini API error (quota, invalid key, etc)
-    if (error.message?.includes('API key not valid') || error.message?.includes('API_KEY_INVALID')) {
-      return NextResponse.json({ error: 'AI Provider Error: Invalid API Key' }, { status: 502, headers: corsHeaders });
+    if (error instanceof OpenRouterError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status || 502, headers: corsHeaders }
+      );
     }
     
     if (error.message === 'RateLimitExceeded') {

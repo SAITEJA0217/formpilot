@@ -155,14 +155,14 @@ async function handleAnalyzeForm(questions: FormQuestion[], targetTabId: number)
   );
 
   if (!response.ok) {
-    let errorMessage = `Failed to generate answers: ${response.status}`;
+    let errorMessage = `API Error (${response.status}): Failed to generate answers`;
     try {
       const errorData = await response.json();
       if (errorData.error) {
-        errorMessage = `API Error (${response.status}): ${errorData.error}`;
+        errorMessage = errorData.error;
       }
     } catch (e) {
-      // Ignore if no JSON body
+      // Ignore if not JSON
     }
     throw new Error(errorMessage);
   }
@@ -195,7 +195,12 @@ async function handleSendCorrection(payload: any) {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to save correction');
+    let errMsg = 'Failed to save correction';
+    try {
+      const errData = await response.json();
+      if (errData.error) errMsg = errData.error;
+    } catch {}
+    throw new Error(errMsg);
   }
 
   return await response.json();

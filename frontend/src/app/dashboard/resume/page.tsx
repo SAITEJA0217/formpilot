@@ -5,7 +5,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { UploadCloud, FileText, AlertCircle, ArrowRight, Loader2, Sparkles, CheckCircle2, ArrowLeft } from 'lucide-react';
-import { UserProfile } from '../../../../../shared/types';
+import { UserProfile } from '@/shared/types';
 import { Button } from '@/components/ui/button';
 
 export default function ResumeIntelligencePage() {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { AIAnswer } from '../../../shared/types';
 import { Check, X, Edit2, Play, Info } from 'lucide-react';
 
@@ -14,6 +14,12 @@ export default function ReviewPanel({ answers: initialAnswers, onFill, onClose }
   const [editValue, setEditValue] = useState('');
   const [expandedWhy, setExpandedWhy] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialAnswers) {
+      setAnswers(initialAnswers);
+    }
+  }, [initialAnswers]);
 
   const handleEdit = (index: number) => {
     setEditingId(index);

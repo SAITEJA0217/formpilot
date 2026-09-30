@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { UploadCloud, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { UserProfile } from '../../../../shared/types';
+import { UserProfile } from '@/shared/types';
 import { useProfile } from '@/hooks/useProfile';
 import { toast } from 'sonner';
 

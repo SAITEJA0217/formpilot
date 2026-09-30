@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
-import { UserProfile } from '@/../../shared/types';
+import { UserProfile } from '@/shared/types';
 import { toast } from 'sonner';
 import { Plus, Trash2, Clock, ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import { TagInput } from '@/components/ui/tag-input';
@@ -25,20 +25,28 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
 
   const tabList = ['personal', 'education', 'skills', 'projects', 'experience', 'social'];
   
-  // Local state for forms
-  const [personal, setPersonal] = useState(initialData.basicProfile || {
-    fullName: '', email: '', phone: '', dateOfBirth: '', gender: '', address: ''
+  // Local state for forms with safe fallback defaults
+  const [personal, setPersonal] = useState({
+    fullName: initialData.basicProfile?.fullName ?? '',
+    email: initialData.basicProfile?.email ?? '',
+    phone: initialData.basicProfile?.phone ?? '',
+    dateOfBirth: initialData.basicProfile?.dateOfBirth ?? '',
+    gender: initialData.basicProfile?.gender ?? '',
+    address: initialData.basicProfile?.address ?? ''
   });
   
-  const [social, setSocial] = useState(initialData.socialLinks || {
-    linkedin: '', github: '', portfolio: ''
+  const [social, setSocial] = useState({
+    linkedin: initialData.socialLinks?.linkedin ?? '',
+    github: initialData.socialLinks?.github ?? '',
+    portfolio: initialData.socialLinks?.portfolio ?? ''
   });
 
-  const [skills, setSkills] = useState(initialData.skills || {
-    technical: [], soft: []
+  const [skills, setSkills] = useState({
+    technical: initialData.skills?.technical ?? [],
+    soft: initialData.skills?.soft ?? []
   });
 
-  const ensureIds = (arr: any[]) => arr.map((item: any) => item.id ? item : { ...item, id: Math.random().toString(36).substring(7) });
+  const ensureIds = (arr: any[]) => (arr || []).map((item: any) => item?.id ? item : { ...item, id: Math.random().toString(36).substring(7) });
 
   const [education, setEducation] = useState<any[]>(ensureIds(initialData.education || []));
   const [projects, setProjects] = useState<any[]>(ensureIds(initialData.projects || []));
@@ -50,9 +58,29 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
   // Sync state only on initial mount or when data first arrives from empty state
   useEffect(() => {
     if (!isInitialized.current && initialData && Object.keys(initialData).length > 0) {
-      if (initialData.basicProfile) setPersonal(initialData.basicProfile);
-      if (initialData.socialLinks) setSocial(initialData.socialLinks);
-      if (initialData.skills) setSkills(initialData.skills);
+      if (initialData.basicProfile) {
+        setPersonal({
+          fullName: initialData.basicProfile.fullName ?? '',
+          email: initialData.basicProfile.email ?? '',
+          phone: initialData.basicProfile.phone ?? '',
+          dateOfBirth: initialData.basicProfile.dateOfBirth ?? '',
+          gender: initialData.basicProfile.gender ?? '',
+          address: initialData.basicProfile.address ?? '',
+        });
+      }
+      if (initialData.socialLinks) {
+        setSocial({
+          linkedin: initialData.socialLinks.linkedin ?? '',
+          github: initialData.socialLinks.github ?? '',
+          portfolio: initialData.socialLinks.portfolio ?? '',
+        });
+      }
+      if (initialData.skills) {
+        setSkills({
+          technical: initialData.skills.technical ?? [],
+          soft: initialData.skills.soft ?? [],
+        });
+      }
       if (initialData.education) setEducation(ensureIds(initialData.education));
       if (initialData.projects) setProjects(ensureIds(initialData.projects));
       if (initialData.experience) setExperience(ensureIds(initialData.experience));
@@ -74,13 +102,13 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
   }, [updateProfile]);
 
   const handlePersonalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newPersonal = { ...personal, [e.target.name]: e.target.value };
+    const newPersonal = { ...personal, [e.target.name]: e.target.value ?? '' };
     setPersonal(newPersonal);
     handleAutoSave({ basicProfile: newPersonal });
   };
 
   const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSocial = { ...social, [e.target.name]: e.target.value };
+    const newSocial = { ...social, [e.target.name]: e.target.value ?? '' };
     setSocial(newSocial);
     handleAutoSave({ socialLinks: newSocial });
   };
@@ -174,23 +202,23 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="fullName">Full Name</Label>
-              <Input id="fullName" name="fullName" value={personal.fullName} onChange={handlePersonalChange} placeholder="John Doe" />
+              <Input id="fullName" name="fullName" value={personal.fullName || ''} onChange={handlePersonalChange} placeholder="John Doe" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" value={personal.email} onChange={handlePersonalChange} placeholder="john@example.com" />
+              <Input id="email" name="email" type="email" value={personal.email || ''} onChange={handlePersonalChange} placeholder="john@example.com" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" name="phone" value={personal.phone} onChange={handlePersonalChange} placeholder="+1 234 567 890" />
+              <Input id="phone" name="phone" value={personal.phone || ''} onChange={handlePersonalChange} placeholder="+1 234 567 890" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="dateOfBirth">Date of Birth</Label>
-              <Input id="dateOfBirth" name="dateOfBirth" type="date" value={personal.dateOfBirth} onChange={handlePersonalChange} />
+              <Input id="dateOfBirth" name="dateOfBirth" type="date" value={personal.dateOfBirth || ''} onChange={handlePersonalChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="gender">Gender</Label>
-              <Select value={personal.gender} onValueChange={(value) => {
+              <Select value={personal.gender || ''} onValueChange={(value) => {
                 const newPersonal = { ...personal, gender: value || '' };
                 setPersonal(newPersonal);
                 handleAutoSave({ basicProfile: newPersonal });
@@ -208,7 +236,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
             </div>
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="address">Address</Label>
-              <Textarea id="address" name="address" value={personal.address} onChange={handlePersonalChange} placeholder="123 Main St, City, Country" />
+              <Textarea id="address" name="address" value={personal.address || ''} onChange={handlePersonalChange} placeholder="123 Main St, City, Country" />
             </div>
           </div>
         </TabsContent>
@@ -343,15 +371,15 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
           <div className="grid grid-cols-1 gap-6">
             <div className="space-y-2">
               <Label htmlFor="linkedin">LinkedIn URL</Label>
-              <Input id="linkedin" name="linkedin" value={social.linkedin} onChange={handleSocialChange} placeholder="https://linkedin.com/in/johndoe" />
+              <Input id="linkedin" name="linkedin" value={social.linkedin || ''} onChange={handleSocialChange} placeholder="https://linkedin.com/in/johndoe" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="github">GitHub URL</Label>
-              <Input id="github" name="github" value={social.github} onChange={handleSocialChange} placeholder="https://github.com/johndoe" />
+              <Input id="github" name="github" value={social.github || ''} onChange={handleSocialChange} placeholder="https://github.com/johndoe" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="portfolio">Portfolio URL</Label>
-              <Input id="portfolio" name="portfolio" value={social.portfolio} onChange={handleSocialChange} placeholder="https://johndoe.com" />
+              <Input id="portfolio" name="portfolio" value={social.portfolio || ''} onChange={handleSocialChange} placeholder="https://johndoe.com" />
             </div>
           </div>
         </TabsContent>

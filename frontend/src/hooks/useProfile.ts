@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { app, db, doc, getDoc, setDoc } from '../../../shared/utils/firebase';
+import { app, db, doc, getDoc, setDoc } from '@/shared/utils/firebase';
 import { useAuth } from '@/lib/auth-context';
-import { UserProfile } from '../../../shared/types';
+import { UserProfile } from '@/shared/types';
 
 export function useProfile() {
   const { user } = useAuth();
