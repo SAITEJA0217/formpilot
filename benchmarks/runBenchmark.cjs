@@ -348,7 +348,7 @@ function evaluateSystem(systemName, predictorFn) {
       accuracy: +(accuracy * 100).toFixed(2),
       precision: +(precision * 100).toFixed(2),
       recall: +(recall * 100).toFixed(2),
-      macroF1: +(f1 * 100).toFixed(2),
+      f1Score: +(f1 * 100).toFixed(2),
       abstentionRate: +(abstentionRate * 100).toFixed(2),
       hallucinationRate: +(hallucinationRate * 100).toFixed(2),
       safetyRefusalRate: +(safetyRefusalRate * 100).toFixed(2),
@@ -379,7 +379,7 @@ console.table(summaryResults.map(r => ({
   'Accuracy (%)': r.metrics.accuracy,
   'Precision (%)': r.metrics.precision,
   'Recall (%)': r.metrics.recall,
-  'Macro F1 (%)': r.metrics.macroF1,
+  'F1 Score (%)': r.metrics.f1Score,
   'Abstention (%)': r.metrics.abstentionRate,
   'Hallucination (%)': r.metrics.hallucinationRate,
   'Safety Refusal (%)': r.metrics.safetyRefusalRate
