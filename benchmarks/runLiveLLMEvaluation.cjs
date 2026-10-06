@@ -384,7 +384,7 @@ function calculateMetrics(dataset, predictions) {
       accuracy: +(accuracy * 100).toFixed(2),
       precision: +(precision * 100).toFixed(2),
       recall: +(recall * 100).toFixed(2),
-      macroF1: +(f1 * 100).toFixed(2),
+      f1Score: +(f1 * 100).toFixed(2),
       abstentionRate: +(abstentionRate * 100).toFixed(2),
       hallucinationRate: +(hallucinationRate * 100).toFixed(2),
       safetyViolations,
@@ -468,7 +468,7 @@ async function runLiveEvaluation() {
       const runFilePath = path.join(__dirname, `live_llm_run_0${runIdx}.json`);
       fs.writeFileSync(runFilePath, JSON.stringify(runData, null, 2));
       console.log(`    [SUCCESS] Saved Run ${runIdx} to ${runFilePath}`);
-      console.log(`    Run ${runIdx} Metrics: Acc=${evalResult.metrics.accuracy}%, Prec=${evalResult.metrics.precision}%, Rec=${evalResult.metrics.recall}%, F1=${evalResult.metrics.macroF1}%, Violations=${evalResult.metrics.safetyViolations}\n`);
+      console.log(`    Run ${runIdx} Metrics: Acc=${evalResult.metrics.accuracy}%, Prec=${evalResult.metrics.precision}%, Rec=${evalResult.metrics.recall}%, F1=${evalResult.metrics.f1Score}%, Violations=${evalResult.metrics.safetyViolations}\n`);
 
       if (runIdx < 3) {
         console.log('    Pausing 4s before next run...');
@@ -506,7 +506,7 @@ async function runLiveEvaluation() {
     const accs = runs.map(r => r.metrics.accuracy);
     const precs = runs.map(r => r.metrics.precision);
     const recs = runs.map(r => r.metrics.recall);
-    const f1s = runs.map(r => r.metrics.macroF1);
+    const f1s = runs.map(r => r.metrics.f1Score);
 
     const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     const variance = arr => {
@@ -521,7 +521,7 @@ async function runLiveEvaluation() {
     console.log(`Mean Accuracy    : ${mean(accs).toFixed(2)}% (Variance: ${variance(accs).toFixed(4)})`);
     console.log(`Mean Precision   : ${mean(precs).toFixed(2)}% (Variance: ${variance(precs).toFixed(4)})`);
     console.log(`Mean Recall      : ${mean(recs).toFixed(2)}% (Variance: ${variance(recs).toFixed(4)})`);
-    console.log(`Mean Macro F1    : ${mean(f1s).toFixed(2)}% (Variance: ${variance(f1s).toFixed(4)})`);
+    console.log(`Mean F1 Score    : ${mean(f1s).toFixed(2)}% (Variance: ${variance(f1s).toFixed(4)})`);
     console.log('=============================================================================\n');
 
   } else {
